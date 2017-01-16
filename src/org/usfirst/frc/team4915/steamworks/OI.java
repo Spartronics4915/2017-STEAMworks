@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 public class OI
 {
 
-    public final Joystick auxStick = new Joystick(1);
+    public final Joystick m_auxStick = new Joystick(1);
 
-    public final Joystick driveStick = new Joystick(0);
-    public final JoystickButton intakeOn = new JoystickButton(auxStick, 2);
+    public final Joystick m_driveStick = new Joystick(0);
+    public final JoystickButton m_intakeOn = new JoystickButton(m_auxStick, 2);
 
     public OI(Robot robot)
     {
-        intakeOn.whileHeld(new IntakeCommand(robot));
+        m_intakeOn.whileHeld(new IntakeCommand(robot));
     }
 }

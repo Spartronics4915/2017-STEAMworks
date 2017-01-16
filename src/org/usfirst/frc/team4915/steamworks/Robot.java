@@ -15,20 +15,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot
 {
 
-    private Command autonomousCommand;
-    private SendableChooser<Command> chooser = new SendableChooser<>();
+    private Command m_autonomousCommand;
+    private SendableChooser<Command> m_chooser = new SendableChooser<>();
 
-    private Drivetrain drivetrain;
-    private Intake intake;
-    private OI oi;
+    private Drivetrain m_drivetrain;
+    private Intake m_intake;
+    private OI m_oi;
 
     @Override
     public void autonomousInit()
     {
-        autonomousCommand = chooser.getSelected();
-        if (autonomousCommand != null)
+        m_autonomousCommand = m_chooser.getSelected();
+        if (m_autonomousCommand != null)
         {
-            autonomousCommand.start();
+            m_autonomousCommand.start();
         }
     }
 
@@ -52,27 +52,27 @@ public class Robot extends IterativeRobot
 
     public Intake getIntake()
     {
-        return intake;
+        return m_intake;
     }
 
     @Override
     public void robotInit()
     {
-        oi = new OI(this);
-        intake = new Intake(this);
-        drivetrain = new Drivetrain(oi.driveStick);
+        m_oi = new OI(this);
+        m_intake = new Intake(this);
+        m_drivetrain = new Drivetrain(m_oi.m_driveStick);
 
-        chooser.addDefault("Default Auto", new IntakeCommand(this));
+        m_chooser.addDefault("Default Auto", new IntakeCommand(this));
         // chooser.addObject("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", chooser);
+        SmartDashboard.putData("Auto mode", m_chooser);
     }
 
     @Override
     public void teleopInit()
     {
-        if (autonomousCommand != null)
+        if (m_autonomousCommand != null)
         {
-            autonomousCommand.cancel();
+            m_autonomousCommand.cancel();
         }
     }
 

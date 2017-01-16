@@ -13,11 +13,11 @@ public class Intake extends Subsystem
 
     private static final double INTAKE_SPEED = 0.75;
 
-    private final CANTalon intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
+    private final CANTalon m_intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
 
     public Intake(Robot robot)
     {
-        intakeMotor.changeControlMode(TalonControlMode.Speed);
+        m_intakeMotor.changeControlMode(TalonControlMode.Speed);
     }
 
     @Override
@@ -30,11 +30,11 @@ public class Intake extends Subsystem
     {
         if (onOff)
         {
-            intakeMotor.set(INTAKE_SPEED);
+            m_intakeMotor.set(INTAKE_SPEED);
         }
         else
         {
-            intakeMotor.set(0);
+            m_intakeMotor.set(0);
         }
 
     }

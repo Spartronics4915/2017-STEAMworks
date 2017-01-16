@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.command.Command;
 public class IntakeCommand extends Command
 {
 
-    private final Robot robot;
+    private final Robot m_robot;
 
     public IntakeCommand(Robot robot)
     {
-        this.robot = robot;
+        this.m_robot = robot;
 
         requires(robot.getIntake());
     }
@@ -22,7 +22,7 @@ public class IntakeCommand extends Command
     @Override
     public void end()
     {
-        robot.getIntake().setIntake(false);
+        m_robot.getIntake().setIntake(false);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class IntakeCommand extends Command
     @Override
     public void initialize()
     {
-        robot.getIntake().setIntake(true);
+        m_robot.getIntake().setIntake(true);
     }
 
     @Override

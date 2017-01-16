@@ -15,48 +15,48 @@ public class Drivetrain extends Subsystem
 {
 
     public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    private final Joystick driveStick;
+    private final Joystick m_driveStick;
 
-    private final CANTalon leftFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_LEFT_FOLLOWER);
-    private final CANTalon leftMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_LEFT_MASTER);
+    private final CANTalon m_leftFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_LEFT_FOLLOWER);
+    private final CANTalon m_leftMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_LEFT_MASTER);
 
-    private final CANTalon rightFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_RIGHT_FOLLOWER);
-    private final CANTalon rightMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_RIGHT_MASTER);
+    private final CANTalon m_rightFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_RIGHT_FOLLOWER);
+    private final CANTalon m_rightMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_RIGHT_MASTER);
 
-    private final RobotDrive robotDrive;
+    private final RobotDrive m_robotDrive;
 
     public Drivetrain(Joystick driveStick)
     {
-        this.driveStick = driveStick;
+        this.m_driveStick = driveStick;
 
-        leftMasterMotor.changeControlMode(TalonControlMode.Speed);
-        leftFollowerMotor.changeControlMode(TalonControlMode.Follower);
-        leftFollowerMotor.set(leftMasterMotor.getDeviceID());
+        m_leftMasterMotor.changeControlMode(TalonControlMode.Speed);
+        m_leftFollowerMotor.changeControlMode(TalonControlMode.Follower);
+        m_leftFollowerMotor.set(m_leftMasterMotor.getDeviceID());
 
-        rightMasterMotor.changeControlMode(TalonControlMode.Speed);
-        rightFollowerMotor.changeControlMode(TalonControlMode.Follower);
-        rightFollowerMotor.set(rightMasterMotor.getDeviceID());
+        m_rightMasterMotor.changeControlMode(TalonControlMode.Speed);
+        m_rightFollowerMotor.changeControlMode(TalonControlMode.Follower);
+        m_rightFollowerMotor.set(m_rightMasterMotor.getDeviceID());
 
-        leftMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-        rightMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-        leftMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-        rightMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+        m_leftMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+        m_rightMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+        m_leftMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+        m_rightMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
 
-        leftMasterMotor.setVoltageRampRate(48);
-        rightMasterMotor.setVoltageRampRate(48);
+        m_leftMasterMotor.setVoltageRampRate(48);
+        m_rightMasterMotor.setVoltageRampRate(48);
 
-        robotDrive = new RobotDrive(leftFollowerMotor, leftMasterMotor, rightFollowerMotor, rightMasterMotor);
+        m_robotDrive = new RobotDrive(m_leftFollowerMotor, m_leftMasterMotor, m_rightFollowerMotor, m_rightMasterMotor);
     }
 
     public void drive(double forward, double rotation)
     {
-        robotDrive.arcadeDrive(forward, rotation);
+        m_robotDrive.arcadeDrive(forward, rotation);
     }
 
     @Override
     protected void initDefaultCommand()
     {
-        setDefaultCommand(new ManualDriveCommand(this, driveStick));
+        setDefaultCommand(new ManualDriveCommand(this, m_driveStick));
     }
 
 }

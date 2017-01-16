@@ -10,22 +10,22 @@ public class ManualDriveCommand extends Command
 {
 
     private static final double TURN_MULTIPLIER = -0.55;
-    private final Joystick driveStick;
+    private final Joystick m_driveStick;
 
-    private final Drivetrain drivetrain;
+    private final Drivetrain m_drivetrain;
 
     public ManualDriveCommand(Drivetrain drivetrain, Joystick driveStick)
     {
-        this.drivetrain = drivetrain;
-        this.driveStick = driveStick;
+        this.m_drivetrain = drivetrain;
+        this.m_driveStick = driveStick;
     }
 
     @Override
     public void execute()
     {
-        double forwardAmount = -driveStick.getAxis(AxisType.kX);
-        double rotationAmount = driveStick.getAxis(AxisType.kY) * TURN_MULTIPLIER;
-        drivetrain.drive(forwardAmount, rotationAmount);
+        double forwardAmount = -m_driveStick.getAxis(AxisType.kX);
+        double rotationAmount = m_driveStick.getAxis(AxisType.kY) * TURN_MULTIPLIER;
+        m_drivetrain.drive(forwardAmount, rotationAmount);
     }
 
     @Override
