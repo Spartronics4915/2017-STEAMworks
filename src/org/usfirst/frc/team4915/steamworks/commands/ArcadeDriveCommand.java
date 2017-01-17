@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class ManualDriveCommand extends Command
+public class ArcadeDriveCommand extends Command
 {
 
     private static final double TURN_MULTIPLIER = -0.55;
@@ -14,7 +14,7 @@ public class ManualDriveCommand extends Command
 
     private final Drivetrain m_drivetrain;
 
-    public ManualDriveCommand(Drivetrain drivetrain, Joystick driveStick)
+    public ArcadeDriveCommand(Drivetrain drivetrain, Joystick driveStick)
     {
         m_drivetrain = drivetrain;
         m_driveStick = driveStick;
@@ -25,9 +25,9 @@ public class ManualDriveCommand extends Command
     @Override
     public void execute()
     {
-        double forwardAmount = -m_driveStick.getAxis(AxisType.kX);
-        double rotationAmount = m_driveStick.getAxis(AxisType.kY) * TURN_MULTIPLIER;
-        m_drivetrain.drive(forwardAmount, rotationAmount);
+        double forwardAmount = -m_driveStick.getAxis(AxisType.kX); // Get joystick x-axis values
+        double rotationAmount = m_driveStick.getAxis(AxisType.kY) * TURN_MULTIPLIER; // Get joystick y-axis values and multiply with TURN_MULTIPLIER
+        m_drivetrain.driveArcade(forwardAmount, rotationAmount); // Run the Drivetrain.driveArcade method with the joystick information
     }
 
     @Override

@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot
 {
 
+    public static Logger logger;
+
     private Command m_autonomousCommand;
     private SendableChooser<Command> m_chooser = new SendableChooser<>();
 
