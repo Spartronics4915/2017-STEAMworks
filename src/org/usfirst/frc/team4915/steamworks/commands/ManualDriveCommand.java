@@ -16,10 +16,10 @@ public class ManualDriveCommand extends Command
 
     public ManualDriveCommand(Drivetrain drivetrain, Joystick driveStick)
     {
-        this.m_drivetrain = drivetrain;
-        this.m_driveStick = driveStick;
-        
-        requires(this.m_drivetrain);
+        m_drivetrain = drivetrain;
+        m_driveStick = driveStick;
+
+        requires(m_drivetrain);
     }
 
     @Override

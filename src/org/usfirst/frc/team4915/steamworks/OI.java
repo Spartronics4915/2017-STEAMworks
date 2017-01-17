@@ -15,6 +15,9 @@ public class OI
 
     public OI(Robot robot)
     {
-        m_intakeOn.whileHeld(new IntakeCommand(robot));
+        if (robot.getIntake().wasSuccessful())
+        {
+            m_intakeOn.whileHeld(new IntakeCommand(robot.getIntake()));
+        }
     }
 }

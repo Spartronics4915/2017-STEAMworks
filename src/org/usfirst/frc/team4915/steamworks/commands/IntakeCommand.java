@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
-import org.usfirst.frc.team4915.steamworks.Robot;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -10,19 +10,22 @@ import edu.wpi.first.wpilibj.command.Command;
 public class IntakeCommand extends Command
 {
 
-    private final Robot m_robot;
+    private final Intake m_intake;
 
-    public IntakeCommand(Robot robot)
+    public IntakeCommand(Intake intake)
     {
-        this.m_robot = robot;
+        m_intake = intake;
 
-        requires(robot.getIntake());
+        requires(m_intake);
     }
 
     @Override
     public void end()
     {
-        m_robot.getIntake().setIntake(false);
+        if (m_intake.wasSuccessful())
+        {
+            m_intake.setIntake(false);
+        }
     }
 
     @Override
@@ -33,7 +36,10 @@ public class IntakeCommand extends Command
     @Override
     public void initialize()
     {
-        m_robot.getIntake().setIntake(true);
+        if (m_intake.wasSuccessful())
+        {
+            m_intake.setIntake(true);
+        }
     }
 
     @Override
