@@ -25,7 +25,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private RobotDrive m_robotDrive;
 
-    public Drivetrain(Joystick driveStick)
+    public Drivetrain(Robot m_robot, Joystick driveStick)
     {
         m_driveStick = driveStick;
 
@@ -53,11 +53,11 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setVoltageRampRate(48);
 
             m_robotDrive = new RobotDrive(m_portFollowerMotor, m_portMasterMotor, m_starboardFollowerMotor, m_starboardMasterMotor);
-            Robot.logger.info("Drivetrain initialized");
+            m_robot.logger.info("Drivetrain initialized");
         }
         catch (Exception e)
         {
-            Robot.logger.exception(e, false);
+            m_robot.logger.exception(e, false);
             m_successful = false;
             return;
         }

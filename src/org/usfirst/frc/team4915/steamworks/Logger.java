@@ -42,7 +42,7 @@ public class Logger
         ERROR
     };
 
-    private static int s_loglevel = level.INFO.ordinal();
+    private static int s_loglevel = level.DEBUG.ordinal();
 
     private Logger()
     {

@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot
 {
 
-    public static Logger logger;
-
+    public Logger logger = Logger.getInstance();
+    
     private Command m_autonomousCommand;
     private SendableChooser<Command> m_chooser = new SendableChooser<>();
 
@@ -62,8 +62,8 @@ public class Robot extends IterativeRobot
     {
         m_intake = new Intake(this);
         m_oi = new OI(this);
-        m_drivetrain = new Drivetrain(m_oi.m_driveStick);
-
+        m_drivetrain = new Drivetrain(this, m_oi.m_driveStick);
+        
         m_chooser.addDefault("Default Auto", new IntakeCommand(this.m_intake));
         // chooser.addObject("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", m_chooser);
