@@ -18,6 +18,8 @@ public class ManualDriveCommand extends Command
     {
         this.m_drivetrain = drivetrain;
         this.m_driveStick = driveStick;
+        
+        requires(this.m_drivetrain);
     }
 
     @Override

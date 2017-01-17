@@ -59,8 +59,8 @@ public class Robot extends IterativeRobot
     public void robotInit()
     {
         m_intake = new Intake(this);
-        m_drivetrain = new Drivetrain(m_oi.m_driveStick);
         m_oi = new OI(this);
+        m_drivetrain = new Drivetrain(m_oi.m_driveStick);
 
         m_chooser.addDefault("Default Auto", new IntakeCommand(this));
         // chooser.addObject("My Auto", new MyAutoCommand());
