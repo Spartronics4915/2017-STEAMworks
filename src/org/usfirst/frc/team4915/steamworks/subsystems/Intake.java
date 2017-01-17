@@ -13,19 +13,23 @@ public class Intake extends SpartronicsSubsystem
     private static final double INTAKE_SPEED = 0.75;
 
     private CANTalon m_intakeMotor;
-
+    private Robot m_robot;
+    private Logger m_logger;
+    
     public Intake(Robot robot)
     {
+        m_robot = robot;
+        m_logger = new Logger("Intake", Logger.Level.DEBUG);
         try
         {
             m_intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
             m_intakeMotor.changeControlMode(TalonControlMode.Speed);
-            Logger.getInstance().info("Intake initialized");
+            m_logger.info("Intake initialized");
         }
         catch (Exception e)
         {
-            Logger.getInstance().exception(e, false);
-            m_successful = false;
+            m_logger.exception(e, false);
+            m_initialized = false;
         }
     }
 
@@ -37,7 +41,7 @@ public class Intake extends SpartronicsSubsystem
 
     public void setIntake(boolean onOff)
     {
-        if (wasSuccessful())
+        if (initialized())
         {
             if (onOff)
             {
