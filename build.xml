@@ -32,5 +32,7 @@
 
   <import file="${wpilib.ant.dir}/build.xml"/>
   <import file="${wpilib.ant.dir}/build.xml"/>
+	
+  <target name="test" depends="clean,compile"/>
 
 </project>
