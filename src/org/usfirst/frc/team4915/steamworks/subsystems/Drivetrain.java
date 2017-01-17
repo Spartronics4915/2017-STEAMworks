@@ -2,7 +2,6 @@ package org.usfirst.frc.team4915.steamworks.subsystems;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
-import org.usfirst.frc.team4915.steamworks.Robot;
 import org.usfirst.frc.team4915.steamworks.commands.ManualDriveCommand;
 
 import com.ctre.CANTalon;
@@ -25,13 +24,11 @@ public class Drivetrain extends SpartronicsSubsystem
     private CANTalon m_rightMasterMotor;
 
     private RobotDrive m_robotDrive;
-    private Robot m_robot;
     private Logger m_logger;
 
-    public Drivetrain(Robot r)
+    public Drivetrain()
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
-        m_robot = r;
         m_driveStick = null; // we'll get a value for this after OI is inited
 
         try

@@ -1,7 +1,6 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.commands.IntakeCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
@@ -9,8 +8,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot
 {
@@ -19,14 +16,13 @@ public class Robot extends IterativeRobot
     private Drivetrain m_drivetrain;
     private Intake m_intake;
     private OI m_oi;
-    private Command m_autoCommand;
     
     @Override
     public void robotInit()
     {
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
-        m_intake = new Intake(this);
-        m_drivetrain = new Drivetrain(this);
+        m_intake = new Intake();
+        m_drivetrain = new Drivetrain();
         m_oi = new OI(this); // make sure OI is last
     }
 

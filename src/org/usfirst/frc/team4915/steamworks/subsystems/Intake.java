@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
-import org.usfirst.frc.team4915.steamworks.Robot;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
 import com.ctre.CANTalon;
@@ -13,12 +12,10 @@ public class Intake extends SpartronicsSubsystem
     private static final double INTAKE_SPEED = 0.75;
 
     private CANTalon m_intakeMotor;
-    private Robot m_robot;
     private Logger m_logger;
     
-    public Intake(Robot robot)
+    public Intake()
     {
-        m_robot = robot;
         m_logger = new Logger("Intake", Logger.Level.DEBUG);
         try
         {
