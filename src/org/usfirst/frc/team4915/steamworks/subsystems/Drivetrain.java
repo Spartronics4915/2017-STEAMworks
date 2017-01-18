@@ -15,7 +15,7 @@ public class Drivetrain extends SpartronicsSubsystem
 {
 
     public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    private final Joystick m_driveStick;
+    private Joystick m_driveStick;
 
     private CANTalon m_leftFollowerMotor;
     private CANTalon m_leftMasterMotor;
@@ -24,10 +24,12 @@ public class Drivetrain extends SpartronicsSubsystem
     private CANTalon m_rightMasterMotor;
 
     private RobotDrive m_robotDrive;
+    private Logger m_logger;
 
-    public Drivetrain(Joystick driveStick)
+    public Drivetrain()
     {
-        m_driveStick = driveStick;
+        m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
+        m_driveStick = null; // we'll get a value for this after OI is inited
 
         try
         {
@@ -57,16 +59,20 @@ public class Drivetrain extends SpartronicsSubsystem
         }
         catch (Exception e)
         {
-            Logger.getInstance().exception(e, false);
-            m_successful = false;
+            m_logger.exception(e, false);
+            m_initialized = false;
             return;
         }
-
+    }
+    
+    public void setDriveStick(Joystick s)
+    {
+        m_driveStick = s;
     }
 
     public void drive(double forward, double rotation)
     {
-        if (wasSuccessful())
+        if (initialized())
         {
             m_robotDrive.arcadeDrive(forward, rotation);
         }
@@ -75,7 +81,7 @@ public class Drivetrain extends SpartronicsSubsystem
     @Override
     protected void initDefaultCommand()
     {
-        if (wasSuccessful())
+        if (initialized())
         {
             setDefaultCommand(new ManualDriveCommand(this, m_driveStick));
         }

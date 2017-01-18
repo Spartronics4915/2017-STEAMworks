@@ -7,7 +7,8 @@ package org.usfirst.frc.team4915.steamworks;
 //      * runtime inference of logging level (practice vs competition)
 //  usage:
 //      singleton: Logger.getInstance().debug("here's my message");
-//      via Robot:  robot.logger.debug("here's a debugging msg");
+//      via Robot:  robot.m_logger.debug("here's a debugging msg");
+//      via Subsystem: this.m_logger.debug("here's a message");
 //  loglevel conventions:
 //      debug: used for debugging software... not available during
 //          competition.
@@ -21,17 +22,7 @@ package org.usfirst.frc.team4915.steamworks;
 //
 public class Logger 
 {
-    private static Logger s_logger;
-    
-    public static Logger getInstance()
-    {
-        if(s_logger == null) {
-            s_logger = new Logger();
-        }
-        return s_logger; 
-    }
-    
-    private enum level
+    public enum Level
     {
         DEBUG,
         INFO,
@@ -39,13 +30,31 @@ public class Logger
         WARNING,
         ERROR
     };
-    private static int s_loglevel = level.INFO.ordinal(); 
+    private static int s_minloglevel = Level.DEBUG.ordinal();
     
-    private Logger() {}  // currently we encourage singleton usage
+    private static Logger s_logger;
+    public static Logger getInstance()
+    {
+        if(s_logger == null)
+        {
+            s_logger = new Logger("<shared>", Level.DEBUG);
+        }
+        return s_logger; 
+    }
+    
+    
+    private int m_loglevel; // per-instance
+    private String m_namespace;
+    
+    public Logger(String nm, Level lev) 
+    {
+        m_namespace = nm;
+        m_loglevel = lev.ordinal();
+    } 
 
     public void debug(String msg)
     {
-        if(s_loglevel <= level.DEBUG.ordinal())
+        if(reportLevel(Level.DEBUG))
         {
             logMsg("DEBUG  ", msg);
         }
@@ -53,7 +62,7 @@ public class Logger
     
     public void info(String msg)
     {
-        if(s_loglevel <= level.INFO.ordinal())
+        if(reportLevel(Level.INFO))
         {
             logMsg("INFO   ", msg);
         }
@@ -61,7 +70,7 @@ public class Logger
     
     public void notice(String msg)
     {
-        if(s_loglevel <= level.NOTICE.ordinal())
+        if(reportLevel(Level.NOTICE))
         {
             logMsg("NOTICE ", msg);
         }
@@ -69,7 +78,7 @@ public class Logger
     
     public void warning(String msg)
     {
-        if(s_loglevel <= level.WARNING.ordinal())
+        if(reportLevel(Level.WARNING))
         {
             logMsg("WARNING", msg);
         }
@@ -88,10 +97,19 @@ public class Logger
             e.printStackTrace();
         }
     }
+    
+    private boolean reportLevel(Level lev)
+    {
+        int ilev = lev.ordinal();
+        if(ilev >= m_loglevel && ilev >= s_minloglevel)
+            return true;
+        else
+            return false;
+    }
 
     private void logMsg(String lvl, String msg)
     {
-        System.out.println(lvl + ": " + msg);
+        System.out.println(m_namespace + " " + lvl + ": " + msg);
     }
  
 }
