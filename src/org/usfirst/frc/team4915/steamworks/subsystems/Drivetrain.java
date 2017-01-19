@@ -58,7 +58,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setVoltageRampRate(48);
 
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
-            m_logger.info("Drivetrain initialized");
+            m_logger.info("initialized successfully");
         }
         catch (Exception e)
         {
