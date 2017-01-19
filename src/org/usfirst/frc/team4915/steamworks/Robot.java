@@ -26,6 +26,14 @@ public class Robot extends IterativeRobot
         m_oi = new OI(this); // make sure OI is last
     }
 
+    @Override
+    public void robotPeriodic()
+    {
+        // This is invoked in all periodic cases in addition to the other active periodic mode.
+        // We implement this method in order to quell the "unimplemented" message.
+        // Currently we have no good reason to put code here...
+    }
+
     public Intake getIntake()
     {
         return m_intake;
@@ -46,14 +54,6 @@ public class Robot extends IterativeRobot
         }
     }
     
-    @Override
-    public void robotPeriodic()
-    {
-        // This is invoked in all periodic cases in addition to the other active periodic mode.
-        // We implement this method in order to quell the "unimplemented" message.
-        // Currently we have no good reason to put code here...
-    }
-
     @Override
     public void autonomousPeriodic()
     {
