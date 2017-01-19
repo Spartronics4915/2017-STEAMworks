@@ -22,10 +22,7 @@ public class IntakeCommand extends Command
     @Override
     public void end()
     {
-        if (m_intake.wasSuccessful())
-        {
-            m_intake.setIntake(false);
-        }
+        m_intake.setIntake(false);
     }
 
     @Override
@@ -36,10 +33,7 @@ public class IntakeCommand extends Command
     @Override
     public void initialize()
     {
-        if (m_intake.wasSuccessful())
-        {
-            m_intake.setIntake(true);
-        }
+        m_intake.setIntake(true);
     }
 
     @Override
