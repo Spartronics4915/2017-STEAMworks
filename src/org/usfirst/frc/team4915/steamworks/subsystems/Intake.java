@@ -13,14 +13,14 @@ public class Intake extends SpartronicsSubsystem
 
     private CANTalon m_intakeMotor;
     private Logger m_logger;
-    
+
     public Intake()
     {
         m_logger = new Logger("Intake", Logger.Level.DEBUG);
         try
         {
             m_intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
-            m_intakeMotor.changeControlMode(TalonControlMode.Speed);
+            m_intakeMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Intake initialized");
         }
         catch (Exception e)
@@ -42,10 +42,12 @@ public class Intake extends SpartronicsSubsystem
         {
             if (onOff)
             {
+                m_logger.info("Turn the motor on");
                 m_intakeMotor.set(INTAKE_SPEED);
             }
             else
             {
+                m_logger.info("Turn the motor off");
                 m_intakeMotor.set(0);
             }
         }

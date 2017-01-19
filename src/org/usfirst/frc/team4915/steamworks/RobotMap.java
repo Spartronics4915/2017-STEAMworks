@@ -9,5 +9,5 @@ public class RobotMap
     public static final int DRIVE_TRAIN_MOTOR_RIGHT_FOLLOWER = 4;
     public static final int DRIVE_TRAIN_MOTOR_RIGHT_MASTER = 3;
 
-    public static final int INTAKE_MOTOR = 3;
+    public static final int INTAKE_MOTOR = 5;
 }
