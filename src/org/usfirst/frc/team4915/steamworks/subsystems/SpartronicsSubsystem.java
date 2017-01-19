@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 //      within if(initialized() {} blocks.
 // Now commands can merrily run along without awareness of proper
 // initialization without throwing exceptions that produce the
-// dreaded "Robot's don't die" message.
+// dreaded "Robot's don't quit" message.
 //
 // Gotcha:  while this does alleviate problems of spurious exceptions
 //   it doesn't solve the problem of commands that require feedback

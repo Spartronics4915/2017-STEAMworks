@@ -14,10 +14,15 @@ import java.io.IOException;
 
 public class OI
 {
-    public final Joystick m_driveStick = new Joystick(0);
-    
-    
-    public final Joystick m_auxStick = new Joystick(1);
+
+    // Ports for joysticks
+    public static final int DRIVE_STICK_PORT = 0;
+    public static final int AUX_STICK_PORT = 1;
+
+
+    public final Joystick m_driveStick = new Joystick(AUX_STICK_PORT);
+    public final Joystick m_auxStick = new Joystick(DRIVE_STICK_PORT);
+
     public final JoystickButton m_intakeOn = new JoystickButton(m_auxStick, 2);
 
     private Robot m_robot;
