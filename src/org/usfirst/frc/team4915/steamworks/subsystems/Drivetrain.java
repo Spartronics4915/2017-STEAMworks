@@ -13,8 +13,13 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
-
+    // Public finals
+    public static final double SLOW_MULTIPLIER = 0.3;
+    public static final double MEDIUM_MULTIPLIER = 1;
+    public static final double FAST_MULTIPLIER = 1.7;
     public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
+    
+    // Private member variables
     private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
@@ -29,21 +34,21 @@ public class Drivetrain extends SpartronicsSubsystem
     public Drivetrain()
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
-        m_driveStick = null; // we'll get a value for this after OI is inited
+        m_driveStick = null; // We'll get a value for this after OI is initialized
 
         try
         {
-            m_portFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_FOLLOWER);
+            m_portFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_FOLLOWER); // Set motors
             m_portMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_MASTER);
             m_starboardFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_FOLLOWER);
             m_starboardMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_MASTER);
 
             m_portMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
-            m_portFollowerMotor.changeControlMode(TalonControlMode.Follower);
+            m_portFollowerMotor.changeControlMode(TalonControlMode.Follower); // Set to follower
             m_portFollowerMotor.set(m_portMasterMotor.getDeviceID());
 
             m_starboardMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
-            m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower);
+            m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower); // Set to follower
             m_starboardFollowerMotor.set(m_starboardMasterMotor.getDeviceID());
 
             m_portMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
@@ -57,7 +62,8 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
 
-            m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
+            m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor); // Can't be follower motors
+            
             m_logger.info("Drivetrain initialized");
         }
         catch (Exception e)
@@ -73,14 +79,26 @@ public class Drivetrain extends SpartronicsSubsystem
         m_driveStick = s;
     }
 
-    public void driveArcade(double forward, double rotation)
+    public void driveArcade()
     {
         if (initialized())
         {
+            double forward = m_driveStick.getX();
+            double rotation = m_driveStick.getY();
             m_robotDrive.arcadeDrive(forward, rotation);
         }
     }
-
+    
+    public void setControlMode(int mode) {
+        m_starboardMasterMotor.setControlMode(mode);
+        m_portMasterMotor.setControlMode(mode);
+    }
+    
+    public TalonControlMode getControlMode(CANTalon motor) {
+        return motor.getControlMode();
+    }
+   
+     
     @Override
     protected void initDefaultCommand()
     {
