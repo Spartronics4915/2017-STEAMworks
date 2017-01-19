@@ -45,6 +45,14 @@ public class Robot extends IterativeRobot
             acmd.start();
         }
     }
+    
+    @Override
+    public void robotPeriodic()
+    {
+        // This is invoked in all periodic cases in addition to the other active periodic mode.
+        // We implement this method in order to quell the "unimplemented" message.
+        // Currently we have no good reason to put code here...
+    }
 
     @Override
     public void autonomousPeriodic()
