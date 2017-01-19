@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
-import org.usfirst.frc.team4915.steamworks.Robot;
+import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 
@@ -15,7 +15,7 @@ public class Drivetrain extends SpartronicsSubsystem
 {
 
     public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    private final Joystick m_driveStick;
+    private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
     private CANTalon m_portMasterMotor;
@@ -24,10 +24,12 @@ public class Drivetrain extends SpartronicsSubsystem
     private CANTalon m_starboardMasterMotor;
 
     private RobotDrive m_robotDrive;
+    private Logger m_logger;
 
-    public Drivetrain(Robot m_robot, Joystick driveStick)
+    public Drivetrain()
     {
-        m_driveStick = driveStick;
+        m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
+        m_driveStick = null; // we'll get a value for this after OI is inited
 
         try
         {
@@ -53,20 +55,24 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setVoltageRampRate(48);
 
             m_robotDrive = new RobotDrive(m_portFollowerMotor, m_portMasterMotor, m_starboardFollowerMotor, m_starboardMasterMotor);
-            m_robot.logger.info("Drivetrain initialized");
+            m_logger.info("Drivetrain initialized");
         }
         catch (Exception e)
         {
-            m_robot.logger.exception(e, false);
-            m_successful = false;
+            m_logger.exception(e, false);
+            m_initialized = false;
             return;
         }
-
+    }
+    
+    public void setDriveStick(Joystick s)
+    {
+        m_driveStick = s;
     }
 
     public void driveArcade(double forward, double rotation)
     {
-        if (wasSuccessful())
+        if (initialized())
         {
             m_robotDrive.arcadeDrive(forward, rotation);
         }
@@ -75,7 +81,7 @@ public class Drivetrain extends SpartronicsSubsystem
     @Override
     protected void initDefaultCommand()
     {
-        if (wasSuccessful())
+        if (initialized())
         {
             setDefaultCommand(new ArcadeDriveCommand(this, m_driveStick));
         }

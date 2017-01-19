@@ -1,7 +1,6 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.commands.IntakeCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
@@ -9,28 +8,41 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot
 {
-
-    public Logger logger = Logger.getInstance();
-    
-    private Command m_autonomousCommand;
-    private SendableChooser<Command> m_chooser = new SendableChooser<>();
+    public Logger m_logger;
 
     private Drivetrain m_drivetrain;
     private Intake m_intake;
     private OI m_oi;
+    
+    @Override
+    public void robotInit()
+    {
+        m_logger = new Logger("Robot", Logger.Level.DEBUG);
+        m_intake = new Intake();
+        m_drivetrain = new Drivetrain();
+        m_oi = new OI(this); // make sure OI is last
+    }
+
+    public Intake getIntake()
+    {
+        return m_intake;
+    }
+    
+    public Drivetrain getDrivetrain()
+    {
+        return m_drivetrain;
+    }
 
     @Override
     public void autonomousInit()
     {
-        m_autonomousCommand = m_chooser.getSelected();
-        if (m_autonomousCommand != null)
+        Command acmd = m_oi.getAutoCommand();
+        if (acmd != null)
         {
-            m_autonomousCommand.start();
+            acmd.start();
         }
     }
 
@@ -52,29 +64,13 @@ public class Robot extends IterativeRobot
         Scheduler.getInstance().run();
     }
 
-    public Intake getIntake()
-    {
-        return m_intake;
-    }
-
-    @Override
-    public void robotInit()
-    {
-        m_intake = new Intake(this);
-        m_oi = new OI(this);
-        m_drivetrain = new Drivetrain(this, m_oi.m_driveStick);
-        
-        m_chooser.addDefault("Default Auto", new IntakeCommand(this.m_intake));
-        // chooser.addObject("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", m_chooser);
-    }
-
     @Override
     public void teleopInit()
     {
-        if (m_autonomousCommand != null)
+        Command acmd = m_oi.getAutoCommand();
+        if (acmd != null)
         {
-            m_autonomousCommand.cancel();
+            acmd.cancel();
         }
     }
 
