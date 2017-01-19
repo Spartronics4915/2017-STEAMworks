@@ -26,12 +26,6 @@ public class Robot extends IterativeRobot
         m_oi = new OI(this); // make sure OI is last
     }
 
-    @Override
-    public void robotPeriodic()
-    {
-        Scheduler.getInstance().run();
-    }
-
     public Intake getIntake()
     {
         return m_intake;
