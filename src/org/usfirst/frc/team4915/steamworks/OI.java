@@ -82,7 +82,7 @@ public class OI
     {
         if (m_robot.getIntake().initialized())
         {
-            m_intakeOn.whileHeld(new IntakeCommand(m_robot.getIntake()));
+            m_intakeOn.toggleWhenPressed(new IntakeCommand(m_robot.getIntake()));
         }
     }
     
