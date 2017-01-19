@@ -19,18 +19,20 @@ package org.usfirst.frc.team4915.steamworks;
 //      error: used to convey strong abnormal conditions
 //      exception: used in a catch block to report exceptions.
 //
-public class Logger 
+public class Logger
 {
+
     private static Logger s_logger;
-    
+
     public static Logger getInstance()
     {
-        if(s_logger == null) {
+        if (s_logger == null)
+        {
             s_logger = new Logger();
         }
-        return s_logger; 
+        return s_logger;
     }
-    
+
     private enum level
     {
         DEBUG,
@@ -39,51 +41,54 @@ public class Logger
         WARNING,
         ERROR
     };
-    private static int s_loglevel = level.INFO.ordinal(); 
-    
-    private Logger() {}  // currently we encourage singleton usage
+
+    private static int s_loglevel = level.INFO.ordinal();
+
+    private Logger()
+    {
+    } // currently we encourage singleton usage
 
     public void debug(String msg)
     {
-        if(s_loglevel <= level.DEBUG.ordinal())
+        if (s_loglevel <= level.DEBUG.ordinal())
         {
             logMsg("DEBUG  ", msg);
         }
     }
-    
+
     public void info(String msg)
     {
-        if(s_loglevel <= level.INFO.ordinal())
+        if (s_loglevel <= level.INFO.ordinal())
         {
             logMsg("INFO   ", msg);
         }
     }
-    
+
     public void notice(String msg)
     {
-        if(s_loglevel <= level.NOTICE.ordinal())
+        if (s_loglevel <= level.NOTICE.ordinal())
         {
             logMsg("NOTICE ", msg);
         }
     }
-    
+
     public void warning(String msg)
     {
-        if(s_loglevel <= level.WARNING.ordinal())
+        if (s_loglevel <= level.WARNING.ordinal())
         {
             logMsg("WARNING", msg);
         }
     }
-    
+
     public void error(String msg)
     {
         logMsg("ERROR  ", msg);
     }
-    
+
     public void exception(Exception e, boolean skipStackTrace)
     {
         logMsg("EXCEPT ", e.getMessage());
-        if(!skipStackTrace)
+        if (!skipStackTrace)
         {
             e.printStackTrace();
         }
@@ -93,5 +98,5 @@ public class Logger
     {
         System.out.println(lvl + ": " + msg);
     }
- 
+
 }
