@@ -38,11 +38,11 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_FOLLOWER);
             m_starboardMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_MASTER);
 
-            m_portMasterMotor.changeControlMode(TalonControlMode.Speed);
+            m_portMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_portFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_portFollowerMotor.set(m_portMasterMotor.getDeviceID());
 
-            m_starboardMasterMotor.changeControlMode(TalonControlMode.Speed);
+            m_starboardMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_starboardFollowerMotor.set(m_starboardMasterMotor.getDeviceID());
 
@@ -50,11 +50,14 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+            
+            m_portMasterMotor.setInverted(false); // Set direction so that the port motor is inverted *not* inverted
+            m_starboardMasterMotor.setInverted(false); // Set direction so that the starboard motor is *not* inverted
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
 
-            m_robotDrive = new RobotDrive(m_portFollowerMotor, m_portMasterMotor, m_starboardFollowerMotor, m_starboardMasterMotor);
+            m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
             m_logger.info("Drivetrain initialized");
         }
         catch (Exception e)
