@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class IntakeCommand extends Command
+public class IntakeOnCommand extends Command
 {
 
     private final Intake m_intake;
 
-    public IntakeCommand(Intake intake)
+    public IntakeOnCommand(Intake intake)
     {
         m_intake = intake;
 
@@ -22,13 +22,13 @@ public class IntakeCommand extends Command
     @Override
     public void end()
     {
-        m_intake.setIntake(false);
+        m_intake.setIntake(Intake.State.OFF);
     }
 
     @Override
     public void execute()
     {
-        m_intake.setIntake(true);
+        m_intake.setIntake(Intake.State.ON);
     }
 
     @Override
@@ -39,7 +39,6 @@ public class IntakeCommand extends Command
     @Override
     public void interrupted()
     {
-        end();
     }
 
     @Override

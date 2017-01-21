@@ -1,7 +1,9 @@
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.commands.IntakeCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -23,8 +25,10 @@ public class OI
     public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
-    public final JoystickButton m_intakeOn = new JoystickButton(m_auxStick, 2);
     public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
+    public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
+    public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
+    public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
 
     private Robot m_robot;
     private SendableChooser<Command> m_chooser;
@@ -63,8 +67,8 @@ public class OI
     private void initAutoOI()
     {
         m_chooser = new SendableChooser<>();
-        m_chooser.addDefault("Default Auto",
-                new IntakeCommand(m_robot.getIntake()));
+        m_chooser.addDefault("Default Auto", 
+                             new IntakeOnCommand(m_robot.getIntake()));
         // chooser.addObject("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", m_chooser);
     }
@@ -84,7 +88,9 @@ public class OI
     {
         if (m_robot.getIntake().initialized())
         {
-            m_intakeOn.toggleWhenPressed(new IntakeCommand(m_robot.getIntake()));
+            m_intakeOn.whenPressed(new IntakeOnCommand(m_robot.getIntake()));
+            m_intakeOff.whenPressed(new IntakeOffCommand(m_robot.getIntake()));
+            m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
         }
     }
 
