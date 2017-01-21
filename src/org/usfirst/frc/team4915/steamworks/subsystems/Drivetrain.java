@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
+    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250;
     private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
@@ -56,6 +56,9 @@ public class Drivetrain extends SpartronicsSubsystem
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
+            
+            m_portMasterMotor.setEncPosition(0);
+            m_starboardMasterMotor.setEncPosition(0);
 
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
             m_logger.info("initialized successfully");
@@ -79,6 +82,22 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_robotDrive.arcadeDrive(forward, rotation);
         }
+    }
+    
+    public void driveTicksTest(int ticks) {
+        if (initialized()) {
+            m_portMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
+            if (m_portMasterMotor.getEncPosition() < ticks) {
+                m_portMasterMotor.set(0.5);
+            } else {
+                m_portMasterMotor.set(0);
+            }
+        }
+    }
+    
+    public void resetEncPosition() {
+        m_portMasterMotor.setEncPosition(0);
+        m_starboardMasterMotor.setEncPosition(0);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.commands.IntakeCommand;
+import org.usfirst.frc.team4915.steamworks.commands.RunTicksCommand;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -20,10 +21,11 @@ public class OI
     public static final int AUX_STICK_PORT = 1;
 
 
-    public final Joystick m_driveStick = new Joystick(AUX_STICK_PORT);
-    public final Joystick m_auxStick = new Joystick(DRIVE_STICK_PORT);
+    public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
+    public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
     public final JoystickButton m_intakeOn = new JoystickButton(m_auxStick, 2);
+    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
 
     private Robot m_robot;
     private SendableChooser<Command> m_chooser;
@@ -38,6 +40,7 @@ public class OI
         initIntakeOI();
         initLauncherOI();
         initClimberOI();
+        initTestOI();
 
         /* VERSION STRING!!  */
         try (InputStream manifest = getClass().getClassLoader().
@@ -57,6 +60,10 @@ public class OI
             m_logger.error("Build version not found!");;
             m_logger.exception(e, true /*no stack trace needed*/);
         }
+    }
+    
+    private void initTestOI() {
+        m_ticksOn.toggleWhenPressed(new RunTicksCommand(m_robot.getDrivetrain()));
     }
     
     private void initAutoOI()
