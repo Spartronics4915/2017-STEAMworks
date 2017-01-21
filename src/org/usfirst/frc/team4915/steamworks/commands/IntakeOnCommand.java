@@ -23,6 +23,7 @@ public class IntakeOnCommand extends Command
     @Override
     public void end()
     {
+        m_intake.setIntake(State.OFF);
     }
 
     @Override
@@ -44,6 +45,6 @@ public class IntakeOnCommand extends Command
     @Override
     public boolean isFinished()
     {
-        return true;
+        return false;
     }
 }

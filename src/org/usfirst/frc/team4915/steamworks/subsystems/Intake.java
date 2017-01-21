@@ -6,6 +6,8 @@ import org.usfirst.frc.team4915.steamworks.RobotMap;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Intake extends SpartronicsSubsystem
 {
 
@@ -17,6 +19,7 @@ public class Intake extends SpartronicsSubsystem
     }
 
     private static final double INTAKE_SPEED = 0.75;
+
     private CANTalon m_intakeMotor;
 
     private Logger m_logger;
@@ -47,6 +50,8 @@ public class Intake extends SpartronicsSubsystem
     {
         if (initialized())
         {
+            SmartDashboard.putString("Intake Status", state.name());
+            m_logger.info("Intake Status" + state.name());
             switch (state)
             {
                 case ON:
@@ -65,5 +70,4 @@ public class Intake extends SpartronicsSubsystem
         }
 
     }
-
 }
