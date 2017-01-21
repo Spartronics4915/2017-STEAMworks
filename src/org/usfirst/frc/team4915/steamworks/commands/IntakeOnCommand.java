@@ -1,19 +1,19 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class IntakeCommand extends Command
+public class IntakeOnCommand extends Command
 {
 
     private final Intake m_intake;
 
-    public IntakeCommand(Intake intake)
+    public IntakeOnCommand(Intake intake)
     {
         m_intake = intake;
 
@@ -23,15 +23,13 @@ public class IntakeCommand extends Command
     @Override
     public void end()
     {
-        m_intake.setIntake(false);
-        SmartDashboard.putBoolean("Intake Status", false);
+        m_intake.setIntake(State.OFF);
     }
 
     @Override
     public void execute()
     {
-        m_intake.setIntake(true);
-        SmartDashboard.putBoolean("Intake Status", true);
+        m_intake.setIntake(State.ON);
     }
 
     @Override
@@ -42,7 +40,6 @@ public class IntakeCommand extends Command
     @Override
     public void interrupted()
     {
-        end();
     }
 
     @Override
