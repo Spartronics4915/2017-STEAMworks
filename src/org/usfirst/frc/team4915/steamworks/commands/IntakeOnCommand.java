@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
-import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -23,13 +22,13 @@ public class IntakeOnCommand extends Command
     @Override
     public void end()
     {
-        m_intake.setIntake(State.OFF);
+        m_intake.setIntake(Intake.State.OFF);
     }
 
     @Override
     public void execute()
     {
-        m_intake.setIntake(State.ON);
+        m_intake.setIntake(Intake.State.ON);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
@@ -21,10 +22,10 @@ public class OI
     public static final int DRIVE_STICK_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
 
+    public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
+    public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
-    public final Joystick m_driveStick = new Joystick(AUX_STICK_PORT);
-    public final Joystick m_auxStick = new Joystick(DRIVE_STICK_PORT);
-
+    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
@@ -36,33 +37,33 @@ public class OI
     public OI(Robot robot)
     {
         m_robot = robot;
-		m_logger = new Logger("OI", Logger.Level.DEBUG);
+        m_logger = new Logger("OI", Logger.Level.DEBUG);
         initAutoOI();
         initDrivetrainOI();
         initIntakeOI();
         initLauncherOI();
         initClimberOI();
 
-        /* VERSION STRING!!  */
-        try (InputStream manifest = getClass().getClassLoader().
-                                        getResourceAsStream("META-INF/MANIFEST.MF"))
+        /* VERSION STRING!! */
+        try (InputStream manifest = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))
         {
             // build a version string
             Attributes attributes = new Manifest(manifest).getMainAttributes();
             String buildStr = "by: " + attributes.getValue("Built-By") +
-                              "  on: " + attributes.getValue("Built-At") +
-                              "  vers:" + attributes.getValue("Code-Version");
+                    "  on: " + attributes.getValue("Built-At") +
+                    "  vers:" + attributes.getValue("Code-Version");
             SmartDashboard.putString("Build", buildStr);
-            m_logger.notice("Build " + buildStr);;
+            m_logger.notice("Build " + buildStr);
+            ;
         }
         catch (IOException e)
         {
             SmartDashboard.putString("Build", "version not found!");
-            m_logger.error("Build version not found!");;
-            m_logger.exception(e, true /*no stack trace needed*/);
+            m_logger.error("Build version not found!");
+            m_logger.exception(e, true /* no stack trace needed */);
         }
     }
-    
+
     private void initAutoOI()
     {
         m_chooser = new SendableChooser<>();
@@ -71,17 +72,18 @@ public class OI
         // chooser.addObject("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", m_chooser);
     }
-    
+
     public Command getAutoCommand()
     {
         return m_chooser.getSelected();
     }
-   
+
     private void initDrivetrainOI()
     {
-        m_robot.getDrivetrain().setDriveStick(m_driveStick);
+         m_robot.getDrivetrain().setDriveStick(m_driveStick);
+         m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
-    
+
     private void initIntakeOI()
     {
         if (m_robot.getIntake().initialized())
@@ -91,12 +93,12 @@ public class OI
             m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
         }
     }
-    
+
     private void initLauncherOI()
     {
         // includes carousel
     }
-    
+
     private void initClimberOI()
     {
     }

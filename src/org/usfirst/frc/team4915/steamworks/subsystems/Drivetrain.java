@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
+    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250;
     private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
@@ -50,12 +50,15 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-            
+
             m_portMasterMotor.setInverted(false); // Set direction so that the port motor is inverted *not* inverted
             m_starboardMasterMotor.setInverted(false); // Set direction so that the starboard motor is *not* inverted
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
+
+            m_portMasterMotor.setEncPosition(0);
+            m_starboardMasterMotor.setEncPosition(0);
 
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
             m_logger.info("initialized successfully");
@@ -67,17 +70,100 @@ public class Drivetrain extends SpartronicsSubsystem
             return;
         }
     }
-    
+
     public void setDriveStick(Joystick s)
     {
         m_driveStick = s;
     }
+    
+    public int getTicksPerRev()
+    {
+        return QUAD_ENCODER_TICKS_PER_REVOLUTION;
+    }
 
+    public void setControlMode(TalonControlMode m)
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.changeControlMode(m);
+            m_starboardMasterMotor.changeControlMode(m);
+        }
+    }
+    
+    public TalonControlMode getControlMode()
+    {
+        if(initialized())
+        {
+            return m_portMasterMotor.getControlMode(); // presumes that all motors are the same
+        }
+        else
+        {
+            return TalonControlMode.Disabled;
+        }
+    }
+    
     public void driveArcade(double forward, double rotation)
     {
         if (initialized())
         {
             m_robotDrive.arcadeDrive(forward, rotation);
+        }
+    }
+    
+    public void driveStraight(double value)
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.set(value);;
+            m_starboardMasterMotor.set(value);
+        }
+    }
+    
+    public void stop()
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.set(0);
+            m_starboardMasterMotor.set(0);;
+        }
+    }
+    
+    public void driveTicksTest(int ticks)
+    {
+        if (initialized())
+        {
+            if (m_portMasterMotor.getEncPosition() < ticks)
+            {
+                m_portMasterMotor.set(0.5);
+            }
+            else
+            {
+                m_portMasterMotor.set(0);
+            }
+        }
+    }
+
+    public void resetEncPosition() // WARNING: this routine doesn't take effect immediately...
+    {
+        if (initialized())
+        {
+            m_portMasterMotor.setEncPosition(0);
+            m_starboardMasterMotor.setEncPosition(0);
+            
+        }
+    }
+    
+    public int getEncPosition()
+    {
+        // XXX: for now we only return one enc position... Should caller need access to
+        //      a specific motor, we should add a parameter
+        if(initialized())
+        {
+            return m_portMasterMotor.getEncPosition();
+        }
+        else
+        {
+            return 0;
         }
     }
 
