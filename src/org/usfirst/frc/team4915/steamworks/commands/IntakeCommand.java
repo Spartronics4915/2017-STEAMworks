@@ -3,6 +3,7 @@ package org.usfirst.frc.team4915.steamworks.commands;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -23,12 +24,14 @@ public class IntakeCommand extends Command
     public void end()
     {
         m_intake.setIntake(false);
+        SmartDashboard.putBoolean("Intake Status", false);
     }
 
     @Override
     public void execute()
     {
         m_intake.setIntake(true);
+        SmartDashboard.putBoolean("Intake Status", true);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class Intake extends SpartronicsSubsystem
 {
 
     private static final double INTAKE_SPEED = 0.75;
-
+       
     private CANTalon m_intakeMotor;
     private Logger m_logger;
 
@@ -53,5 +53,4 @@ public class Intake extends SpartronicsSubsystem
         }
 
     }
-
 }
