@@ -5,7 +5,9 @@ Repository with the Spartronics code for the FRC 2017-STEAMWorks game.
 
 [WPILib](http://wpilib.screenstepslive.com/s/4485) | 
 [WPILib Java Ref](http://first.wpi.edu/FRC/roborio/release/docs/java) |
-[CTRE Java Ref](http://www.ctr-electronics.com/downloads/api/java/html/index.html)
+[CTRE Java Ref](http://www.ctr-electronics.com/downloads/api/java/html/index.html) | 
+[CANTalon User's Guide](http://www.ctr-electronics.com/Talon%20SRX%20User's%20Guide.pdf) | 
+[CANTalon Ref Guide](http://www.ctr-electronics.com/Talon%20SRX%20Software%20Reference%20Manual.pdf)
 
 [Travis CI](https://travis-ci.org/Spartronics4915/2017-STEAMworks)
 
