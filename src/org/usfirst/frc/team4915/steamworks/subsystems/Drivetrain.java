@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250; // Encoder-specific value
+    private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
+    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
 
     private Joystick m_driveStick;
@@ -174,18 +175,6 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void drivePositionTest()
-    {
-        if (initialized())
-        {
-            if (m_portMasterMotor.getControlMode() == TalonControlMode.Position
-                    && m_starboardMasterMotor.getControlMode() == TalonControlMode.Position)
-            {
-                
-            }
-        }
-    }
-
     public void resetEncPosition() // WARNING: this routine doesn't take effect immediately...
     {
         if (initialized())
@@ -207,11 +196,6 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             return 0;
         }
-    }
-    
-    public int getTPM() 
-    {
-        return QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     @Override
