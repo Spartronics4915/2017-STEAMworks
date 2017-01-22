@@ -81,7 +81,7 @@ public class OI
     private void initDrivetrainOI()
     {
          m_robot.getDrivetrain().setDriveStick(m_driveStick);
-         m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+         m_ticksOn.whenActive(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
