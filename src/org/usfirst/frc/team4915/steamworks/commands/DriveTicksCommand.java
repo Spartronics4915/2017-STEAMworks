@@ -26,7 +26,7 @@ public class DriveTicksCommand extends Command
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus);
         // m_drivetrain.resetEncPosition();  (since this method doesn't take effect immediately, we try an alternate approach)
         m_startTicks = m_drivetrain.getEncPosition();
-        m_endTicks = m_startTicks + m_drivetrain.getTicksPerRev() * 1;
+        m_endTicks = m_startTicks + m_drivetrain.getTicksPerRev() * 4;
         m_logger.info("initalized, start:" + m_startTicks + " end:" + m_endTicks);
     }
 
@@ -34,7 +34,7 @@ public class DriveTicksCommand extends Command
     public void execute()
     {
         // m_drivetrain.driveTicksTest(250);
-        m_drivetrain.driveStraight(.25); 
+        m_drivetrain.driveStraight(.25);
     }
 
     @Override

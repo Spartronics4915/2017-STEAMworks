@@ -2,8 +2,9 @@ package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
+import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ArcadeDriveCommand extends Command
@@ -18,6 +19,12 @@ public class ArcadeDriveCommand extends Command
         m_driveStick = driveStick;
 
         requires(m_drivetrain);
+    }
+    
+    @Override
+    public void initialize() 
+    {
+       m_drivetrain.setControlMode(TalonControlMode.PercentVbus);
     }
 
     @Override
