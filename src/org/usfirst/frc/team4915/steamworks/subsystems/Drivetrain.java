@@ -13,13 +13,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
-    // Public finals
-    public static final double SLOW_MULTIPLIER = 0.3;
-    public static final double MEDIUM_MULTIPLIER = 1;
-    public static final double FAST_MULTIPLIER = 1.7;
-    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    
-    // Private member variables
+
+    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250;
     private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
@@ -34,37 +29,39 @@ public class Drivetrain extends SpartronicsSubsystem
     public Drivetrain()
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
-        m_driveStick = null; // We'll get a value for this after OI is initialized
+        m_driveStick = null; // we'll get a value for this after OI is inited
 
         try
         {
-            m_portFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_FOLLOWER); // Set motors
+            m_portFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_FOLLOWER);
             m_portMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_MASTER);
             m_starboardFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_FOLLOWER);
             m_starboardMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_STARBOARD_MASTER);
 
             m_portMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
-            m_portFollowerMotor.changeControlMode(TalonControlMode.Follower); // Set to follower
+            m_portFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_portFollowerMotor.set(m_portMasterMotor.getDeviceID());
 
             m_starboardMasterMotor.changeControlMode(TalonControlMode.PercentVbus);
-            m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower); // Set to follower
+            m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_starboardFollowerMotor.set(m_starboardMasterMotor.getDeviceID());
 
             m_portMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-            
+
             m_portMasterMotor.setInverted(false); // Set direction so that the port motor is inverted *not* inverted
             m_starboardMasterMotor.setInverted(false); // Set direction so that the starboard motor is *not* inverted
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
 
-            m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor); // Can't be follower motors
-            
-            m_logger.info("Drivetrain initialized");
+            m_portMasterMotor.setEncPosition(0);
+            m_starboardMasterMotor.setEncPosition(0);
+
+            m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
+            m_logger.info("initialized successfully");
         }
         catch (Exception e)
         {
@@ -73,32 +70,103 @@ public class Drivetrain extends SpartronicsSubsystem
             return;
         }
     }
-    
+
     public void setDriveStick(Joystick s)
     {
         m_driveStick = s;
     }
+    
+    public int getTicksPerRev()
+    {
+        return QUAD_ENCODER_TICKS_PER_REVOLUTION;
+    }
 
-    public void driveArcade()
+    public void setControlMode(TalonControlMode m)
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.changeControlMode(m);
+            m_starboardMasterMotor.changeControlMode(m);
+        }
+    }
+    
+    public TalonControlMode getControlMode()
+    {
+        if(initialized())
+        {
+            return m_portMasterMotor.getControlMode(); // presumes that all motors are the same
+        }
+        else
+        {
+            return TalonControlMode.Disabled;
+        }
+    }
+    
+    public void driveArcade(double forward, double rotation)
     {
         if (initialized())
         {
-            double forward = m_driveStick.getX();
-            double rotation = m_driveStick.getY();
             m_robotDrive.arcadeDrive(forward, rotation);
         }
     }
     
-    public void setControlMode(int mode) {
-        m_starboardMasterMotor.setControlMode(mode);
-        m_portMasterMotor.setControlMode(mode);
+    public void driveStraight(double value)
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.set(value);;
+            m_starboardMasterMotor.set(value);
+        }
     }
     
-    public TalonControlMode getControlMode(CANTalon motor) {
-        return motor.getControlMode();
+    public void stop()
+    {
+        if(initialized())
+        {
+            m_portMasterMotor.set(0);
+            m_starboardMasterMotor.set(0);;
+        }
     }
-   
-     
+    
+    public void driveTicksTest(int ticks)
+    {
+        if (initialized())
+        {
+            if (m_portMasterMotor.getEncPosition() < ticks)
+            {
+                m_portMasterMotor.set(0.5);
+            }
+            else
+            {
+                m_portMasterMotor.set(0);
+            }
+        }
+    }
+
+    public void resetEncPosition() // WARNING: this routine doesn't take effect immediately...
+    {
+        if (initialized())
+        {
+            m_portMasterMotor.setEncPosition(0);
+            m_starboardMasterMotor.setEncPosition(0);
+            
+        }
+    }
+    
+    public int getEncPosition()
+    {
+        // XXX: for now we only return one enc position... Should caller need access to
+        //      a specific motor, we should add a parameter
+        if(initialized())
+        {
+            return m_portMasterMotor.getEncPosition();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
     @Override
     protected void initDefaultCommand()
     {
