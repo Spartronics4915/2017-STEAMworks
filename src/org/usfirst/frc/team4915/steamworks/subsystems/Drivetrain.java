@@ -13,8 +13,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
-
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250;
+    private static final double TURN_MULTIPLIER = -0.55;
+    
     private Joystick m_driveStick;
 
     private CANTalon m_portFollowerMotor;
@@ -102,10 +103,12 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void driveArcade(double forward, double rotation)
+    public void driveArcade()
     {
         if (initialized())
         {
+            double forward = m_driveStick.getY();
+            double rotation = m_driveStick.getX()*TURN_MULTIPLIER;
             m_robotDrive.arcadeDrive(forward, rotation);
         }
     }
@@ -149,7 +152,6 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
-            
         }
     }
     
