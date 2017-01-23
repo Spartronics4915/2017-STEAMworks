@@ -1,5 +1,11 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
+import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
@@ -8,31 +14,25 @@ import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.InputStream;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-import java.io.IOException;
 
 public class OI
 {
 
+    public static final int AUX_STICK_PORT = 1;
     // Ports for joysticks
     public static final int DRIVE_STICK_PORT = 0;
-    public static final int AUX_STICK_PORT = 1;
 
-    public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
+    public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
 
-    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
-    public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
+    public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
+    private Logger m_logger;
 
     private Robot m_robot;
-    private SendableChooser<Command> m_chooser;
-    private Logger m_logger;
+    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
 
     public OI(Robot robot)
     {
@@ -62,26 +62,41 @@ public class OI
             m_logger.error("Build version not found!");
             m_logger.exception(e, true /* no stack trace needed */);
         }
-    }
 
-    private void initAutoOI()
-    {
-        m_chooser = new SendableChooser<>();
-        m_chooser.addDefault("Default Auto", 
-                             new IntakeOnCommand(m_robot.getIntake()));
-        // chooser.addObject("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", m_chooser);
+        for (Logger logger : Logger.getAllLoggers())
+        {
+            LoggerChooser loggerChooser = new LoggerChooser(logger.getNamespace());
+
+            SmartDashboard.putData(loggerChooser);
+
+            Level desired = loggerChooser.getSelected();
+            if (desired == null)
+            {
+                desired = Level.DEBUG;
+            }
+            logger.setLogLevel(desired);
+            m_logger.debug("Logger created: " + logger.getNamespace() + " (" + desired.name() + ")");
+        }
     }
 
     public Command getAutoCommand()
     {
-        return m_chooser.getSelected();
+        // TODO this just stops the robot from dying on boot
+        return new IntakeOffCommand(m_robot.getIntake());
+    }
+
+    private void initAutoOI()
+    {
+    }
+
+    private void initClimberOI()
+    {
     }
 
     private void initDrivetrainOI()
     {
-         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-         m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+        m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
@@ -97,9 +112,5 @@ public class OI
     private void initLauncherOI()
     {
         // includes carousel
-    }
-
-    private void initClimberOI()
-    {
     }
 }
