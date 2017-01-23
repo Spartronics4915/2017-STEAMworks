@@ -21,14 +21,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 //   it doesn't solve the problem of commands that require feedback
 //   from a subsystem for progress or completion.
 
-public abstract class SpartronicsSubsystem extends Subsystem
-{
+public abstract class SpartronicsSubsystem extends Subsystem {
 
-    protected boolean m_initialized = true;
+	protected boolean m_initialized = true;
 
-    public boolean initialized()
-    {
-        return m_initialized;
-    }
+	public boolean initialized() {
+		return m_initialized;
+	}
 
 }
