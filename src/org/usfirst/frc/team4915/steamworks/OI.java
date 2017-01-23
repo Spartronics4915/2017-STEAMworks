@@ -1,11 +1,7 @@
 package org.usfirst.frc.team4915.steamworks;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
@@ -15,6 +11,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.io.InputStream;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+import java.io.IOException;
 
 public class OI
 {
@@ -29,8 +29,9 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
-    private Logger m_logger;
+    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
 
+    private Logger m_logger;
     private Robot m_robot;
     public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
 
@@ -106,6 +107,7 @@ public class OI
             m_intakeOn.whenPressed(new IntakeOnCommand(m_robot.getIntake()));
             m_intakeOff.whenPressed(new IntakeOffCommand(m_robot.getIntake()));
             m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
+            m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
         }
     }
 
