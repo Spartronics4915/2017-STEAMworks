@@ -1,6 +1,9 @@
 package org.usfirst.frc.team4915.steamworks;
 
+
+import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
+
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
@@ -29,6 +32,7 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
+    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
 
     private Robot m_robot;
     private SendableChooser<Command> m_chooser;
@@ -91,6 +95,7 @@ public class OI
             m_intakeOn.whenPressed(new IntakeOnCommand(m_robot.getIntake()));
             m_intakeOff.whenPressed(new IntakeOffCommand(m_robot.getIntake()));
             m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
+            m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
         }
     }
 
