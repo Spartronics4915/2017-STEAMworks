@@ -1,8 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
-import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
-
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -22,13 +20,13 @@ public class IntakeReverseCommand extends Command
     @Override
     public void end()
     {
-        m_intake.setIntake(State.OFF);
+        m_intake.setIntake(Intake.State.OFF);
     }
 
     @Override
     public void execute()
     {
-        m_intake.setIntake(State.REVERSE);
+        m_intake.setIntake(Intake.State.REVERSE);
     }
 
     @Override
