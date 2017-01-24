@@ -1,12 +1,10 @@
 package org.usfirst.frc.team4915.steamworks;
 
 
+import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
-
-import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -72,7 +70,7 @@ public class OI
     {
         m_chooser = new SendableChooser<>();
         m_chooser.addDefault("Default Auto", 
-                             new IntakeOnCommand(m_robot.getIntake()));
+                             new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         // chooser.addObject("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", m_chooser);
     }
@@ -92,9 +90,9 @@ public class OI
     {
         if (m_robot.getIntake().initialized())
         {
-            m_intakeOn.whenPressed(new IntakeOnCommand(m_robot.getIntake()));
-            m_intakeOff.whenPressed(new IntakeOffCommand(m_robot.getIntake()));
-            m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
+            m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+            m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+            m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
             m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
         }
     }
