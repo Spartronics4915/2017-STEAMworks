@@ -106,6 +106,13 @@ public class OI
     }
 
     private void initLoggers() {
+
+        /*
+         * Get the shared instance, then throw away the result.
+         * This ensures that the shared logger is created, even if never used elsewhere.
+         */
+        Logger.getSharedInstance();
+
         for (Logger logger : Logger.getAllLoggers())
         {
             SendableChooser<Level> loggerChooser = new SendableChooser<>();
