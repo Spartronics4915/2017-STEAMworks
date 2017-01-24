@@ -10,6 +10,7 @@ import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.InputStream;
 import java.util.jar.Attributes;
@@ -19,21 +20,21 @@ import java.io.IOException;
 public class OI
 {
 
-    public static final int AUX_STICK_PORT = 1;
     // Ports for joysticks
     public static final int DRIVE_STICK_PORT = 0;
+    public static final int AUX_STICK_PORT = 1;
 
-    public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
     public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
+    public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
-    public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
+    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
+    public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
 
     private Logger m_logger;
     private Robot m_robot;
-    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
 
     public OI(Robot robot)
     {
@@ -44,6 +45,9 @@ public class OI
         initIntakeOI();
         initLauncherOI();
         initClimberOI();
+
+        // Init loggers last, as this uses special values generated when other loggers are created.
+        initLoggers();
 
         /* VERSION STRING!! */
         try (InputStream manifest = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))
@@ -62,21 +66,6 @@ public class OI
             SmartDashboard.putString("Build", "version not found!");
             m_logger.error("Build version not found!");
             m_logger.exception(e, true /* no stack trace needed */);
-        }
-
-        for (Logger logger : Logger.getAllLoggers())
-        {
-            LoggerChooser loggerChooser = new LoggerChooser(logger.getNamespace());
-
-            SmartDashboard.putData(loggerChooser);
-
-            Level desired = loggerChooser.getSelected();
-            if (desired == null)
-            {
-                desired = Level.DEBUG;
-            }
-            logger.setLogLevel(desired);
-            m_logger.debug("Logger created: " + logger.getNamespace() + " (" + desired.name() + ")");
         }
     }
 
@@ -114,5 +103,25 @@ public class OI
     private void initLauncherOI()
     {
         // includes carousel
+    }
+
+    private void initLoggers() {
+        for (Logger logger : Logger.getAllLoggers())
+        {
+            SendableChooser<Level> loggerChooser = new SendableChooser<>();
+            for (Level level : Level.values())
+            {
+                loggerChooser.addObject(logger.getNamespace() + " " + level.name(), level);
+            }
+
+            SmartDashboard.putData("Logger for " + logger.getNamespace(), loggerChooser);
+
+            Level desired = loggerChooser.getSelected();
+            if (desired == null)
+            {
+                desired = Level.DEBUG;
+            }
+            logger.setLogLevel(desired);
+        }
     }
 }
