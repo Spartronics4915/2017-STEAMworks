@@ -108,7 +108,7 @@ class PixyCam
 
     private void update() // invoked via scheduler
     {
-        if(1 == getBlocks(1)) // for now we only care about the first (largest) block
+        if (1 == getBlocks(1)) // for now we only care about the first (largest) block
         {
             m_targetX = m_blocks[0].x;
             m_targetY = m_blocks[0].y;
@@ -118,36 +118,36 @@ class PixyCam
     // getBlocks is the primary means to obtain target data from PixyCam
     private int getBlocks(int maxBlocks) // returns blocks received.
     {
-        int blockCount=0;
+        int blockCount = 0;
         if (!m_skipStart)
         {
             if (!getStart())
                 return blockCount; // error, can't read blocks
         }
 
-        while(blockCount < maxBlocks)
+        while (blockCount < maxBlocks)
         {
             short checksum = getShort();
-            if(checksum == k_startWord)
+            if (checksum == k_startWord)
             {
                 m_skipStart = true;
                 m_blockType = BlockType.NormalBlock;
                 break; // out of while loop
             }
-            else if(checksum == k_startWordCC)
+            else if (checksum == k_startWordCC)
             {
                 m_skipStart = true;
                 m_blockType = BlockType.CCBlock;
                 break;
             }
-            else if(checksum == 0)
+            else if (checksum == 0)
                 break;
-            
+
             // here we read one block
             Block blk = m_blocks[blockCount];
             short w;
-            
-            blk.signature = getShort(); 
+
+            blk.signature = getShort();
             w = blk.signature;
             blk.x = getShort();
             w += blk.x;
@@ -157,26 +157,26 @@ class PixyCam
             w += blk.width;
             blk.height = getShort();
             w += blk.height;
-            if(m_blockType == BlockType.CCBlock)
+            if (m_blockType == BlockType.CCBlock)
             {
                 blk.angle = getShort();
                 w += blk.angle;
             }
             else
                 blk.angle = 0;
-            
-            if(w == checksum)
+
+            if (w == checksum)
                 blockCount++;
             else
             {
                 Logger.getAnonymousLogger().warning("PixyCam: checksum error");
             }
-            
+
             // proceed to next block
             w = getShort();
-            if(w == k_startWord)
+            if (w == k_startWord)
                 m_blockType = BlockType.NormalBlock;
-            else if(w == k_startWordCC)
+            else if (w == k_startWordCC)
                 m_blockType = BlockType.CCBlock;
             else
                 break;
