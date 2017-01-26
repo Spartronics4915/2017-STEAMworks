@@ -89,13 +89,10 @@ public class OI
 
     private void initIntakeOI()
     {
-        if (m_robot.getIntake().initialized())
-        {
-            m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
-            m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
-            m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-            m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
-        }
+        m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+        m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+        m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
+        m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
     }
 
     private void initLauncherOI()
