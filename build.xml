@@ -27,7 +27,7 @@
   <echo message="Looking for git version tag..." />
      <exec executable="git" outputproperty="code-version" 
            errorproperty="code-version" failifexecutionfails="false">
-        <arg line="describe --tags" />
+        <arg line="describe --tags --dirty" />
       </exec>
   <echo message="git version string: ${code-version}" />
 
