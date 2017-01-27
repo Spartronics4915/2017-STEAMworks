@@ -31,6 +31,7 @@ public class ArcadeDriveCommand extends Command
     public void execute()
     {
         m_drivetrain.setDriveStick(m_driveStick);
+        m_logger.info("IMU Normalized Heading: "+m_drivetrain.getIMUNormalizedHeading())
         m_drivetrain.driveArcade(); // Run the Drivetrain.driveArcade method with the joystick information
     }
 
