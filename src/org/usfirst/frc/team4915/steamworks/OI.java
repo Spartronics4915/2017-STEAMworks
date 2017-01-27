@@ -4,6 +4,7 @@ import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
+import org.usfrst.frc.team4915.steamworks.Logger;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
