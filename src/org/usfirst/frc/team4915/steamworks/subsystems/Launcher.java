@@ -32,7 +32,7 @@ public class Launcher extends SpartronicsSubsystem
 			
 			m_launcherMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 			m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-			m_launcherMotor.setVoltageRampRate(48);
+			m_launcherMotor.setVoltageRampRate(48);git 
 			m_launcherMotor.reverseSensor(false);
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
 			m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);

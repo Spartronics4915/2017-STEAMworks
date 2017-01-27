@@ -1,12 +1,10 @@
 package org.usfirst.frc.team4915.steamworks;
 
-
+import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
-
-import org.usfirst.frc.team4915.steamworks.commands.IntakeOffCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeOnCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeReverseCommand;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -34,9 +32,8 @@ public class OI
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
 
-    private Robot m_robot;
-    private SendableChooser<Command> m_chooser;
     private Logger m_logger;
+    private Robot m_robot;
 
     public OI(Robot robot)
     {
@@ -47,6 +44,9 @@ public class OI
         initIntakeOI();
         initLauncherOI();
         initClimberOI();
+
+        // Init loggers last, as this uses special values generated when other loggers are created.
+        initLoggers();
 
         /* VERSION STRING!! */
         try (InputStream manifest = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))
@@ -68,35 +68,31 @@ public class OI
         }
     }
 
-    private void initAutoOI()
-    {
-        m_chooser = new SendableChooser<>();
-        m_chooser.addDefault("Default Auto", 
-                             new IntakeOnCommand(m_robot.getIntake()));
-        // chooser.addObject("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", m_chooser);
-    }
-
     public Command getAutoCommand()
     {
-        return m_chooser.getSelected();
+        return null;
+    }
+
+    private void initAutoOI()
+    {
+    }
+
+    private void initClimberOI()
+    {
     }
 
     private void initDrivetrainOI()
     {
-         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-         m_ticksOn.whenActive(new DriveTicksCommand(m_robot.getDrivetrain()));
+        m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
     {
-        if (m_robot.getIntake().initialized())
-        {
-            m_intakeOn.whenPressed(new IntakeOnCommand(m_robot.getIntake()));
-            m_intakeOff.whenPressed(new IntakeOffCommand(m_robot.getIntake()));
-            m_intakeReverse.whenPressed(new IntakeReverseCommand(m_robot.getIntake()));
-            m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
-        }
+        m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+        m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+        m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
+        m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
     }
 
     private void initLauncherOI()
@@ -104,7 +100,30 @@ public class OI
         // includes carousel
     }
 
-    private void initClimberOI()
-    {
+    private void initLoggers() {
+
+        /*
+         * Get the shared instance, then throw away the result.
+         * This ensures that the shared logger is created, even if never used elsewhere.
+         */
+        Logger.getSharedInstance();
+
+        for (Logger logger : Logger.getAllLoggers())
+        {
+            SendableChooser<Level> loggerChooser = new SendableChooser<>();
+            for (Level level : Level.values())
+            {
+                loggerChooser.addObject(logger.getNamespace() + " " + level.name(), level);
+            }
+
+            SmartDashboard.putData("Logger for " + logger.getNamespace(), loggerChooser);
+
+            Level desired = loggerChooser.getSelected();
+            if (desired == null)
+            {
+                desired = Level.DEBUG;
+            }
+            logger.setLogLevel(desired);
+        }
     }
 }
