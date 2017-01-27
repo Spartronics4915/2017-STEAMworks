@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class Robot extends IterativeRobot
 {
+
     public Logger m_logger;
 
     private Drivetrain m_drivetrain;
     private Intake m_intake;
     private OI m_oi;
-    
+
     @Override
     public void robotInit()
     {
@@ -30,7 +31,7 @@ public class Robot extends IterativeRobot
     {
         return m_intake;
     }
-    
+
     public Drivetrain getDrivetrain()
     {
         return m_drivetrain;

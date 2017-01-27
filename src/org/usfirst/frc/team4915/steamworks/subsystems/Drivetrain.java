@@ -14,8 +14,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    private Joystick m_driveStick;
+    public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 250;
+    public static final int QUAD_ENCODER_TICKS_PER_INCH = QUAD_ENCODER_TICKS_PER_REVOLUTION / (int) (Math.PI * 6);
+    private Joystick m_driveStick; //6 is the diameter of the wheels
 
     private CANTalon m_portFollowerMotor;
     private CANTalon m_portMasterMotor;
@@ -65,6 +66,23 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
+    public void init() {
+        this.setMaxOutput(25);
+        // reset encoders
+        m_starboardMasterMotor.setEncPosition(0);
+        m_portMasterMotor.setEncPosition(0);
+        
+        //change the control mode to POSITION
+        m_portMasterMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+        m_starboardMasterMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+    }
+    
+    public void setDesiredDistance(double ticks)
+    {
+        m_portMasterMotor.set(ticks);
+        m_starboardMasterMotor.set(ticks);
+    }
+
     public void setDriveStick(Joystick s)
     {
         m_driveStick = s;
@@ -78,6 +96,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    public int inchesToTicks(double inches)
+    {
+        return (int) (inches * QUAD_ENCODER_TICKS_PER_INCH);
+    }
+
     @Override
     protected void initDefaultCommand()
     {
@@ -86,5 +109,31 @@ public class Drivetrain extends SpartronicsSubsystem
             setDefaultCommand(new ArcadeDriveCommand(this, m_driveStick));
         }
     }
+    
+    public void driveStraight(double value)
+    {
+        m_robotDrive.setMaxOutput(value);
+    }
+    
+    //checks if encoders are at 0
+    public boolean isEncPositionZero() {
+        return ((m_portMasterMotor.getEncPosition() == 0) 
+                && (m_starboardMasterMotor.getEncPosition() == 0));
+    }
+    
+    //checks if both encoders reached a certain number of ticks
+    public boolean isLocationReached(double m_desiredDistanceTicks) {
+        return (Math.abs(m_portMasterMotor.getEncPosition()) >= m_desiredDistanceTicks
+                || Math.abs(m_starboardMasterMotor.getEncPosition()) >= m_desiredDistanceTicks);
+    }
 
+    public void stop()
+    {
+        m_robotDrive.stopMotor();
+    }
+    
+    public void setMaxOutput(int n)
+    {
+        
+    }
 }

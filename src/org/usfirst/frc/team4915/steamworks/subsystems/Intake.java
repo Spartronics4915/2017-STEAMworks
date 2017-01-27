@@ -13,7 +13,7 @@ public class Intake extends SpartronicsSubsystem
 
     private CANTalon m_intakeMotor;
     private Logger m_logger;
-    
+
     public Intake()
     {
         m_logger = new Logger("Intake", Logger.Level.DEBUG);

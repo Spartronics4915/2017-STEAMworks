@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.commands.AutoDriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeCommand;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -15,11 +16,11 @@ public class OI
     public static final int DRIVE_STICK_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
 
-
     public final Joystick m_driveStick = new Joystick(AUX_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(DRIVE_STICK_PORT);
 
     public final JoystickButton m_intakeOn = new JoystickButton(m_auxStick, 2);
+    public final JoystickButton m_autoButton = new JoystickButton(m_auxStick, 8);
 
     private Robot m_robot;
     private SendableChooser<Command> m_chooser;
@@ -33,26 +34,27 @@ public class OI
         initLauncherOI();
         initClimberOI();
     }
-    
+
     public Command getAutoCommand()
     {
         return m_chooser.getSelected();
     }
-    
+
     private void initAutoOI()
     {
         m_chooser = new SendableChooser<>();
-        m_chooser.addDefault("Default Auto", 
-                             new IntakeCommand(m_robot.getIntake()));
+        m_chooser.addDefault("Default Auto",
+                new IntakeCommand(m_robot.getIntake()));
         // chooser.addObject("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", m_chooser);
     }
-    
+
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_autoButton.whenPressed(new AutoDriveStraightCommand(m_robot.getDrivetrain()));
     }
-    
+
     private void initIntakeOI()
     {
         if (m_robot.getIntake().initialized())
@@ -60,13 +62,14 @@ public class OI
             m_intakeOn.whileHeld(new IntakeCommand(m_robot.getIntake()));
         }
     }
-    
+
     private void initLauncherOI()
     {
         // includes carousel
     }
-    
+
     private void initClimberOI()
     {
     }
+    
 }
