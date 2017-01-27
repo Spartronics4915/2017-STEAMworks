@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Launcher extends SpartronicsSubsystem 
 {
 	//the "perfect" static speed that always makes goal
-	public static final double DEFAULT_SPEED = 60;
+	public static final double DEFAULT_SPEED = .5;
 	public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 7; //7 cpr
 	private CANTalon m_launcherMotor;
 	private Logger m_logger;
@@ -31,11 +31,16 @@ public class Launcher extends SpartronicsSubsystem
 			
 			
 			m_launcherMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-			m_launcherMotor.setVoltageRampRate(48);git 
+			//m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+			//m_launcherMotor.setVoltageRampRate(48); 
 			m_launcherMotor.reverseSensor(false);
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
-			m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);
+			m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
+			
+			//m_launcherMotor.setF(0);
+			//m_launcherMotor.setP(0);
+			//m_launcherMotor.setI(0);
+			//m_launcherMotor.setD(0);
 			
 			m_logger.info("Launcher initialized");
 		} catch (Exception e) {

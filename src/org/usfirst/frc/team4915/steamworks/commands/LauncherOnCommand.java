@@ -15,6 +15,7 @@ public class LauncherOnCommand extends Command
 
 	private final Joystick m_launchStick;
 	private final Launcher m_launcher;
+	private Logger m_logger;
 
 	public LauncherOnCommand(Launcher launcher, Joystick launchStick) 
 	{
@@ -23,14 +24,14 @@ public class LauncherOnCommand extends Command
 
 		m_launcher = launcher;
 		m_launchStick = launchStick;
-
+		m_logger = new Logger("Launcher", Logger.Level.DEBUG);
 		requires(m_launcher);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() 
 	{
-		Logger.getInstance().debug("LauncherOnCommand Initialize");
+		m_logger.debug("LauncherOnCommand Initialized");
 		m_launcher.setLauncher(true);
 	}
 
@@ -45,7 +46,7 @@ public class LauncherOnCommand extends Command
 		double speed =  Launcher.DEFAULT_SPEED;
 		m_launcher.setLauncherSpeed(speed);
 		
-		Logger.getInstance().debug("rawZ = " + rawZ + ", speed = " + speed);
+		m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
@@ -64,6 +65,6 @@ public class LauncherOnCommand extends Command
 	// subsystems is scheduled to run
 	protected void interrupted() 
 	{
-		Logger.getInstance().info("LauncherOnCommand.interrupted");
+		m_logger.info("LauncherOnCommand.interrupted");
 	}
 }

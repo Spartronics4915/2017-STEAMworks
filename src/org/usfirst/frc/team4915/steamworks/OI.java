@@ -3,6 +3,8 @@ package org.usfirst.frc.team4915.steamworks;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
@@ -31,6 +33,11 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
+    public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
+    
+    
+    
 
     private Logger m_logger;
     private Robot m_robot;
@@ -97,6 +104,9 @@ public class OI
 
     private void initLauncherOI()
     {
+    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher(), m_driveStick));
+    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher(), m_driveStick));
+    	
         // includes carousel
     }
 
