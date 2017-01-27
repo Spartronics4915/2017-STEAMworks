@@ -555,6 +555,10 @@ public class BNO055 {
     public double getHeading() {
         return m_heading[0];
     }
+    
+    public double getIntialHeading() {
+        return m_initialHeading[0];
+    }
 
     // we normalize on [-180, 180]
     // see: http://goo.gl/L1cMeV  for modulo details in java

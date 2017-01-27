@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.I2C;
 import java.nio.ByteBuffer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
+import java.util.concurrent.*;
 
 class PixyCam
 {
@@ -44,7 +45,6 @@ class PixyCam
 
     private class Block // fields should be ushort, but seem to fit
     {
-
         public short signature;
         public short x;
         public short y;
@@ -52,7 +52,28 @@ class PixyCam
         public short height;
         public short angle; // only valid for color-coded blocks
     }
-
+    
+    private enum SetOp
+    {
+        LED,
+        Brightness,
+        Servos
+    }
+    
+    private class SetCmd
+    {
+        public SetOp op;
+        public short a, b, c;
+        
+        public SetCmd(SetOp o, short aa, short bb, short cc)
+        {
+            op = o;
+            a = aa;
+            b = bb;
+            c = cc;
+        }
+    }
+        
     private class PixyCamUpdateTask extends TimerTask
     {
 
@@ -70,21 +91,27 @@ class PixyCam
     }
 
     private static final int k_maxBlocks = 10;
+    private static final int k_maxSendBufSize = 6;
     private static final int k_bufferSize = 1024;
     private static final int k_threadPeriod = 20; // ms, 50fps frame-rate of PixyCam
     private static final short k_startWord = (short) 0xaa55;
     private static final short k_startWordCC = (short) 0xaa56;
     private static final short k_startWordX = 0x55aa;
+    private static final byte k_syncLED = (byte) 0xfd;
+    private static final byte k_syncBrightness = (byte) 0xfe;
+    private static final byte k_syncServos = (byte) 0xff;
 
     private I2C m_i2c;
     private java.util.Timer m_scheduler;
     private volatile double m_targetX, m_targetY;
     private volatile boolean m_initialized;
+    private ConcurrentLinkedQueue<SetCmd> m_setcmdQueue;
     private BlockType m_blockType;
     private byte[] m_bytes;
     private boolean m_skipStart;
     private Block[] m_blocks;
-
+    private ByteBuffer m_sendBuf;
+   
     public PixyCam(int deviceAddress)
     {
         m_i2c = new I2C(I2C.Port.kOnboard, deviceAddress);
@@ -94,6 +121,8 @@ class PixyCam
         m_skipStart = false;
         m_bytes = new byte[k_bufferSize];
         m_blocks = new Block[k_maxBlocks];
+        m_setcmdQueue = new ConcurrentLinkedQueue<SetCmd>();
+        m_sendBuf = ByteBuffer.allocateDirect(k_maxSendBufSize);
     }
 
     public boolean GetTarget(Point2 center)
@@ -104,10 +133,57 @@ class PixyCam
             center.m_y = m_targetY;
         }
         return m_initialized;
+    } 
+    public void SetCamBrightness(short b)
+    {
+        m_setcmdQueue.add(new SetCmd(SetOp.Brightness, b, (short) 0, (short) 0));
+    }
+    
+    public void SetLEDColor(short r, short g, short b)
+    {
+        m_setcmdQueue.add(new SetCmd(SetOp.LED, r, g, b));        
+    }
+    
+    public void SetServos(short s0, short s1)
+    {
+        m_setcmdQueue.add(new SetCmd(SetOp.Servos, s0, s1, (short) 0));        
     }
 
-    private void update() // invoked via scheduler
+    private void update() // invoked via scheduler (in another thread)
     {
+        // http://www.javacodex.com/Concurrency/ConcurrentLinkedQueue-Example
+        while(!m_setcmdQueue.isEmpty())
+        {
+            SetCmd c = m_setcmdQueue.poll();
+            byte[] bytes = m_sendBuf.array();
+            switch(c.op)
+            {
+            case LED:
+                bytes[0] = 0;
+                bytes[1] = k_syncLED;
+                bytes[2] = (byte) c.a;
+                bytes[3] = (byte) c.b;
+                bytes[4] = (byte) c.c;
+                m_i2c.writeBulk(m_sendBuf, 5);
+                break;
+            case Brightness:
+                bytes[0] = 0;
+                bytes[1] = k_syncBrightness;
+                bytes[2] = (byte) c.a;
+                m_i2c.writeBulk(m_sendBuf, 3);
+                break;
+            case Servos:
+                bytes[0] = 0;
+                bytes[1] = k_syncServos;
+                bytes[2] = (byte) (c.a & 0xFF); // these are short
+                bytes[3] = (byte) ((c.a>>8) & 0xFF); // XXX: endian-ness not validated yet
+                bytes[4] = (byte) (c.b & 0xFF);
+                bytes[5] = (byte) ((c.b>>8) & 0xFF);
+                m_i2c.writeBulk(m_sendBuf, 6);
+                break;
+            }
+        }
+       
         if (1 == getBlocks(1)) // for now we only care about the first (largest) block
         {
             m_targetX = m_blocks[0].x;

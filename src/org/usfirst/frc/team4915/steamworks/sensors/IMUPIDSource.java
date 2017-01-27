@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4915.steamworks.sensors;
 
-import org.usfirst.frc.team4915.steamworks.RobotMap;
-
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
