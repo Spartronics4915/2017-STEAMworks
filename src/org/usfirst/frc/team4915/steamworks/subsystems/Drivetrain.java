@@ -64,8 +64,8 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
 
-            m_portMasterMotor.setInverted(false); // Set direction so that the port motor is *not* inverted
-            m_starboardMasterMotor.setInverted(false); // Set direction so that the starboard motor is *not* inverted
+            m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
+            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
