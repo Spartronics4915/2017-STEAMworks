@@ -1,18 +1,19 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class IntakeCommand extends Command
+public class IntakeEncoderUpdateCommand extends Command
 {
 
     private final Intake m_intake;
 
-    public IntakeCommand(Intake intake)
+    public IntakeEncoderUpdateCommand(Intake intake)
     {
         m_intake = intake;
 
@@ -22,24 +23,24 @@ public class IntakeCommand extends Command
     @Override
     public void end()
     {
-        m_intake.setIntake(false);
+        m_intake.setIntake(State.OFF);
     }
 
     @Override
     public void execute()
     {
+        m_intake.setIntake(State.COUNT);
+        System.out.println(m_intake.getEncoder());
     }
 
     @Override
     public void initialize()
     {
-        m_intake.setIntake(true);
     }
 
     @Override
     public void interrupted()
     {
-        end();
     }
 
     @Override

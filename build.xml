@@ -21,7 +21,23 @@
 
   <!-- Any other property in build.properties can also be overridden. -->
 
+  <!-- here we communicate some variables to the custom wpibuild
+       for the purposes of embedding version info into the manifest.
+    -->
+  <echo message="Looking for git version tag..." />
+     <exec executable="git" outputproperty="code-version" 
+           errorproperty="code-version" failifexecutionfails="false">
+        <arg line="describe --tags --dirty" />
+      </exec>
+  <echo message="git version string: ${code-version}" />
+
+  <tstamp>
+      <!-- current time in this format: Jul 08, 04:34 PM -->
+      <format property="build-date" pattern="MMM dd, hh:mm a" />
+  </tstamp>
+
   <property environment="env"/>
+
   <condition property="wpilib.root" value="lib" else="${user.home}">
     <isset property="env.TRAVIS" />
   </condition>
@@ -30,8 +46,8 @@
   <property file="build.properties"/>
   <property file="${wpilib.root}/wpilib/java/${version}/ant/build.properties"/>
 
-  <import file="${wpilib.ant.dir}/build.xml"/>
-  <import file="${wpilib.ant.dir}/build.xml"/>
+  <!-- <import file="${wpilib.ant.dir}/build.xml"/> -->
+  <import file="wpibuild.xml"/>
 	
   <target name="test" depends="clean,compile"/>
 

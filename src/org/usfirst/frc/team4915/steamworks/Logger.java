@@ -1,7 +1,10 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // Logger:
-//  a simple class to route all logging through. 
+//  a simple class to route all logging through.
 //  future enhancement:
 //      * support logging to file
 //      * runtime inference of logging level (practice vs competition)
@@ -23,6 +26,9 @@ package org.usfirst.frc.team4915.steamworks;
 public class Logger
 {
 
+    // The code formatter attempts to reorder the levels, that doesn't help...
+
+    //@formatter:off
     public enum Level
     {
         DEBUG,
@@ -30,28 +36,34 @@ public class Logger
         NOTICE,
         WARNING,
         ERROR
-    };
-
-    private static int s_minloglevel = Level.DEBUG.ordinal();
-
-    private static Logger s_logger;
-
-    public static Logger getInstance()
-    {
-        if (s_logger == null)
-        {
-            s_logger = new Logger("<shared>", Level.DEBUG);
-        }
-        return s_logger;
     }
+    //@formatter:on
+
+    private static List<Logger> s_allLoggers = new ArrayList<>();
+    private static Logger s_sharedLogger;
 
     private int m_loglevel; // per-instance
     private String m_namespace;
+
+    public static List<Logger> getAllLoggers()
+    {
+        return s_allLoggers;
+    }
+
+    public static Logger getSharedInstance()
+    {
+        if (s_sharedLogger == null)
+        {
+            s_sharedLogger = new Logger("<shared>", Level.DEBUG);
+        }
+        return s_sharedLogger;
+    }
 
     public Logger(String nm, Level lev)
     {
         m_namespace = nm;
         m_loglevel = lev.ordinal();
+        s_allLoggers.add(this);
     }
 
     public void debug(String msg)
@@ -100,18 +112,23 @@ public class Logger
         }
     }
 
-    private boolean reportLevel(Level lev)
-    {
-        int ilev = lev.ordinal();
-        if (ilev >= m_loglevel && ilev >= s_minloglevel)
-            return true;
-        else
-            return false;
-    }
-
     private void logMsg(String lvl, String msg)
     {
         System.out.println(m_namespace + " " + lvl + ": " + msg);
     }
 
+    private boolean reportLevel(Level lev)
+    {
+        return lev.ordinal() >= m_loglevel;
+    }
+
+    public String getNamespace()
+    {
+        return m_namespace;
+    }
+
+    public void setLogLevel(Level level)
+    {
+        m_loglevel = level.ordinal();
+    }
 }
