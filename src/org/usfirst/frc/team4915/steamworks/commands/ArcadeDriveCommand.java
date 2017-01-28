@@ -42,5 +42,4 @@ public class ArcadeDriveCommand extends Command
     {
         return false;
     }
-
 }

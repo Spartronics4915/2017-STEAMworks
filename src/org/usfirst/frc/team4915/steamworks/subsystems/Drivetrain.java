@@ -4,6 +4,8 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.sensors.BNO055;
+import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.CANTalon;
@@ -11,6 +13,7 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drivetrain extends SpartronicsSubsystem
@@ -20,18 +23,29 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
 
-    private Joystick m_driveStick;
+    private Joystick m_driveStick; // Joystick for ArcadeDrive
 
+    // Port motors
     private CANTalon m_portFollowerMotor;
     private CANTalon m_portMasterMotor;
 
+    // Starboard motors
     private CANTalon m_starboardFollowerMotor;
     private CANTalon m_starboardMasterMotor;
 
+    // Robot drive for ArcadeDrive
     private RobotDrive m_robotDrive;
     private Logger m_logger;
     
+    // IMU
     private BNO055 m_imu;
+    // PID Turning with IMU
+    private PIDController m_turningPIDController;
+    private IMUPIDSource m_imuPIDSource;
+    private static final double turnKp = 0.1;
+    private static final double turnKi = 0;
+    private static final double turnKd = 0.30;
+    private static final double turnKf = 0.001;
 
     public Drivetrain()
     {
@@ -82,6 +96,19 @@ public class Drivetrain extends SpartronicsSubsystem
             m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
                     BNO055.vector_type_t.VECTOR_EULER);
 
+            // PID Turning with the IMUPIDSource
+            m_imuPIDSource = new IMUPIDSource(m_imu);
+            m_turningPIDController = new PIDController(turnKp, turnKi, turnKd, turnKf,
+                                    m_imuPIDSource,
+                                    new PIDOutput() {
+                public void pidWrite(double output) {
+                    // output is [-1, 1]... we need to
+                    // convert this to a speed...
+                    Robot.driveTrain.turn(output * MAXIMUM_TURN_SPEED);
+                    // robotDrive.tankDrive(-output, output);
+                }
+            }, 50);
+                    
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
