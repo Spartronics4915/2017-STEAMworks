@@ -46,7 +46,7 @@ public class LauncherOnCommand extends Command
 		double speed =  Launcher.DEFAULT_SPEED;
 		m_launcher.setLauncherSpeed(speed);
 		
-		m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
+		//m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()

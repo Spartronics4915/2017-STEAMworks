@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Launcher extends SpartronicsSubsystem 
 {
 	//the "perfect" static speed that always makes goal
-	public static final double DEFAULT_SPEED = .5;
-	public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 7; //7 cpr
+	public static final double DEFAULT_SPEED = 3000;
+	public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 1000; //Native Units per revolution
 	private CANTalon m_launcherMotor;
 	private Logger m_logger;
 
@@ -31,16 +31,15 @@ public class Launcher extends SpartronicsSubsystem
 			
 			
 			m_launcherMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			//m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-			//m_launcherMotor.setVoltageRampRate(48); 
 			m_launcherMotor.reverseSensor(false);
+			m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+			
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
 			m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
-			
-			//m_launcherMotor.setF(0);
-			//m_launcherMotor.setP(0);
-			//m_launcherMotor.setI(0);
-			//m_launcherMotor.setD(0);
+			m_launcherMotor.setF(.001);
+			m_launcherMotor.setP(.1);
+			m_launcherMotor.setI(0);
+			m_launcherMotor.setD(0);
 			
 			m_logger.info("Launcher initialized");
 		} catch (Exception e) {
@@ -64,6 +63,9 @@ public class Launcher extends SpartronicsSubsystem
 	// Sets the launcher to a given speed
 	public void setLauncherSpeed(double speed) {
 		m_launcherMotor.set(speed);
+		m_logger.debug("Speed we wrote to the motor: "+ speed + " Speed as read from motor:  "+m_launcherMotor.getSpeed());
+		m_logger.debug("ClosedLoopError returns: "+m_launcherMotor.getClosedLoopError()+" lastError: "+m_launcherMotor.getLastError());
+		//m_logger.debug("BusVoltage: "+m_launcherMotor.getBusVoltage()+ " volts: "+ m_launcherMotor.getOutputVoltage());
 	}
 
 	public void initDefaultCommand() {

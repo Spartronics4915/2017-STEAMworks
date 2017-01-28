@@ -13,12 +13,14 @@ public class LauncherOffCommand extends Command {
 
 	private final Launcher m_launcher;
 	private final Joystick m_launchStick;
+	private Logger m_logger;
 
 	public LauncherOffCommand(Launcher launcher, Joystick launchStick) {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		m_launcher = launcher;
 		m_launchStick = launchStick;
+		m_logger = new Logger("Launcher", Logger.Level.DEBUG);
 		requires(m_launcher);
 	}
 
@@ -34,7 +36,7 @@ public class LauncherOffCommand extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return true;
+		return false;
 	}
 
 	// Called once after isFinished returns true
@@ -44,6 +46,6 @@ public class LauncherOffCommand extends Command {
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-
+		m_logger.info("LauncherOffCommand.interrupted");
 	}
 }
