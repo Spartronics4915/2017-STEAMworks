@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
@@ -16,6 +17,7 @@ public class Robot extends IterativeRobot
     private Drivetrain m_drivetrain;
     private Intake m_intake;
     private OI m_oi;
+    private Climber m_climber;
     
     @Override
     public void robotInit()
@@ -23,6 +25,7 @@ public class Robot extends IterativeRobot
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
         m_intake = new Intake();
         m_drivetrain = new Drivetrain();
+        m_climber = new Climber();
         m_oi = new OI(this); // make sure OI is last
     }
 
@@ -94,5 +97,10 @@ public class Robot extends IterativeRobot
     public void testPeriodic()
     {
         LiveWindow.run();
+    }
+
+    public Climber getClimber()
+    {
+        return m_climber;
     }
 }
