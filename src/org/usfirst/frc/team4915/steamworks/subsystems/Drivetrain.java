@@ -4,6 +4,7 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.sensors.BNO055;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
@@ -151,8 +152,6 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY();
                 double rotation = m_driveStick.getX() * TURN_MULTIPLIER;
-                m_logger.debug("forward: "+forward);
-                m_logger.debug("rotation: "+rotation);
                 m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
@@ -167,7 +166,6 @@ public class Drivetrain extends SpartronicsSubsystem
         if (initialized())
         {
             m_portMasterMotor.set(value);
-            ;
             m_starboardMasterMotor.set(value);
         }
     }
@@ -217,6 +215,13 @@ public class Drivetrain extends SpartronicsSubsystem
         else
         {
             return 0;
+        }
+    }
+    
+    public void updatePeriodicHook() { // Hook called by Robot periodic used to update the SmartDash board
+        if (m_imu.isInitialized()) // Make sure that the IMU is initalized
+        {
+            SmartDashboard.putDouble("Drivetrain_IMU_Heading",this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
         }
     }
 

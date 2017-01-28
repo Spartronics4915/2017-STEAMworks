@@ -31,7 +31,9 @@ public class Robot extends IterativeRobot
     {
         // This is invoked in all periodic cases in addition to the other active periodic mode.
         // We implement this method in order to quell the "unimplemented" message.
-        // Currently we have no good reason to put code here...
+        // To get code running through this method create a method in your subsystem to be called here as a hook
+        
+        m_drivetrain.updatePeriodicHook(); // Drivetrain hook
     }
 
     public Intake getIntake()
