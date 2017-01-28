@@ -17,9 +17,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Launcher extends SpartronicsSubsystem 
 {
 	//the "perfect" static speed that always makes goal
-	public static final double DEFAULT_SPEED = 3000;
+	public static final double DEFAULT_SPEED = 100; //60 rpm
 	public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 1000; //Native Units per revolution
 	private CANTalon m_launcherMotor;
+	private CANTalon m_agitatorMotor;
 	private Logger m_logger;
 
 	public Launcher() {
@@ -29,17 +30,26 @@ public class Launcher extends SpartronicsSubsystem
 			m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
 			m_launcherMotor.changeControlMode(TalonControlMode.Speed);
 			
-			
 			m_launcherMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 			m_launcherMotor.reverseSensor(false);
 			m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
 			
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
 			m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
-			m_launcherMotor.setF(.001);
-			m_launcherMotor.setP(.1);
+			m_launcherMotor.setF(10.23); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
+			m_launcherMotor.setP(.2692); //
 			m_launcherMotor.setI(0);
 			m_launcherMotor.setD(0);
+			
+			m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
+			m_agitatorMotor.changeControlMode(TalonControlMode.Speed);
+			
+			m_agitatorMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+			m_agitatorMotor.reverseSensor(false);
+			m_agitatorMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+			
+			
+			
 			
 			m_logger.info("Launcher initialized");
 		} catch (Exception e) {
