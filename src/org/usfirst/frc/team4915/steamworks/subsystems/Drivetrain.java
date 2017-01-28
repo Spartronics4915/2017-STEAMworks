@@ -3,6 +3,8 @@ package org.usfirst.frc.team4915.steamworks.subsystems;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
+import org.usfirst.frc.team4915.steamworks.sensors.BNO055;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
@@ -28,6 +30,8 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private RobotDrive m_robotDrive;
     private Logger m_logger;
+    
+    private BNO055 m_imu;
 
     public Drivetrain()
     {
@@ -73,6 +77,10 @@ public class Drivetrain extends SpartronicsSubsystem
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
+            
+            // Get an instance of the BNO055 IMU
+            m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
+                    BNO055.vector_type_t.VECTOR_EULER);
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -83,6 +91,19 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.exception(e, false);
             m_initialized = false;
             return;
+        }
+    }
+    
+    public double getIMUNormalizedHeading() 
+    {
+        if (m_imu.isInitialized()) 
+        {
+            return m_imu.getNormalizedHeading();
+        }
+        else 
+        {
+            m_logger.warning("can't get IMU normalized heading because the IMU isn't initalized.");
+            return 0;
         }
     }
 
@@ -145,7 +166,6 @@ public class Drivetrain extends SpartronicsSubsystem
         if (initialized())
         {
             m_portMasterMotor.set(value);
-            ;
             m_starboardMasterMotor.set(value);
         }
     }
@@ -195,6 +215,13 @@ public class Drivetrain extends SpartronicsSubsystem
         else
         {
             return 0;
+        }
+    }
+    
+    public void updatePeriodicHook() { // Hook called by Robot periodic used to update the SmartDash board
+        if (m_imu.isInitialized()) // Make sure that the IMU is initalized
+        {
+            SmartDashboard.putDouble("Drivetrain_IMU_Heading",this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
         }
     }
 
