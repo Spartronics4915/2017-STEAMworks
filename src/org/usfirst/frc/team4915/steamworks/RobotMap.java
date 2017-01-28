@@ -10,5 +10,5 @@ public class RobotMap
     public static final int DRIVE_TRAIN_MOTOR_STARBOARD_MASTER = 4;
 
     public static final int INTAKE_MOTOR = 5; 
-    public static final int CLIMBER_MOTOR = 5;
+    public static final int CLIMBER_MOTOR = 7;
 }
