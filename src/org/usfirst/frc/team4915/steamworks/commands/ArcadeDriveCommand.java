@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class ArcadeDriveCommand extends Command
 {
-
     private final Drivetrain m_drivetrain;
     private final Joystick m_driveStick;
     private final Logger m_logger;

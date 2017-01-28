@@ -151,7 +151,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
                 double forward = m_driveStick.getY();
-                double rotation = m_driveStick.getX() * TURN_MULTIPLIER;
+                double rotation = -(m_driveStick.getX() * TURN_MULTIPLIER);
                 m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
