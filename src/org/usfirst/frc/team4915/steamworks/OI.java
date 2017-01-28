@@ -1,9 +1,12 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
+import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,7 +34,11 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
-
+ 
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10); 
+    
     private Logger m_logger;
     private Robot m_robot;
 
@@ -79,6 +86,9 @@ public class OI
 
     private void initClimberOI()
     {
+        m_climberOn.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.ON));
+        m_climberOff.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.OFF));
+        m_climberSlow.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.SLOW));
     }
 
     private void initDrivetrainOI()
