@@ -2,6 +2,8 @@ package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
+import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -22,7 +24,9 @@ public class TurnDegreesIMU extends Command
     protected void initialize()
     {
         // Will the IMU be initialized by the time we get here?
-        m_drivetrain.startIMUTurnAbsolute(360); // We will parameterize this value for command groups probably
+        m_drivetrain.endIMUTurn();
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus);
+        m_drivetrain.startIMUTurnAbsolute(360); // We will parameterize this value in the constructor for command groups probably
     }
 
     @Override

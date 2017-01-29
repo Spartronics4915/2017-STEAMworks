@@ -4,6 +4,7 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
@@ -28,7 +29,7 @@ public class OI
     public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
-    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
+    public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
@@ -93,6 +94,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_turnIMUStart.whenReleased(new TurnDegreesIMU(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
