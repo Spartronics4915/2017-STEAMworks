@@ -12,6 +12,9 @@ import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
@@ -19,8 +22,9 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
+    
 
-    private Joystick m_driveStick;
+    private XboxController m_driveStick;
 
     private CANTalon m_portFollowerMotor;
     private CANTalon m_portMasterMotor;
@@ -35,6 +39,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     public Drivetrain()
     {
+        
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // we'll get a value for this after OI is inited
 
@@ -107,7 +112,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void setDriveStick(Joystick s)
+    public void setDriveStick(XboxController s)
     {
         m_driveStick = s;
     }
@@ -150,8 +155,8 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = m_driveStick.getY();
-                double rotation = -(m_driveStick.getX() * TURN_MULTIPLIER);
+                double forward = m_driveStick.getY(GenericHID.Hand.kLeft);
+                double rotation = -(m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER);
                 m_robotDrive.arcadeDrive(forward, rotation);
             }
             else

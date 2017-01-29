@@ -6,15 +6,16 @@ import com.ctre.CANTalon.TalonControlMode;
 import org.usfirst.frc.team4915.steamworks.Logger;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ArcadeDriveCommand extends Command
 {
     private final Drivetrain m_drivetrain;
-    private final Joystick m_driveStick;
+    private final XboxController m_driveStick;
     private final Logger m_logger;
 
-    public ArcadeDriveCommand(Drivetrain drivetrain, Joystick driveStick)
+    public ArcadeDriveCommand(Drivetrain drivetrain, XboxController driveStick)
     {
         m_drivetrain = drivetrain;
         m_driveStick = driveStick;

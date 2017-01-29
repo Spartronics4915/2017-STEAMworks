@@ -10,6 +10,7 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,18 +27,18 @@ public class OI
     public static final int DRIVE_STICK_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
 
-    public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
+    public final XboxController m_driveStick = new XboxController(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
     public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
-    public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
-    public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
-    public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
-    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
+    public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
+    public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
+    public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 3);
+    //public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 10);
  
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
-    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10); 
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 5);
+    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 10);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 6); 
     
     private Logger m_logger;
     private Robot m_robot;
@@ -102,7 +103,7 @@ public class OI
         m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-        m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
+        //m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
     }
 
     private void initLauncherOI()
