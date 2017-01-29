@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4915.steamworks.commands;
+/*package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
@@ -40,7 +40,7 @@ public class DriveTicksCommand extends Command
     @Override
     public boolean isFinished()
     {
-        int pos = m_drivetrain.getAvgEncPosition();
+        //int pos = m_drivetrain.getAvgEncPosition();
         if(pos >= m_endTicks)
         {
             m_logger.debug("finished, final position: " + pos);
@@ -67,3 +67,4 @@ public class DriveTicksCommand extends Command
     }
 
 }
+*/

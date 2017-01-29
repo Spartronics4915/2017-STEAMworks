@@ -18,6 +18,8 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
     private static final int QUAD_ENCODER_TICKS_PER_INCH = QUAD_ENCODER_TICKS_PER_REVOLUTION/(int)(Math.PI*6);
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
+    
+    private static final int MAX_ENC_ERROR = 10;
 
     private Joystick m_driveStick;
 
@@ -62,7 +64,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
 
             m_portMasterMotor.setInverted(false); // Set direction so that the port motor is *not* inverted
-            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
+            m_starboardMasterMotor.setInverted(false); // Set direction so that the starboard motor is *not* inverted
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
@@ -70,6 +72,9 @@ public class Drivetrain extends SpartronicsSubsystem
             // Enable break mode
             m_portMasterMotor.enableBrakeMode(true);
             m_starboardMasterMotor.enableBrakeMode(true);
+            
+            // Invert the encoder output
+            m_starboardMasterMotor.reverseSensor(true);
 
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
@@ -87,13 +92,25 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void setDesiredDistance(double ticks)
-    {
-        m_portMasterMotor.set(ticks);
-        m_starboardMasterMotor.set(-ticks); //motor is already inverted, - sign cancels it out?!
+    public void setDesiredDistance(double inches)
+    {   
+        //set the ticks
+        int ticks = (int) inchesToTicks(inches);
+        
+        // get the current encoder position
+        int portPosition = m_portMasterMotor.getEncPosition();
+        int starboardPosition = m_starboardMasterMotor.getEncPosition();
+        
+        //set the position to the current position plus the desired distance ticks
+        m_portMasterMotor.set(portPosition + ticks);
+        m_starboardMasterMotor.set(starboardPosition + ticks);
+        
+        m_logger.info("desired port position" + portPosition + ticks);
+        m_logger.info("desired starboard position" + starboardPosition + ticks);
     }
     
-    public void setPID(double p, double i, double d) {
+    public void setPID(double p, double i, double d) 
+    {
         m_portMasterMotor.setPID(p,i,d);
         m_starboardMasterMotor.setPID(p,i,d);
     }
@@ -186,11 +203,17 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public int getAvgEncPosition()
+    
+    // returns how much the encoders are off from where they should be
+    public double getAvgEncError()
     {
         if (initialized())
         {
-            return (Math.abs(m_portMasterMotor.getEncPosition())+Math.abs(m_starboardMasterMotor.getEncPosition()))/2; // Get both encoder positions and average them
+            double portError = m_portMasterMotor.getError();
+            double starboardError = m_starboardMasterMotor.getError();
+            m_logger.info("portError: " + portError);
+            m_logger.info("starboardError: " + starboardError);
+            return (Math.abs(portError)+Math.abs(starboardError)/2); // Get both encoder positions and average them
         }
         else
         {
@@ -219,12 +242,12 @@ public class Drivetrain extends SpartronicsSubsystem
     }
     
     //checks if both encoders reached a certain number of ticks
-    public boolean isLocationReached(int m_desiredDistanceTicks) {
+    public boolean isLocationReached() {
         m_logger.info("Encoder position: \t" + m_portMasterMotor.getEncPosition() + "\t" + m_starboardMasterMotor.getEncPosition());
         
-        return (Math.abs(m_portMasterMotor.getEncPosition()) >= m_desiredDistanceTicks
-                || Math.abs(m_starboardMasterMotor.getEncPosition()) >= m_desiredDistanceTicks);
-        
+        double avgEncError = getAvgEncError();
+
+        return (avgEncError <= MAX_ENC_ERROR);
     }
     
     public void setMaxOutput(double maxOutput)

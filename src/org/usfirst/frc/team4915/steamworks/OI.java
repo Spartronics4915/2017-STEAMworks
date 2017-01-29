@@ -4,7 +4,6 @@ import org.usfirst.frc.team4915.steamworks.commands.AutoDriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -86,7 +85,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+        //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
         m_autoButton.whenReleased(new AutoDriveStraightCommand(m_robot.getDrivetrain()));
         m_logger.info("Drivetrain initialized");
     }

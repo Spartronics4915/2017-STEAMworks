@@ -18,7 +18,6 @@ public class AutoDriveStraightCommand extends Command
 //    private int initializeRetryCount = 0;
 //    private final static int MAX_RETRIES = 100;
     private Drivetrain m_drivetrain;
-    private int m_desiredDistanceTicks;
     private double m_desiredInches; //distance the robot is going to drive in inches, set in initialize()
     
     private Logger m_logger;
@@ -38,38 +37,25 @@ public class AutoDriveStraightCommand extends Command
     protected void initialize()
     {
         m_drivetrain.setMaxOutput(4); // Set the max output in volts (we think)
-        m_drivetrain.resetEncPosition(); // Reset encoder position, *doesn't take effect immediately*
+        //m_drivetrain.resetEncPosition(); // Reset encoder position, *doesn't take effect immediately*
         m_drivetrain.setControlMode(CANTalon.TalonControlMode.Position); // Set ourselves to position mode
         m_drivetrain.setPID(0.22,0,0); // PID tuning
         
-        m_desiredInches = 36;
-        m_desiredDistanceTicks = inchesToTicks(m_desiredInches);
-        m_drivetrain.setDesiredDistance(m_desiredDistanceTicks);
+        m_desiredInches = 36; //TODO: put that in the constructor later
+        m_drivetrain.setDesiredDistance(m_desiredInches);
         
         m_logger.info("Desired inches: " + m_desiredInches);
-        m_logger.info("Desired ticks: " + m_desiredDistanceTicks);
         
 //        AUTOSPEED = 25; //To do: check what a good speed would be
         
         m_logger.info("Initialized");
-        m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
+        //m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute()
     {
-        // updateSB();
-//        if(initializeRetryCount >= MAX_RETRIES) {
-//            m_logger.warning("INITIALISATION FAILED, MAXED OUT RETRIES");
-//            m_drivetrain.stop();
-//        }
-//        
-//        if (!isInitialized){
-//            isInitialized = m_drivetrain.isEncPositionZero();
-//            initializeRetryCount++;
-//        }
-        
-        m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
+        //do nothing, wait for command to finish
     }
 
     protected void end()
@@ -80,16 +66,11 @@ public class AutoDriveStraightCommand extends Command
     
     public boolean isFinished()
     {
-        if(m_drivetrain.isLocationReached(m_desiredDistanceTicks))
+        if(m_drivetrain.isLocationReached())
         {
             m_logger.info("isFinished is true");
             return true;
         }
         return false;
-    }
-    
-    public int inchesToTicks(double inches)
-    {
-        return (int) (inches * QUAD_ENCODER_TICKS_PER_INCH);
     }
 }
