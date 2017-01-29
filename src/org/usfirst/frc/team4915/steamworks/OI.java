@@ -2,7 +2,6 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
@@ -33,7 +32,6 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
-    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
  
     public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
@@ -102,7 +100,6 @@ public class OI
         m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-        m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
     }
 
     private void initLauncherOI()
