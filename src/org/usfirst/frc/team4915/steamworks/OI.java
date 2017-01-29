@@ -5,6 +5,7 @@ import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
@@ -33,11 +34,11 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
-
+ 
     public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
-
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10); 
+    
     private Logger m_logger;
     private Robot m_robot;
 
@@ -93,6 +94,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
@@ -108,13 +110,11 @@ public class OI
         // includes carousel
     }
 
-    private void initLoggers()
-    {
+    private void initLoggers() {
 
         /*
          * Get the shared instance, then throw away the result.
-         * This ensures that the shared logger is created, even if never used
-         * elsewhere.
+         * This ensures that the shared logger is created, even if never used elsewhere.
          */
         Logger.getSharedInstance();
 

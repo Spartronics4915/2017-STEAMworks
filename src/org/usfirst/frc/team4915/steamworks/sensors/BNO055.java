@@ -61,8 +61,7 @@ import edu.wpi.first.wpilibj.Timer;
  *         MIT license, all text above must be included in any redistribution
  *
  */
-public class BNO055
-{
+public class BNO055 {
 
     // Tread variables
     private java.util.Timer executor;
@@ -95,21 +94,18 @@ public class BNO055
     private volatile double[] m_heading = new double[3];
     private volatile double[] m_initialHeading = new double[3];
 
-    /*
-     * private volatile byte[] calDataStore = new byte[22];
-     * public String calDataStoreString = "fill me with gibberish";
-     */
+/*    private volatile byte[] calDataStore = new byte[22];
+ *    public String calDataStoreString = "fill me with gibberish";
+ */
 
-    public class SystemStatus
-    {
+    public class SystemStatus {
 
         public int system_status;
         public int self_test_result;
         public int system_error;
     }
 
-    public enum reg_t
-    {
+    public enum reg_t {
         /* Page id register definition */
         BNO055_PAGE_ID_ADDR(0X07),
 
@@ -259,38 +255,32 @@ public class BNO055
 
         private final int val;
 
-        reg_t(int val)
-        {
+        reg_t(int val) {
             this.val = val;
         }
 
-        public int getVal()
-        {
+        public int getVal() {
             return val;
         }
     };
 
-    public enum powermode_t
-    {
+    public enum powermode_t {
         POWER_MODE_NORMAL(0X00),
         POWER_MODE_LOWPOWER(0X01),
         POWER_MODE_SUSPEND(0X02);
 
         private final int val;
 
-        powermode_t(int val)
-        {
+        powermode_t(int val) {
             this.val = val;
         }
 
-        public int getVal()
-        {
+        public int getVal() {
             return val;
         }
     };
 
-    public enum opmode_t
-    {
+    public enum opmode_t {
         /* Operation mode settings */
         OPERATION_MODE_CONFIG(0X00),
         OPERATION_MODE_ACCONLY(0X01),
@@ -308,19 +298,16 @@ public class BNO055
 
         private final int val;
 
-        opmode_t(int val)
-        {
+        opmode_t(int val) {
             this.val = val;
         }
 
-        public int getVal()
-        {
+        public int getVal() {
             return val;
         }
     }
 
-    public class RevInfo
-    {
+    public class RevInfo {
 
         public byte accel_rev;
         public byte mag_rev;
@@ -329,8 +316,7 @@ public class BNO055
         public byte bl_rev;
     }
 
-    public class CalData
-    {
+    public class CalData {
 
         public byte sys;
         public byte gyro;
@@ -338,8 +324,7 @@ public class BNO055
         public byte mag;
     }
 
-    public enum vector_type_t
-    {
+    public enum vector_type_t {
         VECTOR_ACCELEROMETER(reg_t.BNO055_ACCEL_DATA_X_LSB_ADDR.getVal()),
         VECTOR_MAGNETOMETER(reg_t.BNO055_MAG_DATA_X_LSB_ADDR.getVal()),
         VECTOR_GYROSCOPE(reg_t.BNO055_GYRO_DATA_X_LSB_ADDR.getVal()),
@@ -349,13 +334,11 @@ public class BNO055
 
         private final int val;
 
-        vector_type_t(int val)
-        {
+        vector_type_t(int val) {
             this.val = val;
         }
 
-        public int getVal()
-        {
+        public int getVal() {
             return val;
         }
     };
@@ -366,14 +349,14 @@ public class BNO055
      * @param port the physical port the sensor is plugged into on the roboRio
      * @param address the address the sensor is at (0x28 or 0x29)
      */
-    private BNO055(I2C.Port port, byte address)
-    {
+    private BNO055(I2C.Port port, byte address) {
         imu = new I2C(port, address);
         this.initialized = false;
         this.state = 0;
         executor = new java.util.Timer();
         executor.schedule(new BNO055UpdateTask(this), 0L, THREAD_PERIOD);
     }
+
 
     /**
      * Get an instance of the IMU object.
@@ -384,10 +367,8 @@ public class BNO055
      * @return the instantiated BNO055 object
      */
     public static BNO055 getInstance(opmode_t mode, vector_type_t vectorType,
-            I2C.Port port, byte address)
-    {
-        if (instance == null)
-        {
+            I2C.Port port, byte address) {
+        if (instance == null) {
             instance = new BNO055(port, address);
         }
         requestedMode = mode;
@@ -403,14 +384,12 @@ public class BNO055
      *        in (if you don't know use VECTOR_EULER).
      * @return the instantiated BNO055 object
      */
-    public static BNO055 getInstance(opmode_t mode, vector_type_t vectorType)
-    {
+    public static BNO055 getInstance(opmode_t mode, vector_type_t vectorType) {
         return getInstance(mode, vectorType, I2C.Port.kOnboard,
                 BNO055_ADDRESS_A);
     }
 
-    public static BNO055 getInstance()
-    {
+    public static BNO055 getInstance() {
         // Preferred entry point for 4915
         return getInstance(opmode_t.OPERATION_MODE_ACCMAG, vector_type_t.VECTOR_LINEARACCEL);
     }
@@ -418,29 +397,23 @@ public class BNO055
     /**
      * Called periodically. Communicates with the sensor, and checks its state.
      */
-    private void update()
-    {
+    private void update() {
         currentTime = Timer.getFPGATimestamp(); // seconds
-        if (!initialized)
-        {
-            //          System.out.println("State: " + state + ".  curr: " + currentTime
-            //                  + ", next: " + nextTime);
+        if (!initialized) {
+//          System.out.println("State: " + state + ".  curr: " + currentTime
+//                  + ", next: " + nextTime);
 
             // Step through process of initializing the sensor in a non-
             // blocking manner. This sequence of events follows the process
             // defined in the original adafruit source as closely as possible.
             // XXX: It's likely some of these delays can be optimized out.
-            switch (state)
-            {
+            switch (state) {
                 case 0:
                     // Wait for the sensor to be present
-                    if ((0xFF & read8(reg_t.BNO055_CHIP_ID_ADDR)) != BNO055_ID)
-                    {
+                    if ((0xFF & read8(reg_t.BNO055_CHIP_ID_ADDR)) != BNO055_ID) {
                         // Sensor not present, keep trying
                         sensorPresent = false;
-                    }
-                    else
-                    {
+                    } else {
                         // Sensor present, go to next state
                         sensorPresent = true;
                         state++;
@@ -448,8 +421,7 @@ public class BNO055
                     }
                     break;
                 case 1:
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         // Switch to config mode (just in case since this is the
                         // default)
                         setMode(opmode_t.OPERATION_MODE_CONFIG.getVal());
@@ -459,16 +431,14 @@ public class BNO055
                     break;
                 case 2:
                     // Reset
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         write8(reg_t.BNO055_SYS_TRIGGER_ADDR, (byte) 0x20);
                         state++;
                     }
                     break;
                 case 3:
                     // Wait for the sensor to be present
-                    if ((0xFF & read8(reg_t.BNO055_CHIP_ID_ADDR)) == BNO055_ID)
-                    {
+                    if ((0xFF & read8(reg_t.BNO055_CHIP_ID_ADDR)) == BNO055_ID) {
                         // Sensor present, go to next state
                         state++;
                         // Log current time
@@ -477,8 +447,7 @@ public class BNO055
                     break;
                 case 4:
                     // Wait at least 50ms
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         /* Set to normal power mode */
                         write8(reg_t.BNO055_PWR_MODE_ADDR, (byte) powermode_t.POWER_MODE_NORMAL.getVal());
                         nextTime = Timer.getFPGATimestamp() + 0.050;
@@ -487,16 +456,14 @@ public class BNO055
                     break;
                 case 5:
                     // Use external crystal - 32.768 kHz
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         write8(reg_t.BNO055_PAGE_ID_ADDR, (byte) 0x00);
                         nextTime = Timer.getFPGATimestamp() + 0.050;
                         state++;
                     }
                     break;
                 case 6:
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         write8(reg_t.BNO055_SYS_TRIGGER_ADDR, (byte) 0x80);
                         nextTime = Timer.getFPGATimestamp() + 0.500;
                         state++;
@@ -504,16 +471,14 @@ public class BNO055
                     break;
                 case 7:
                     // Set operating mode to mode requested at instantiation
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         setMode(requestedMode);
                         nextTime = Timer.getFPGATimestamp() + 1.05;
                         state++;
                     }
                     break;
                 case 8:
-                    if (currentTime >= nextTime)
-                    {
+                    if (currentTime >= nextTime) {
                         state++;
                     }
                 case 9:
@@ -525,16 +490,13 @@ public class BNO055
                     // Should never get here - Fail safe
                     initialized = false;
             }
-        }
-        else
-        {
+        } else {
             // Sensor is initialized, periodically query position data
             calculateHeadingAndPosition();
         }
     }
 
-    private void calculateHeadingAndPosition()
-    {
+    private void calculateHeadingAndPosition() {
         short hx = 0, hy = 0, hz = 0;
         short ax = 0, ay = 0, az = 0;
 
@@ -573,8 +535,7 @@ public class BNO055
         double deltaT = THREAD_PERIOD / 1000.0;
         double[] deltaVelocity = new double[3];
         double[] newVelocity = new double[3];
-        for (int i = 0; i < 3; i++)
-        {
+        for (int i = 0; i < 3; i++) {
             deltaVelocity[i] = m_accel[i] * deltaT;
             newVelocity[i] = m_velocity[i] + deltaVelocity[i];
             m_position[i] += ((newVelocity[i] + m_velocity[i]) / 2 * deltaT);
@@ -583,23 +544,19 @@ public class BNO055
         m_distFromOrigin = Math.hypot(m_position[0], m_position[1]);
     }
 
-    public double[] getAccel()
-    {
+    public double[] getAccel() {
         return m_accel;
     }
 
-    public int getTurns()
-    {
+    public int getTurns() {
         return (int) (m_heading[0] / 360);
     }
 
-    public double getHeading()
-    {
+    public double getHeading() {
         return m_heading[0];
     }
-
-    public double getIntialHeading()
-    {
+    
+    public double getIntialHeading() {
         return m_initialHeading[0];
     }
 
@@ -608,17 +565,15 @@ public class BNO055
     //  the sign of the result equals the sign of the dividend
     //  -13 % 360 == 347
     //  -377 % 360 == 347
-    public int getNormalizedHeading()
-    {
-        // int h = (int) Math.round((m_heading[0]-m_initialHeading[0]) % 360);
+    public int getNormalizedHeading() {
+    	// int h = (int) Math.round((m_heading[0]-m_initialHeading[0]) % 360);
         int h = (int) Math.round(m_heading[0] % 360);
-        if (h > 180)
-            h = -(360 - h);
+    	if(h > 180)
+    		h = -(360 - h);
         return h;
     }
 
-    public double getDistFromOrigin()
-    {
+    public double getDistFromOrigin() {
         return m_distFromOrigin;
     }
 
@@ -627,13 +582,11 @@ public class BNO055
      *
      * @param mode
      */
-    public void setMode(opmode_t mode)
-    {
+    public void setMode(opmode_t mode) {
         setMode(mode.getVal());
     }
 
-    private void setMode(int mode)
-    {
+    private void setMode(int mode) {
         _mode = mode;
         write8(reg_t.BNO055_OPR_MODE_ADDR, (byte) _mode);
     }
@@ -643,8 +596,7 @@ public class BNO055
      *
      * @return
      */
-    public SystemStatus getSystemStatus()
-    {
+    public SystemStatus getSystemStatus() {
         SystemStatus status = new SystemStatus();
 
         write8(reg_t.BNO055_PAGE_ID_ADDR, (byte) 0x00);
@@ -685,8 +637,7 @@ public class BNO055
      *
      * @return the chips revision information
      */
-    public RevInfo getRevInfo()
-    {
+    public RevInfo getRevInfo() {
         int a = 0, b = 0;
         RevInfo info = new RevInfo();
 
@@ -717,8 +668,7 @@ public class BNO055
      *
      * @return true if the sensor is found on the I2C bus
      */
-    public boolean isSensorPresent()
-    {
+    public boolean isSensorPresent() {
         return sensorPresent;
     }
 
@@ -730,8 +680,7 @@ public class BNO055
      *
      * @return true when the sensor is initialized.
      */
-    public boolean isInitialized()
-    {
+    public boolean isInitialized() {
         return initialized;
     }
 
@@ -741,8 +690,7 @@ public class BNO055
      * @return each value will be set to 0 if not calibrated, 3 if fully
      *         calibrated.
      */
-    public CalData getCalibration()
-    {
+    public CalData getCalibration() {
         CalData data = new CalData();
         int rawCalData = read8(reg_t.BNO055_CALIB_STAT_ADDR);
 
@@ -754,30 +702,33 @@ public class BNO055
         return data;
     }
 
-    /*
-     * public void getCalibrationData() {
-     * setMode(opmode_t.OPERATION_MODE_CONFIG.getVal());
-     * readLen(reg_t.ACCEL_OFFSET_X_LSB_ADDR, calDataStore);
-     * DatatypeConverter.printHexBinary(calDataStore);
-     * System.out.println(DatatypeConverter.printHexBinary(calDataStore));
-     * setMode(opmode_t.OPERATION_MODE_IMUPLUS);
-     * }
-     * public void setCalibrationData() {
-     * setMode(opmode_t.OPERATION_MODE_CONFIG.getVal());
-     * calDataStore = DatatypeConverter.parseHexBinary(calDataStoreString);
-     * retVal = imu.write(reg_t.ACCEL_OFFSET_X_LSB_ADDR.getVal(), 22);
-     * setMode(opmode_t.OPERATION_MODE_IMUPLUS);
-     * }
-     * /**
+/*    public void getCalibrationData() {
+        setMode(opmode_t.OPERATION_MODE_CONFIG.getVal());
+        readLen(reg_t.ACCEL_OFFSET_X_LSB_ADDR, calDataStore);
+        DatatypeConverter.printHexBinary(calDataStore);
+        System.out.println(DatatypeConverter.printHexBinary(calDataStore));
+
+        setMode(opmode_t.OPERATION_MODE_IMUPLUS);
+    }
+
+    public void setCalibrationData() {
+        setMode(opmode_t.OPERATION_MODE_CONFIG.getVal());
+        calDataStore = DatatypeConverter.parseHexBinary(calDataStoreString);
+        retVal = imu.write(reg_t.ACCEL_OFFSET_X_LSB_ADDR.getVal(), 22);
+
+        setMode(opmode_t.OPERATION_MODE_IMUPLUS);
+    }
+
+    /**
      * Returns true if all required sensors (accelerometer, magnetometer,
      * gyroscope) have completed their respective calibration sequence. Only
      * sensors required by the current operating mode are checked. See Section
      * 3.3.
+     *
      * @return true if calibration is complete for all sensors required for the
-     * mode the sensor is currently operating in.
+     *         mode the sensor is currently operating in.
      */
-    public boolean isCalibrated()
-    {
+    public boolean isCalibrated() {
         boolean retVal = true;
 
         // Per Table 3-3
@@ -815,10 +766,10 @@ public class BNO055
      *
      * @return temperature in degrees celsius.
      */
-    public int getTemp()
-    {
+    public int getTemp() {
         return (read8(reg_t.BNO055_TEMP_ADDR));
     }
+
 
     /**
      * Writes an 8 bit value over I2C
@@ -828,8 +779,7 @@ public class BNO055
      * @return whatever I2CJNI.i2CWrite returns. It's not documented in the
      *         wpilib javadocs!
      */
-    private boolean write8(reg_t reg, byte value)
-    {
+    private boolean write8(reg_t reg, byte value) {
         boolean retVal = false;
 
         retVal = imu.write(reg.getVal(), value);
@@ -843,8 +793,7 @@ public class BNO055
      * @param reg the register to read from.
      * @return
      */
-    private byte read8(reg_t reg)
-    {
+    private byte read8(reg_t reg) {
         byte[] vals = new byte[1];
 
         readLen(reg, vals);
@@ -858,8 +807,7 @@ public class BNO055
      * @param buffer to store the read data into
      * @return true on success
      */
-    private boolean readLen(reg_t reg, byte[] buffer)
-    {
+    private boolean readLen(reg_t reg, byte[] buffer) {
         return readLen(reg.getVal(), buffer);
     }
 
@@ -870,12 +818,10 @@ public class BNO055
      * @param buffer the size of the data to read
      * @return true on success
      */
-    private boolean readLen(int reg, byte[] buffer)
-    {
+    private boolean readLen(int reg, byte[] buffer) {
         boolean retVal = true;
 
-        if (buffer == null || buffer.length < 1)
-        {
+        if (buffer == null || buffer.length < 1) {
             return false;
         }
 
@@ -884,15 +830,12 @@ public class BNO055
         return retVal;
     }
 
-    private class BNO055UpdateTask extends TimerTask
-    {
+    private class BNO055UpdateTask extends TimerTask {
 
         private BNO055 imu;
 
-        private BNO055UpdateTask(BNO055 imu)
-        {
-            if (imu == null)
-            {
+        private BNO055UpdateTask(BNO055 imu) {
+            if (imu == null) {
                 throw new NullPointerException("BNO055 pointer null");
             }
             this.imu = imu;
@@ -901,8 +844,7 @@ public class BNO055
         /**
          * Called periodically in its own thread
          */
-        public void run()
-        {
+        public void run() {
             imu.update();
         }
     }
