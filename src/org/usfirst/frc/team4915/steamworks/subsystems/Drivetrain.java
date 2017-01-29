@@ -23,6 +23,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
+    private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.6;
 
     private Joystick m_driveStick; // Joystick for ArcadeDrive
 
@@ -106,7 +107,6 @@ public class Drivetrain extends SpartronicsSubsystem
                     m_imuPIDSource,
                     new PIDOutput()
                     {
-
                         public void pidWrite(double output)
                         {
                             turn(output); // Turn with the output we get
@@ -119,8 +119,11 @@ public class Drivetrain extends SpartronicsSubsystem
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
+            
+            // Set a max speed for RobotDrive
+            m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
-            // Debug stuff so everyone knows that we're initalized
+            // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
             SmartDashboard.putString("Drivetrain_Constructor_Initalized", "Drivetrain initalized sucsessfully."); // Right now the naming of smart dashboard keys is going by a convention that I made up, which is <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
         }
@@ -139,8 +142,8 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus) // Make sure that we're in PercentVbus mode
             {
-                m_portMasterMotor.set(speed);
-                m_starboardMasterMotor.set(-speed); // TODO: This still needs to be tested, because we don't know directions for all of this stuff
+                m_robotDrive.arcadeDrive(0, speed); // We're using 0 for the "forward" parameter and 'speed' for the "rotation" parameter, basically we are telling RobotDrive to turn with 'speed'
+                m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"\nheading: "+m_imu.getHeading()+"\nPID: "+m_turningPIDController.get());
             }
             else
             {
@@ -153,9 +156,9 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (m_imu.isInitialized())
         {
-            m_turningPIDController.reset();
-            m_turningPIDController.setSetpoint(degrees);
-            m_turningPIDController.enable();
+            m_turningPIDController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
+            m_turningPIDController.setSetpoint(degrees); // Set the point we want to turn to
+            m_turningPIDController.enable(); // Enable the PIDController (we should start turning)
         }
         else
         {

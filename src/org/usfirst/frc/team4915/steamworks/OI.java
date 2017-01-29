@@ -94,7 +94,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenReleased(new TurnDegreesIMU(m_robot.getDrivetrain()));
+        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
