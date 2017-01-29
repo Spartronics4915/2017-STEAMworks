@@ -20,9 +20,9 @@ public class Intake extends SpartronicsSubsystem
         REVERSE,
         COUNT
     }
-    
+
     //private static final int INTAKE_QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
-    
+
     private static final double INTAKE_SPEED = 0.75;
 
     private CANTalon m_intakeMotor;
@@ -51,7 +51,7 @@ public class Intake extends SpartronicsSubsystem
     @Override
     protected void initDefaultCommand()
     {
-        
+
     }
 
     // gives encoder ticks to the Counter command
@@ -59,24 +59,25 @@ public class Intake extends SpartronicsSubsystem
     {
         return m_intakeMotor.getEncPosition();
     }
-    
+
     public void setIntake(State state)
     {
         if (initialized())
         {
-           // System.out.println(m_intakeEncoder.get());
+            // System.out.println(m_intakeEncoder.get());
             //Records Intake status in dashboard and the logger
             SmartDashboard.putString("Intake Status", state.name());
             m_logger.info("Intake Status" + state.name());
             //Changes the current state of the Intake
             switch (state)
             {
-                /*Modes Within the Intake Class:
+                /*
+                 * Modes Within the Intake Class:
                  * On: Currently runs in speed mode
                  * Reverse: Opposite direction of On
                  * Count: On, but counts encoder ticks
                  * Off: turns intake off
-                 * */ 
+                 */
                 case ON:
                     m_logger.info("Intake motor on");
                     m_intakeMotor.set(INTAKE_SPEED);

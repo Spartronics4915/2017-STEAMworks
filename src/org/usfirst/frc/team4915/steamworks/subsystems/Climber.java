@@ -13,14 +13,15 @@ public class Climber extends SpartronicsSubsystem
 
     //The 'SHLOW' is cutting the the speed of 'ON' in half
     // The speed of ON is .75
-    
+
     public static enum State
     {
         OFF,
         ON,
         SLOW
     }
-//Shows climber speed 
+
+    //Shows climber speed 
     private static final double CLIMBER_SPEED = 0.75;
 
     private CANTalon m_climberMotor;
@@ -30,8 +31,8 @@ public class Climber extends SpartronicsSubsystem
     public Climber()
     {
         m_logger = new Logger("Climber", Logger.Level.DEBUG);
-        try 
-        
+        try
+
         {
             m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
@@ -57,7 +58,7 @@ public class Climber extends SpartronicsSubsystem
             SmartDashboard.putString("Climber Status", state.name());
             m_logger.info("Climber Status" + state.name());
             switch (state)
-            { 
+            {
                 //Shows that SLOW is half of climber speed
                 case ON:
                     m_logger.info("Climber motor on");
@@ -65,7 +66,7 @@ public class Climber extends SpartronicsSubsystem
                     break;
                 case SLOW:
                     m_logger.info("Climber motor in slow");
-                    m_climberMotor.set(CLIMBER_SPEED/2);
+                    m_climberMotor.set(CLIMBER_SPEED / 2);
                     break;
                 case OFF:
                 default:
