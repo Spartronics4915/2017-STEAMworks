@@ -4,10 +4,8 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
 import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends SpartronicsSubsystem
@@ -17,11 +15,8 @@ public class Intake extends SpartronicsSubsystem
     {
         OFF,
         ON,
-        REVERSE,
-        COUNT
+        REVERSE
     }
-    
-    //private static final int INTAKE_QUAD_ENCODER_TICKS_PER_REVOLUTION = 9000;
     
     private static final double INTAKE_SPEED = 0.75;
 
@@ -37,9 +32,7 @@ public class Intake extends SpartronicsSubsystem
             m_intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
             m_intakeMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Intake initialized");
-            //declares the encoder
-            m_intakeMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-            //m_intakeMotor.configEncoderCodesPerRev(INTAKE_QUAD_ENCODER_TICKS_PER_REVOLUTION);
+            SmartDashboard.putString("Intake Status: ", "Initialized");
         }
         catch (Exception e)
         {
@@ -53,20 +46,13 @@ public class Intake extends SpartronicsSubsystem
     {
         
     }
-
-    // gives encoder ticks to the Counter command
-    public int getEncoder()
-    {
-        return m_intakeMotor.getEncPosition();
-    }
     
     public void setIntake(State state)
     {
         if (initialized())
         {
-           // System.out.println(m_intakeEncoder.get());
             //Records Intake status in dashboard and the logger
-            SmartDashboard.putString("Intake Status", state.name());
+            SmartDashboard.putString("Intake State: ", state.name());
             m_logger.info("Intake Status" + state.name());
             //Changes the current state of the Intake
             switch (state)
@@ -74,7 +60,6 @@ public class Intake extends SpartronicsSubsystem
                 /*Modes Within the Intake Class:
                  * On: Currently runs in speed mode
                  * Reverse: Opposite direction of On
-                 * Count: On, but counts encoder ticks
                  * Off: turns intake off
                  * */ 
                 case ON:
@@ -84,10 +69,6 @@ public class Intake extends SpartronicsSubsystem
                 case REVERSE:
                     m_logger.info("Intake motor in reverse");
                     m_intakeMotor.set(-INTAKE_SPEED);
-                    break;
-                case COUNT:
-                    m_logger.info("Intake motor in Count Mode");
-                    m_intakeMotor.set(INTAKE_SPEED);
                     break;
                 case OFF:
                 default:

@@ -12,7 +12,7 @@ public class Climber extends SpartronicsSubsystem
 {
 
     //The 'SHLOW' is cutting the the speed of 'ON' in half
-    // The speed of ON is .75
+    // The speed of ON is currently .75
     
     public static enum State
     {
@@ -36,6 +36,7 @@ public class Climber extends SpartronicsSubsystem
             m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Climber initialized");
+            SmartDashboard.putString("Intake Status: ", "Initialized");
         }
         catch (Exception e)
         {
@@ -54,7 +55,7 @@ public class Climber extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            SmartDashboard.putString("Climber Status", state.name());
+            SmartDashboard.putString("Climber State: ", state.name());
             m_logger.info("Climber Status" + state.name());
             switch (state)
             { 
