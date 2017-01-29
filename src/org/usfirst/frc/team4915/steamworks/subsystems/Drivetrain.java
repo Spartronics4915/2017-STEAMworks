@@ -14,13 +14,14 @@ import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
 
     private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
-    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
+    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
 
     private Joystick m_driveStick; // Joystick for ArcadeDrive
@@ -35,8 +36,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
     // Robot drive for ArcadeDrive
     private RobotDrive m_robotDrive;
+
+    // Logger
     private Logger m_logger;
-    
+
     // IMU
     private BNO055 m_imu;
     // PID Turning with IMU
@@ -50,7 +53,7 @@ public class Drivetrain extends SpartronicsSubsystem
     public Drivetrain()
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
-        m_driveStick = null; // we'll get a value for this after OI is inited
+        m_driveStick = null; // We'll get a value for this after OI is inited
 
         try
         {
@@ -81,6 +84,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
             m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
 
+            // What do these do, and do we want a variable for them?
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
 
@@ -91,27 +95,34 @@ public class Drivetrain extends SpartronicsSubsystem
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
-            
+
             // Get an instance of the BNO055 IMU
             m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
                     BNO055.vector_type_t.VECTOR_EULER);
 
-            // PID Turning with the IMUPIDSource
-            m_imuPIDSource = new IMUPIDSource(m_imu);
+            // PID Turning with the IMUPIDSource and controller
+            m_imuPIDSource = new IMUPIDSource(m_imu); // Make a new IMUPIDSource that we can use with a PIDController
             m_turningPIDController = new PIDController(turnKp, turnKi, turnKd, turnKf,
-                                    m_imuPIDSource,
-                                    new PIDOutput() {
-                public void pidWrite(double output) {
-                    // output is [-1, 1]... we need to
-                    // convert this to a speed...
-                    Robot.driveTrain.turn(output * MAXIMUM_TURN_SPEED);
-                    // robotDrive.tankDrive(-output, output);
-                }
-            }, 50);
-                    
+                    m_imuPIDSource,
+                    new PIDOutput()
+                    {
+
+                        public void pidWrite(double output)
+                        {
+                            turn(output); // Turn with the output we get
+                        }
+                    }); // A PID Controller which has an inline method for PID output
+            // Should the numbers below be replace with constants?
+            m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
+            m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
+            m_turningPIDController.setPercentTolerance(2); // This is the tolerance for error for reaching our target
+
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
+
+            // Debug stuff so everyone knows that we're initalized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
+            SmartDashboard.putString("Drivetrain_Constructor_Initalized", "Drivetrain initalized sucsessfully."); // Right now the naming of smart dashboard keys is going by a convention that I made up, which is <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
         }
         catch (Exception e)
         {
@@ -120,16 +131,60 @@ public class Drivetrain extends SpartronicsSubsystem
             return;
         }
     }
-    
-    public double getIMUNormalizedHeading() 
+
+    private void turn(double speed) // This is private because it is only being used by the turning PID output
     {
-        if (m_imu.isInitialized()) 
+        if (initialized())
+        {
+            if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
+                    && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus) // Make sure that we're in PercentVbus mode
+            {
+                m_portMasterMotor.set(speed);
+                m_starboardMasterMotor.set(-speed); // TODO: This still needs to be tested, because we don't know directions for all of this stuff
+            }
+            else
+            {
+                m_logger.warning("turn attempt with wrong motor control mode (should be PercentVbus)");
+            }
+        }
+    }
+
+    public void startIMUTurnAbsolute(double degrees) // We call this absolute because we do not turn 180 degrees, we turn *to* 180 degrees
+    {
+        if (m_imu.isInitialized())
+        {
+            m_turningPIDController.reset();
+            m_turningPIDController.setSetpoint(degrees);
+            m_turningPIDController.enable();
+        }
+        else
+        {
+            m_logger.warning("can't start an IMU turn because the IMU isn't initalized");
+        }
+    }
+
+    public void endIMUTurn()
+    {
+        if (m_turningPIDController.isEnabled())
+        {
+            m_turningPIDController.disable();
+        }
+    }
+
+    public boolean isIMUTurnFinished()
+    {
+        return m_turningPIDController.onTarget();
+    }
+
+    public double getIMUNormalizedHeading()
+    {
+        if (m_imu.isInitialized())
         {
             return m_imu.getNormalizedHeading();
         }
-        else 
+        else
         {
-            m_logger.warning("can't get IMU normalized heading because the IMU isn't initalized.");
+            m_logger.warning("can't get normalized IMU heading because the IMU isn't initalized");
             return 0;
         }
     }
@@ -162,7 +217,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            return m_portMasterMotor.getControlMode(); // presumes that all motors are the same
+            return m_portMasterMotor.getControlMode(); // Presumes that all motors have the same control mode
         }
         else
         {
@@ -188,37 +243,12 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void driveStraight(double value)
-    {
-        if (initialized())
-        {
-            m_portMasterMotor.set(value);
-            m_starboardMasterMotor.set(value);
-        }
-    }
-
     public void stop()
     {
         if (initialized())
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
-            ;
-        }
-    }
-
-    public void driveTicksTest(int startingticks, int ticks)
-    {
-        if (initialized())
-        {
-            if (m_portMasterMotor.getEncPosition() < startingticks + ticks)
-            {
-                m_portMasterMotor.set(0.5);
-            }
-            else
-            {
-                m_portMasterMotor.set(0);
-            }
         }
     }
 
@@ -244,11 +274,12 @@ public class Drivetrain extends SpartronicsSubsystem
             return 0;
         }
     }
-    
-    public void updatePeriodicHook() { // Hook called by Robot periodic used to update the SmartDash board
+
+    public void updatePeriodicHook() // Hook called by Robot periodic used to update the SmartDashboard
+    {
         if (m_imu.isInitialized()) // Make sure that the IMU is initalized
         {
-            SmartDashboard.putDouble("Drivetrain_IMU_Heading",this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
+            SmartDashboard.putNumber("Drivetrain_IMU_Heading", this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
         }
     }
 
