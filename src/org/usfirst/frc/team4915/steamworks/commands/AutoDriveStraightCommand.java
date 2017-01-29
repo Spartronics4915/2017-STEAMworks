@@ -18,7 +18,7 @@ public class AutoDriveStraightCommand extends Command
 //    private int initializeRetryCount = 0;
 //    private final static int MAX_RETRIES = 100;
     private Drivetrain m_drivetrain;
-    private double m_desiredDistanceTicks;
+    private int m_desiredDistanceTicks;
     private double m_desiredInches; //distance the robot is going to drive in inches, set in initialize()
     
     private Logger m_logger;
@@ -46,9 +46,13 @@ public class AutoDriveStraightCommand extends Command
         m_desiredDistanceTicks = inchesToTicks(m_desiredInches);
         m_drivetrain.setDesiredDistance(m_desiredDistanceTicks);
         
+        m_logger.info("Desired inches: " + m_desiredInches);
+        m_logger.info("Desired ticks: " + m_desiredDistanceTicks);
+        
 //        AUTOSPEED = 25; //To do: check what a good speed would be
         
         m_logger.info("Initialized");
+        m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -65,7 +69,7 @@ public class AutoDriveStraightCommand extends Command
 //            initializeRetryCount++;
 //        }
         
-        m_logger.info("" + m_drivetrain.getAvgEncPosition());
+        m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
     }
 
     protected void end()
@@ -76,7 +80,12 @@ public class AutoDriveStraightCommand extends Command
     
     public boolean isFinished()
     {
-        return m_drivetrain.isLocationReached(m_desiredDistanceTicks);
+        if(m_drivetrain.isLocationReached(m_desiredDistanceTicks))
+        {
+            m_logger.info("isFinished is true");
+            return true;
+        }
+        return false;
     }
     
     public int inchesToTicks(double inches)

@@ -90,7 +90,7 @@ public class Drivetrain extends SpartronicsSubsystem
     public void setDesiredDistance(double ticks)
     {
         m_portMasterMotor.set(ticks);
-        m_starboardMasterMotor.set(-ticks);
+        m_starboardMasterMotor.set(-ticks); //motor is already inverted, - sign cancels it out?!
     }
     
     public void setPID(double p, double i, double d) {
@@ -219,9 +219,12 @@ public class Drivetrain extends SpartronicsSubsystem
     }
     
     //checks if both encoders reached a certain number of ticks
-    public boolean isLocationReached(double m_desiredDistanceTicks) {
+    public boolean isLocationReached(int m_desiredDistanceTicks) {
+        m_logger.info("Encoder position: \t" + m_portMasterMotor.getEncPosition() + "\t" + m_starboardMasterMotor.getEncPosition());
+        
         return (Math.abs(m_portMasterMotor.getEncPosition()) >= m_desiredDistanceTicks
                 || Math.abs(m_starboardMasterMotor.getEncPosition()) >= m_desiredDistanceTicks);
+        
     }
     
     public void setMaxOutput(double maxOutput)
