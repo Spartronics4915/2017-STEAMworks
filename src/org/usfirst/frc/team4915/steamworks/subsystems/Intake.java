@@ -65,15 +65,18 @@ public class Intake extends SpartronicsSubsystem
                 case ON:
                     m_logger.info("Intake motor on");
                     m_intakeMotor.set(INTAKE_SPEED);
+                    SmartDashboard.putNumber("Intake Speed", INTAKE_SPEED);
                     break;
                 case REVERSE:
                     m_logger.info("Intake motor in reverse");
                     m_intakeMotor.set(-INTAKE_SPEED);
+                    SmartDashboard.putNumber("Intake Speed", -INTAKE_SPEED);
                     break;
                 case OFF:
                 default:
                     m_logger.info("Intake motor off");
                     m_intakeMotor.set(0);
+                    SmartDashboard.putNumber("Intake Speed", 0);
             }
         }
     }
