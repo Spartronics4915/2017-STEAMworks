@@ -22,10 +22,9 @@ public class AutoDriveStraightCommand extends Command
     
     private Logger m_logger;
 
-    public AutoDriveStraightCommand(Drivetrain drivetrain) {
+    public AutoDriveStraightCommand(Drivetrain drivetrain, double distanceInInches) {
+        this.m_desiredInches = distanceInInches;        
         
-//        this.AUTOSPEED = speed;
-//        desiredDistanceTicks = inchesToTicks(desiredDistanceInches);
         m_drivetrain = drivetrain;
         requires(m_drivetrain);
         m_logger = new Logger("AutoDriveStraightCommand", Logger.Level.INFO);
@@ -36,17 +35,14 @@ public class AutoDriveStraightCommand extends Command
     // Called just before this Command runs the first time
     protected void initialize()
     {
-        m_drivetrain.setMaxOutput(4); // Set the max output in volts (we think)
+        m_drivetrain.setMaxOutput(1); // Set the max output in volts (we think)
         //m_drivetrain.resetEncPosition(); // Reset encoder position, *doesn't take effect immediately*
         m_drivetrain.setControlMode(CANTalon.TalonControlMode.Position); // Set ourselves to position mode
         m_drivetrain.setPID(0.22,0,0); // PID tuning
-        
-        m_desiredInches = 36; //TODO: put that in the constructor later
         m_drivetrain.setDesiredDistance(m_desiredInches);
         
         m_logger.info("Desired inches: " + m_desiredInches);
         
-//        AUTOSPEED = 25; //To do: check what a good speed would be
         
         m_logger.info("Initialized");
         //m_logger.info("Average encoder position: " + m_drivetrain.getAvgEncPosition());
@@ -55,7 +51,8 @@ public class AutoDriveStraightCommand extends Command
     // Called repeatedly when this Command is scheduled to run
     protected void execute()
     {
-        //do nothing, wait for command to finish
+        //always set the destination
+        m_drivetrain.setDestinationPosition();
     }
 
     protected void end()
