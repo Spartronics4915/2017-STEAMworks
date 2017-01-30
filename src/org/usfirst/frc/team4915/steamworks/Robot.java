@@ -12,13 +12,14 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class Robot extends IterativeRobot
 {
+
     public Logger m_logger;
 
     private Drivetrain m_drivetrain;
     private Intake m_intake;
     private OI m_oi;
     private Climber m_climber;
-    
+
     @Override
     public void robotInit()
     {
@@ -35,7 +36,7 @@ public class Robot extends IterativeRobot
         // This is invoked in all periodic cases in addition to the other active periodic mode.
         // We implement this method in order to quell the "unimplemented" message.
         // To get code running through this method create a method in your subsystem to be called here as a hook
-        
+
         m_drivetrain.updatePeriodicHook(); // Drivetrain hook
     }
 
@@ -43,7 +44,7 @@ public class Robot extends IterativeRobot
     {
         return m_intake;
     }
-    
+
     public Drivetrain getDrivetrain()
     {
         return m_drivetrain;
@@ -58,7 +59,7 @@ public class Robot extends IterativeRobot
             acmd.start();
         }
     }
-    
+
     @Override
     public void autonomousPeriodic()
     {
