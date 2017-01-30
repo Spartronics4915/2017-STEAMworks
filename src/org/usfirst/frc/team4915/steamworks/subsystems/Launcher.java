@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Launcher extends SpartronicsSubsystem 
 {
 	//the "perfect" static speed that always makes goal
-	public static final double DEFAULT_SPEED = 100; //60 rpm
-	public static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = 1000; //Native Units per revolution
+	public static final double DEFAULT_LAUNCHER_SPEED = 60; //60 rpm (CtreMagEncoder) (Native Units per 100 ms)
+	public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm
 	private CANTalon m_launcherMotor;
 	private CANTalon m_agitatorMotor;
 	private Logger m_logger;
@@ -30,26 +30,29 @@ public class Launcher extends SpartronicsSubsystem
 			m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
 			m_launcherMotor.changeControlMode(TalonControlMode.Speed);
 			
-			m_launcherMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+			m_launcherMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 			m_launcherMotor.reverseSensor(false);
-			m_launcherMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+			
 			
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
-			m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
-			m_launcherMotor.setF(10.23); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
-			m_launcherMotor.setP(.2692); //
+			m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);
+			m_launcherMotor.setF(2.498); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
+			m_launcherMotor.setP(.1); //
 			m_launcherMotor.setI(0);
 			m_launcherMotor.setD(0);
+			
 			
 			m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
 			m_agitatorMotor.changeControlMode(TalonControlMode.Speed);
 			
-			m_agitatorMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+			m_agitatorMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
 			m_agitatorMotor.reverseSensor(false);
-			m_agitatorMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-			
-			
-			
+			m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
+			m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
+			m_agitatorMotor.setF(0);
+			m_agitatorMotor.setP(0);
+			m_agitatorMotor.setI(0);
+			m_agitatorMotor.setD(0);
 			
 			m_logger.info("Launcher initialized");
 		} catch (Exception e) {
@@ -57,25 +60,53 @@ public class Launcher extends SpartronicsSubsystem
 			m_initialized = false;
 		}
 	}
+	
+	private void logMotor(CANTalon motor) 
+	{
+		double speed = motor.getSpeed();
+		double motorOutput = motor.getOutputVoltage()/motor.getBusVoltage();
+		if(motor.equals(m_launcherMotor)) 
+		{
+			m_logger.debug("Launcher Target Speed: "+ DEFAULT_LAUNCHER_SPEED + " Actual Speed:  "+ speed);
+			m_logger.debug("Launcher Error: "+motor.getClosedLoopError() + " Launcher Motor Output: " + motorOutput);
+		}
+		else
+		{
+			m_logger.debug("Agitator Target Speed: "+ DEFAULT_AGITATOR_SPEED + " Actual Speed:  "+ speed);
+			m_logger.debug("Agitator Error: "+motor.getClosedLoopError() + " Agitator Motor Output: " + motorOutput);
+		}
+		
+	}
 
-	public void setLauncher(boolean isOn) {
+	public void setLauncher(boolean isOn) 
+	{
 		if (initialized()) {
 			if (isOn) {
-				setLauncherSpeed(DEFAULT_SPEED);
+				
+				setLauncherSpeed(DEFAULT_LAUNCHER_SPEED);
+				setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
 				m_logger.info("Launcher.setLauncher:ON");
+				m_logger.info("Launcher.setAgitator:ON");
+				logMotor(m_launcherMotor);
+				
 			} else {
 				setLauncherSpeed(0);
+				setAgitatorSpeed(0);
 				m_logger.info("Launcher.setLauncher:OFF");
 			}
 		}
 	}
+	
+	
 
 	// Sets the launcher to a given speed
 	public void setLauncherSpeed(double speed) {
 		m_launcherMotor.set(speed);
-		m_logger.debug("Speed we wrote to the motor: "+ speed + " Speed as read from motor:  "+m_launcherMotor.getSpeed());
-		m_logger.debug("ClosedLoopError returns: "+m_launcherMotor.getClosedLoopError()+" lastError: "+m_launcherMotor.getLastError());
-		//m_logger.debug("BusVoltage: "+m_launcherMotor.getBusVoltage()+ " volts: "+ m_launcherMotor.getOutputVoltage());
+	}
+	
+	// Sets the agitator to a given speed
+	public void setAgitatorSpeed(double speed) {
+		m_agitatorMotor.set(speed);
 	}
 
 	public void initDefaultCommand() {

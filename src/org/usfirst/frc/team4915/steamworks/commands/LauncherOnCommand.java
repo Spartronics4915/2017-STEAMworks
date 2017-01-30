@@ -38,13 +38,8 @@ public class LauncherOnCommand extends Command
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() 
 	{
-		//rawZ is raw data from z axis on joystick. Range of rawZ: [-1,1]
-		//double rawZ = m_launchStick.getAxis(AxisType.kZ);
-		 
-		//maps range of rawZ to units of setLauncherSpeed (RPM?)
-		//double speed = Launcher.DEFAULT_SPEED + 0.25 * rawZ;
-		double speed =  Launcher.DEFAULT_SPEED;
-		m_launcher.setLauncherSpeed(speed);
+		
+		m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
 		
 		//m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
 	}
