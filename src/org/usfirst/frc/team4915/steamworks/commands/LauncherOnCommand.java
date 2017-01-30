@@ -13,17 +13,15 @@ import edu.wpi.first.wpilibj.command.Command;
 public class LauncherOnCommand extends Command 
 {
 
-	private final Joystick m_launchStick;
 	private final Launcher m_launcher;
 	private Logger m_logger;
 
-	public LauncherOnCommand(Launcher launcher, Joystick launchStick) 
+	public LauncherOnCommand(Launcher launcher) 
 	{
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 
 		m_launcher = launcher;
-		m_launchStick = launchStick;
 		m_logger = new Logger("Launcher", Logger.Level.DEBUG);
 		requires(m_launcher);
 	}
@@ -40,6 +38,7 @@ public class LauncherOnCommand extends Command
 	{
 		
 		m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
+		m_launcher.setAgitatorSpeed(Launcher.DEFAULT_AGITATOR_SPEED);
 		
 		//m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
 	}

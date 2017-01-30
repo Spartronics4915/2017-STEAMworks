@@ -108,8 +108,8 @@ public class OI
 
     private void initLauncherOI()
     {
-    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher(), m_driveStick));
-    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher(), m_driveStick));
+    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
+    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
     	
         // includes carousel
     }

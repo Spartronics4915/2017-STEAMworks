@@ -9,17 +9,16 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
+//This command turns the agitator and launcher motor off at the same time
 public class LauncherOffCommand extends Command {
 
 	private final Launcher m_launcher;
-	private final Joystick m_launchStick;
 	private Logger m_logger;
 
-	public LauncherOffCommand(Launcher launcher, Joystick launchStick) {
+	public LauncherOffCommand(Launcher launcher) {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		m_launcher = launcher;
-		m_launchStick = launchStick;
 		m_logger = new Logger("Launcher", Logger.Level.DEBUG);
 		requires(m_launcher);
 	}
