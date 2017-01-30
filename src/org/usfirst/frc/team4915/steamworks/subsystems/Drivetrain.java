@@ -115,7 +115,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setPercentTolerance(0.1); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setPercentTolerance(0.6); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -178,7 +178,8 @@ public class Drivetrain extends SpartronicsSubsystem
     
     public void debugIMU()
     {
-        m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"\nheading: "+m_imu.getHeading()+"\nPID: "+m_turningPIDController.get());
+        m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"heading: "+m_imu.getHeading()+"PID: "+m_turningPIDController.get());
+        System.out.println("I should be outputting debug information.");
     }
 
     public boolean isIMUTurnFinished()

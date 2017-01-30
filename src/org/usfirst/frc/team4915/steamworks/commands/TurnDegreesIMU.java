@@ -15,11 +15,13 @@ public class TurnDegreesIMU extends Command
 
     private final Drivetrain m_drivetrain;
     private Logger m_logger;
+    private double m_degrees;
 
-    public TurnDegreesIMU(Drivetrain drivetrain)
+    public TurnDegreesIMU(Drivetrain drivetrain, double degrees)
     {
         m_drivetrain = drivetrain;
         m_logger = new Logger("TurnDegreesIMU", Logger.Level.DEBUG);
+        m_degrees = degrees;
         requires(m_drivetrain);
     }
 
@@ -29,7 +31,7 @@ public class TurnDegreesIMU extends Command
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus);
-        m_drivetrain.startIMUTurnAbsolute(45); // We will parameterize this value in the constructor for command groups probably
+        m_drivetrain.startIMUTurnAbsolute(m_degrees); // We will parameterize this value in the constructor for command groups probably
         m_logger.debug("initalized");
     }
 
