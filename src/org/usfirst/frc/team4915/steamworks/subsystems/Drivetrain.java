@@ -23,7 +23,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
-    private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.6;
+    private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
 
     private Joystick m_driveStick; // Joystick for ArcadeDrive
 
@@ -115,7 +115,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setPercentTolerance(2); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setPercentTolerance(0.1); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -135,7 +135,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    private void turn(double speed) // This is private because it is only being used by the turning PID output
+    // This is private because it is only being used by the turning PID output
+    private void turn(double speed)
     {
         if (initialized())
         {
@@ -143,7 +144,6 @@ public class Drivetrain extends SpartronicsSubsystem
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus) // Make sure that we're in PercentVbus mode
             {
                 m_robotDrive.arcadeDrive(0, speed); // We're using 0 for the "forward" parameter and 'speed' for the "rotation" parameter, basically we are telling RobotDrive to turn with 'speed'
-                m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"\nheading: "+m_imu.getHeading()+"\nPID: "+m_turningPIDController.get());
             }
             else
             {
@@ -152,7 +152,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void startIMUTurnAbsolute(double degrees) // We call this absolute because we do not turn 180 degrees, we turn *to* 180 degrees
+    // We call this absolute because we do not turn 180 degrees, we turn *to* 180 degrees
+    public void startIMUTurnAbsolute(double degrees)
     {
         if (m_imu.isInitialized())
         {
@@ -171,11 +172,18 @@ public class Drivetrain extends SpartronicsSubsystem
         if (m_turningPIDController.isEnabled())
         {
             m_turningPIDController.disable();
+            m_turningPIDController.reset();
         }
+    }
+    
+    public void debugIMU()
+    {
+        m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"\nheading: "+m_imu.getHeading()+"\nPID: "+m_turningPIDController.get());
     }
 
     public boolean isIMUTurnFinished()
     {
+        debugIMU();
         return m_turningPIDController.onTarget();
     }
 
@@ -202,7 +210,8 @@ public class Drivetrain extends SpartronicsSubsystem
         return QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
-    public void setControlMode(TalonControlMode m) // Not to be confused with CANTalon's setControlMode
+    // Not to be confused with CANTalon's setControlMode
+    public void setControlMode(TalonControlMode m)
     {
         if (initialized())
         {
@@ -228,7 +237,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void driveArcade() // Uses arcadeDrive
+    // Uses arcade drive
+    public void driveArcade()
     {
         if (initialized())
         {
@@ -237,7 +247,13 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY();
                 double rotation = -(m_driveStick.getX() * TURN_MULTIPLIER);
-                m_robotDrive.arcadeDrive(forward, rotation);
+                if (Math.abs(forward) > 3 || Math.abs(rotation) > 3) {
+                    m_robotDrive.arcadeDrive(forward, rotation);
+                }
+                else
+                {
+                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled");
+                }
             }
             else
             {
@@ -278,9 +294,10 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void updatePeriodicHook() // Hook called by Robot periodic used to update the SmartDashboard
+    // Hook called by Robot periodic used to update the SmartDashboard
+    public void updatePeriodicHook()
     {
-        if (m_imu.isInitialized()) // Make sure that the IMU is initalized
+        if (m_imu.isInitialized()) // Make sure that the IMU is initialized
         {
             SmartDashboard.putNumber("Drivetrain_IMU_Heading", this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
         }
