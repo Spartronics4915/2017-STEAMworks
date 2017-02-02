@@ -3,6 +3,8 @@ package org.usfirst.frc.team4915.steamworks;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
@@ -31,7 +33,10 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
-    
+
+    public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
+
     public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
     public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
@@ -103,6 +108,9 @@ public class OI
 
     private void initLauncherOI()
     {
+    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
+    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
+    	
         // includes carousel
     }
 
