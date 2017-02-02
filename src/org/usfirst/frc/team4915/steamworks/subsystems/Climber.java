@@ -36,7 +36,7 @@ public class Climber extends SpartronicsSubsystem
             m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Climber initialized");
-            SmartDashboard.putString("Intake Status: ", "Initialized");
+            SmartDashboard.putString("Climber Status: ", "Initialized");
         }
         catch (Exception e)
         {
@@ -63,15 +63,18 @@ public class Climber extends SpartronicsSubsystem
                 case ON:
                     m_logger.info("Climber motor on");
                     m_climberMotor.set(CLIMBER_SPEED);
+                    SmartDashboard.putNumber("Climber Speed", CLIMBER_SPEED);
                     break;
                 case SLOW:
                     m_logger.info("Climber motor in slow");
-                    m_climberMotor.set(CLIMBER_SPEED/2);
+                    m_climberMotor.set(CLIMBER_SPEED / 2);
+                    SmartDashboard.putNumber("Climber Speed", CLIMBER_SPEED / 2);
                     break;
                 case OFF:
                 default:
                     m_logger.info("Climber motor off");
                     m_climberMotor.set(0);
+                    SmartDashboard.putNumber("Climber Speed", 0);
             }
         }
 

@@ -10,6 +10,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -17,8 +18,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Launcher extends SpartronicsSubsystem 
 {
 	//the "perfect" static speed that always makes goal
-	public static final double DEFAULT_LAUNCHER_SPEED = 60; //60 rpm (CtreMagEncoder) (Native Units per 100 ms)
-	public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm
+	public static final double DEFAULT_LAUNCHER_SPEED = 60; //60 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
+	public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm (CtreMagEncoder) 
 	private CANTalon m_launcherMotor;
 	private CANTalon m_agitatorMotor;
 	private Logger m_logger;
@@ -37,7 +38,7 @@ public class Launcher extends SpartronicsSubsystem
 			m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
 			m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);
 			m_launcherMotor.setF(2.498); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
-			m_launcherMotor.setP(.1); //
+			m_launcherMotor.setP(.1); //(Proportion off target speed * 1023) / Worst Error
 			m_launcherMotor.setI(0);
 			m_launcherMotor.setD(0);
 			
@@ -69,11 +70,13 @@ public class Launcher extends SpartronicsSubsystem
 		{
 			m_logger.debug("Launcher Target Speed: "+ DEFAULT_LAUNCHER_SPEED + " Actual Speed:  "+ speed);
 			m_logger.debug("Launcher Error: "+motor.getClosedLoopError() + " Launcher Motor Output: " + motorOutput);
+			SmartDashboard.putString("Launcher Status: ", "Initialized");
 		}
 		else
 		{
 			m_logger.debug("Agitator Target Speed: "+ DEFAULT_AGITATOR_SPEED + " Actual Speed:  "+ speed);
 			m_logger.debug("Agitator Error: "+motor.getClosedLoopError() + " Agitator Motor Output: " + motorOutput);
+			SmartDashboard.putString("Agitator Status: ", "Initialized");
 		}
 		
 	}
@@ -82,7 +85,6 @@ public class Launcher extends SpartronicsSubsystem
 	{
 		if (initialized()) {
 			if (isOn) {
-				
 				setLauncherSpeed(DEFAULT_LAUNCHER_SPEED);
 				setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
 				m_logger.info("Launcher.setLauncher:ON");
