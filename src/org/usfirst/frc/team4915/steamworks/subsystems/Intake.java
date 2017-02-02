@@ -17,7 +17,7 @@ public class Intake extends SpartronicsSubsystem
         ON,
         REVERSE
     }
-    
+
     private static final double INTAKE_SPEED = 0.75;
 
     private CANTalon m_intakeMotor;
@@ -44,9 +44,9 @@ public class Intake extends SpartronicsSubsystem
     @Override
     protected void initDefaultCommand()
     {
-        
+
     }
-    
+
     public void setIntake(State state)
     {
         if (initialized())
@@ -57,11 +57,12 @@ public class Intake extends SpartronicsSubsystem
             //Changes the current state of the Intake
             switch (state)
             {
-                /*Modes Within the Intake Class:
+                /*
+                 * Modes Within the Intake Class:
                  * On: Currently runs in speed mode
                  * Reverse: Opposite direction of On
                  * Off: turns intake off
-                 * */ 
+                 */
                 case ON:
                     m_logger.info("Intake motor on");
                     m_intakeMotor.set(INTAKE_SPEED);
