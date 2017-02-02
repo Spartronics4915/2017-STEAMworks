@@ -33,10 +33,11 @@ public class Robot extends IterativeRobot
     @Override
     public void robotPeriodic()
     {
-        // This is invoked in all periodic cases in addition to the other active periodic mode.
-        // We implement this method in order to quell the "unimplemented" message.
-        // To get code running through this method create a method in your subsystem to be called here as a hook
-
+        // This is invoked in all periodic cases in addition to the other
+        // active periodic mode.  We implement this method in order to
+        // quell the "unimplemented" message.  To get code running through
+        // this method create a method in your subsystem to be called here 
+        // as a hook.
         m_drivetrain.updatePeriodicHook(); // Drivetrain hook
     }
 
@@ -75,7 +76,8 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledPeriodic()
     {
-        Scheduler.getInstance().run();
+        // we don't want to run the scheduler in disabled mode!
+        // Scheduler.getInstance().run();
     }
 
     @Override
