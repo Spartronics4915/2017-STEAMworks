@@ -21,8 +21,8 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void initialize()
     {
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, 12.0);
-        
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0);
+
     }
 
     @Override
