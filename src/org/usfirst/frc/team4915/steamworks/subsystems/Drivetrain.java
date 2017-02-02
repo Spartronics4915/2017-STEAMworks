@@ -16,10 +16,12 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION*4; // This should be one full rotation
-    private static final int QUAD_ENCODER_TICKS_PER_INCH = QUAD_ENCODER_TICKS_PER_REVOLUTION/(int)(Math.PI*6);
+    private static final int QUAD_ENCODER_TICKS_PER_INCH = (int)(QUAD_ENCODER_TICKS_PER_REVOLUTION/(Math.PI*6));
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
     
     private static final int MAX_ENC_ERROR = 200;
+    
+    private static final int MAX_OUTPUT_VOLTAGE = 12;
 
     private Joystick m_driveStick;
 
@@ -30,7 +32,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private CANTalon m_starboardMasterMotor;
 
     private RobotDrive m_robotDrive;
-    private Logger m_logger;
+    public Logger m_logger;
     
     private int m_destinationPositionPort;
     private int m_destinationPositionStarboard;
@@ -42,6 +44,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
         try
         {
+            m_logger.info("initializing Drivetrain");
             // Create new CANTalons for all our drivetrain motors
             m_portFollowerMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_FOLLOWER);
             m_portMasterMotor = new CANTalon(RobotMap.DRIVE_TRAIN_MOTOR_PORT_MASTER);
@@ -63,11 +66,13 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 
             // Set the number of encoder ticks per wheel revolution
-            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION);
+            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION);
 
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
+            
+            //setMaxOutput(MAX_OUTPUT_VOLTAGE);        
 
             // Enable break mode
             m_portMasterMotor.enableBrakeMode(true);
@@ -84,10 +89,17 @@ public class Drivetrain extends SpartronicsSubsystem
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
+            
+            //instead of Maxoutput
+            m_portMasterMotor.configNominalOutputVoltage(0, 0);
+            m_starboardMasterMotor.configNominalOutputVoltage(0, 0);
+            
+            m_portMasterMotor.configPeakOutputVoltage(12f, -12f);
+            m_starboardMasterMotor.configPeakOutputVoltage(12f, -12f);
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
-            m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
+            m_logger.info("initialized Drivetrain successfully"); // Tell everyone that the drivetrain is initialized successfully
         }
         catch (Exception e)
         {
@@ -95,6 +107,18 @@ public class Drivetrain extends SpartronicsSubsystem
             m_initialized = false;
             return;
         }
+    }
+    
+    public void driveStraight(double inches) {
+        
+        m_portMasterMotor.set(inches);
+        m_starboardMasterMotor.set(inches);
+    }
+    
+    public void setPosition(int port, int starboard)
+    {
+        m_portMasterMotor.setPosition(port);
+        m_starboardMasterMotor.setPosition(starboard);
     }
     
     public void setDesiredDistance(double inches)
@@ -112,11 +136,10 @@ public class Drivetrain extends SpartronicsSubsystem
         m_logger.info("Port start position: " + portPosition);
         m_logger.info("Starboard start position: " + starboardPosition);
         
-        m_destinationPositionPort = portPosition + ticks;  //TODO: portPosition might be negative, could cause problems
-        m_destinationPositionStarboard = starboardPosition + ticks;
-        
         //set the position to the current position plus the desired distance ticks
-        setDestinationPosition();
+        m_portMasterMotor.set(ticksToRotations(portPosition + ticks));
+        m_starboardMasterMotor.set(ticksToRotations(starboardPosition + ticks));
+        
         m_portMasterMotor.setAllowableClosedLoopErr(MAX_ENC_ERROR);
         m_starboardMasterMotor.setAllowableClosedLoopErr(MAX_ENC_ERROR);
         
@@ -124,9 +147,8 @@ public class Drivetrain extends SpartronicsSubsystem
         m_logger.info("desired starboard position" + starboardPosition + ticks);
     }
     
-    public void setDestinationPosition() {
-        m_portMasterMotor.set(m_destinationPositionPort);
-        m_starboardMasterMotor.set(m_destinationPositionStarboard);
+    public double ticksToRotations(int ticks) {
+        return (double)ticks/QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
     
     public void setPID(double p, double i, double d) 
@@ -229,12 +251,12 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            int portError = getError(m_portMasterMotor.getEncPosition(), m_destinationPositionPort);
-            int starboardError = getError(m_starboardMasterMotor.getEncPosition(), m_destinationPositionStarboard);
-            m_logger.info("portError: " + portError);
-            m_logger.info("starboardError: " + starboardError);
+//            int portError = getError(m_portMasterMotor.getEncPosition(), m_destinationPositionPort);
+//            int starboardError = getError(m_starboardMasterMotor.getEncPosition(), m_destinationPositionStarboard);
+//            m_logger.info("portError: " + portError);
+//            m_logger.info("starboardError: " + starboardError);
             //return (Math.abs(portError)+Math.abs(starboardError)/2); // Get both encoder positions and average them
-            return portError;
+            return m_starboardMasterMotor.getClosedLoopError();
         }
         else
         {
@@ -242,10 +264,18 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public int getError(int currentPos, int destinationPos) {
+    public int getError(int currentPos, int destinationPos) 
+    {
         int difference;
         difference = destinationPos - (int) Math.abs((double)currentPos);
         return difference;
+    }
+    
+    public int getPortEncError() {
+        return m_portMasterMotor.getClosedLoopError();
+    }
+    public int getStarboardEncError() {
+        return m_starboardMasterMotor.getClosedLoopError();
     }
 
     public int inchesToTicks(double inches)
@@ -258,7 +288,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            setDefaultCommand(new ArcadeDriveCommand(this, m_driveStick));
+            //setDefaultCommand(new ArcadeDriveCommand(this, m_driveStick));
         }
     }
     
@@ -279,8 +309,19 @@ public class Drivetrain extends SpartronicsSubsystem
     
     public void setMaxOutput(double maxOutput)
     {
-        m_portMasterMotor.configMaxOutputVoltage(6);
-        m_starboardMasterMotor.configMaxOutputVoltage(6);
+        m_portMasterMotor.configMaxOutputVoltage(maxOutput);
+        m_starboardMasterMotor.configMaxOutputVoltage(maxOutput);
     }
     
+    public int getPortPosition() {
+        return (int) m_portMasterMotor.getPosition();
+    }
+    public int getStarboardPosition() {
+        return (int) m_starboardMasterMotor.getPosition();
+    }
+    
+    public double get()
+    {
+        return m_portMasterMotor.get();
+    }
 }

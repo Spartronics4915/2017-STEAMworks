@@ -32,6 +32,7 @@ public class OI
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
     public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
     public final JoystickButton m_autoButton = new JoystickButton(m_auxStick, 8);
+    public final JoystickButton m_autoButton2 = new JoystickButton(m_auxStick, 9);
 
     private Logger m_logger;
     private Robot m_robot;
@@ -86,7 +87,8 @@ public class OI
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
         //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
-        m_autoButton.whenReleased(new AutoDriveStraightCommand(m_robot.getDrivetrain(), 18.849));
+        m_autoButton.whenReleased(new AutoDriveStraightCommand(m_robot.getDrivetrain(), 1));
+        
         m_logger.info("Drivetrain initialized");
     }
 
