@@ -20,9 +20,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-    private static final int QUAD_ENCODER_CYCLES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
-    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CYCLES_PER_REVOLUTION * 4; // This should be one full rotation
-    private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
+    private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
+    private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
 
     private Joystick m_driveStick; // Joystick for ArcadeDrive
@@ -46,7 +45,7 @@ public class Drivetrain extends SpartronicsSubsystem
     // PID Turning with IMU
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
-    private static final double turnKp = 0.2;
+    private static final double turnKp = 0.09;
     private static final double turnKi = 0;
     private static final double turnKd = 0.30;
     private static final double turnKf = 0.001;
@@ -74,28 +73,32 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_starboardFollowerMotor.set(m_starboardMasterMotor.getDeviceID()); // Sets the master motor for the follower
 
-            // Reset
-            m_portMasterMotor.set(0);
-            m_starboardMasterMotor.set(0);
-
             // Setup the motor so it has an encoder
             m_portMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 
             // Set the number of encoder ticks per wheel revolution
-            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION); // This is actual ticks, so it *shouldn't* be multiplied by 4
-            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION);
+            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION); // This is actual ticks, so it *shouldn't* be multiplied by 4
+            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION);
 
             m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
             m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
+            
+            // Configure peak output voltages
+            m_portMasterMotor.configPeakOutputVoltage(12.0, 12.0);
+            m_starboardMasterMotor.configPeakOutputVoltage(12.0, 12.0);
 
-            // What do these do, and do we want a variable for them?
+            // Affects maximum acceleration
             m_portMasterMotor.setVoltageRampRate(48);
             m_starboardMasterMotor.setVoltageRampRate(48);
 
             // Enable break mode
             m_portMasterMotor.enableBrakeMode(true);
             m_starboardMasterMotor.enableBrakeMode(true);
+            
+            // Stop
+            m_portMasterMotor.set(0);
+            m_starboardMasterMotor.set(0);
 
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
@@ -125,7 +128,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
 
-            // Set a max speed for RobotDrive
+            // Set a max output in volts for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
             // Debug stuff so everyone knows that we're initialized
@@ -226,7 +229,7 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
     // Not to be confused with CANTalon's setControlMode
-    public void setControlMode(TalonControlMode m)
+    public void setControlMode(TalonControlMode m, double forwardPeakVoltage, double reversePeakVoltage)
     {
         if (initialized())
         {
@@ -236,10 +239,9 @@ public class Drivetrain extends SpartronicsSubsystem
             // Set so we're at a state we understand
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
-            // Enable control
-            m_portMasterMotor.enableControl();
-            m_starboardMasterMotor.enableControl();
-            // @TODO Explicitly set maximum output
+            // Explicitly set maximum output
+            m_portMasterMotor.configPeakOutputVoltage(forwardPeakVoltage, reversePeakVoltage);
+            m_starboardMasterMotor.configPeakOutputVoltage(forwardPeakVoltage, reversePeakVoltage);
         }
     }
 
@@ -264,14 +266,14 @@ public class Drivetrain extends SpartronicsSubsystem
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
                 double forward = m_driveStick.getY();
-                double rotation = -(m_driveStick.getX() * TURN_MULTIPLIER);
-                if (Math.abs(forward) > 3 || Math.abs(rotation) > 3)
+                double rotation = m_driveStick.getX();
+                if (Math.abs(forward) > 0.02 | Math.abs(rotation) > 0.02)
                 {
                     m_robotDrive.arcadeDrive(forward, rotation);
                 }
                 else
                 {
-                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled");
+                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled"+forward+" "+rotation);
                 }
             }
             else
@@ -287,7 +289,6 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
-            m_portMasterMotor.disableControl();
         }
     }
 
