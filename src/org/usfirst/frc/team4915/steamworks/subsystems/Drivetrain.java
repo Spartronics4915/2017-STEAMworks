@@ -157,7 +157,9 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY(GenericHID.Hand.kLeft);
                 double rotation = -(m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER);
+                m_logger.debug("Forward Value" + forward);
                 m_robotDrive.arcadeDrive(forward, rotation);
+                m_driveStick.setRumble(GenericHID.RumbleType.kLeftRumble, Math.abs(forward));
             }
             else
             {

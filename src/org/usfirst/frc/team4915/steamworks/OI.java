@@ -30,7 +30,7 @@ public class OI
     public final XboxController m_driveStick = new XboxController(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
-    public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
+    //public final JoystickButton m_ticksOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 3);
@@ -95,7 +95,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+        //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
