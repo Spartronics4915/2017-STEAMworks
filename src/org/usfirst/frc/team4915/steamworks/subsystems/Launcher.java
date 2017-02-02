@@ -39,8 +39,8 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);
-            m_launcherMotor.setF(2.498); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
-            m_launcherMotor.setP(.1); //(Proportion off target speed * 1023) / Worst Error
+            m_launcherMotor.setF(.03188); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
+            m_launcherMotor.setP(0); //(Proportion off target speed * 1023) / Worst Error
             m_launcherMotor.setI(0);
             m_launcherMotor.setD(0);
 
@@ -67,7 +67,7 @@ public class Launcher extends SpartronicsSubsystem
 
     private void logMotor(CANTalon motor)
     {
-        double speed = motor.getSpeed();
+        double speed = motor.get();
         double motorOutput = motor.getOutputVoltage() / motor.getBusVoltage();
         if (motor.equals(m_launcherMotor))
         {
@@ -91,7 +91,7 @@ public class Launcher extends SpartronicsSubsystem
             if (isOn)
             {
                 setLauncherSpeed(DEFAULT_LAUNCHER_SPEED);
-                setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
+                //setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
                 m_logger.info("Launcher.setLauncher:ON");
                 m_logger.info("Launcher.setAgitator:ON");
                 logMotor(m_launcherMotor);
@@ -109,7 +109,11 @@ public class Launcher extends SpartronicsSubsystem
     // Sets the launcher to a given speed
     public void setLauncherSpeed(double speed)
     {
+        
         m_launcherMotor.set(speed);
+        if(speed != 0) {
+             logMotor(m_launcherMotor);
+        }
     }
 
     // Sets the agitator to a given speed

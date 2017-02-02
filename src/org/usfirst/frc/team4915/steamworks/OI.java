@@ -34,12 +34,13 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
 
+
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
 
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
-    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 4); //8
+    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 4); //12
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 4); //10
 
     private Logger m_logger;
     private Robot m_robot;
