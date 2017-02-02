@@ -10,55 +10,55 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class LauncherOnCommand extends Command 
+public class LauncherOnCommand extends Command
 {
 
-	private final Launcher m_launcher;
-	private Logger m_logger;
+    private final Launcher m_launcher;
+    private Logger m_logger;
 
-	public LauncherOnCommand(Launcher launcher) 
-	{
-		// Use requires() here to declare subsystem dependencies
-		// eg. requires(chassis);
+    public LauncherOnCommand(Launcher launcher)
+    {
+        // Use requires() here to declare subsystem dependencies
+        // eg. requires(chassis);
 
-		m_launcher = launcher;
-		m_logger = new Logger("Launcher", Logger.Level.DEBUG);
-		requires(m_launcher);
-	}
+        m_launcher = launcher;
+        m_logger = new Logger("Launcher", Logger.Level.DEBUG);
+        requires(m_launcher);
+    }
 
-	// Called just before this Command runs the first time
-	protected void initialize() 
-	{
-		m_logger.debug("LauncherOnCommand Initialized");
-		m_launcher.setLauncher(true);
-	}
+    // Called just before this Command runs the first time
+    protected void initialize()
+    {
+        m_logger.debug("LauncherOnCommand Initialized");
+        m_launcher.setLauncher(true);
+    }
 
-	// Called repeatedly when this Command is scheduled to run
-	protected void execute() 
-	{
-		
-		m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
-		m_launcher.setAgitatorSpeed(Launcher.DEFAULT_AGITATOR_SPEED);
-		
-		//m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
-	}
+    // Called repeatedly when this Command is scheduled to run
+    protected void execute()
+    {
 
-	// Make this return true when this Command no longer needs to run execute()
-	protected boolean isFinished() 
-	{
-		return false;
-	}
+        m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
+        m_launcher.setAgitatorSpeed(Launcher.DEFAULT_AGITATOR_SPEED);
 
-	// Called once after isFinished returns true
-	protected void end() 
-	{
+        //m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
+    }
 
-	}
+    // Make this return true when this Command no longer needs to run execute()
+    protected boolean isFinished()
+    {
+        return false;
+    }
 
-	// Called when another command which requires one or more of the same
-	// subsystems is scheduled to run
-	protected void interrupted() 
-	{
-		m_logger.info("LauncherOnCommand.interrupted");
-	}
+    // Called once after isFinished returns true
+    protected void end()
+    {
+
+    }
+
+    // Called when another command which requires one or more of the same
+    // subsystems is scheduled to run
+    protected void interrupted()
+    {
+        m_logger.info("LauncherOnCommand.interrupted");
+    }
 }

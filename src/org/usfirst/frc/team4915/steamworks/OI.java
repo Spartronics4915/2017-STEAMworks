@@ -34,7 +34,6 @@ public class OI
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
 
-    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
 
