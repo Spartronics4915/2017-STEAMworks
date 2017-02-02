@@ -130,14 +130,23 @@ public class Drivetrain extends SpartronicsSubsystem
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
-            SmartDashboard.putString("Drivetrain_Constructor_Initalized", "Drivetrain initalized sucsessfully."); // Right now the naming of smart dashboard keys is going by a convention that I made up, which is <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
         }
         catch (Exception e)
         {
             m_logger.exception(e, false);
             m_initialized = false;
-            return;
         }
+        SmartDashboard.putString("Drivetrain_Status", (m_initialized ? 
+                        "initialized": "error"));
+        //
+        // Right now the naming of smart dashboard keys is going by a convention 
+        // that I made up, which is 
+        //      <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
+        // Comment from dbadb:  
+        //   since we have to manually lay out the smartdashboard,
+        //   the value of this convention is less than a simpler naming
+        //   strategy... If we can make the case for more programmatic
+        //   layout (as with loggers), we should revisit this.
     }
 
     // This is private because it is only being used by the turning PID output

@@ -37,7 +37,7 @@ public class Climber extends SpartronicsSubsystem
             m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Climber initialized");
-            SmartDashboard.putString("Intake Status: ", "Initialized");
+            SmartDashboard.putString("Climber Status: ", "Initialized");
         }
         catch (Exception e)
         {
