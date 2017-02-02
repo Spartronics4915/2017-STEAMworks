@@ -39,14 +39,14 @@ public class Drivetrain extends SpartronicsSubsystem
     private RobotDrive m_robotDrive;
 
     // Logger
-    private Logger m_logger;
+    public Logger m_logger;
 
     // IMU
     private BNO055 m_imu;
     // PID Turning with IMU
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
-    private static final double turnKp = 0.1;
+    private static final double turnKp = 0.2;
     private static final double turnKi = 0;
     private static final double turnKd = 0.30;
     private static final double turnKf = 0.001;
@@ -74,13 +74,17 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardFollowerMotor.changeControlMode(TalonControlMode.Follower);
             m_starboardFollowerMotor.set(m_starboardMasterMotor.getDeviceID()); // Sets the master motor for the follower
 
+            // Reset
+            m_portMasterMotor.set(0);
+            m_starboardMasterMotor.set(0);
+
             // Setup the motor so it has an encoder
             m_portMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 
             // Set the number of encoder ticks per wheel revolution
-            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
-            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_TICKS_PER_REVOLUTION);
+            m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION); // This is actual ticks, so it *shouldn't* be multiplied by 4
+            m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CYCLES_PER_REVOLUTION);
 
             m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
             m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
@@ -107,6 +111,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     m_imuPIDSource,
                     new PIDOutput()
                     {
+
                         public void pidWrite(double output)
                         {
                             turn(output); // Turn with the output we get
@@ -119,7 +124,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
-            
+
             // Set a max speed for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
@@ -175,10 +180,10 @@ public class Drivetrain extends SpartronicsSubsystem
             m_turningPIDController.reset();
         }
     }
-    
+
     public void debugIMU()
     {
-        m_logger.debug("onTarget: "+m_turningPIDController.onTarget()+"heading: "+m_imu.getHeading()+"PID: "+m_turningPIDController.get());
+        m_logger.debug("onTarget: " + m_turningPIDController.onTarget() + "heading: " + m_imu.getHeading() + "PID: " + m_turningPIDController.get());
         System.out.println("I should be outputting debug information.");
     }
 
@@ -219,9 +224,12 @@ public class Drivetrain extends SpartronicsSubsystem
             // Change the control mode
             m_portMasterMotor.changeControlMode(m);
             m_starboardMasterMotor.changeControlMode(m);
-            // Set the position so we're at a state we understand
+            // Set so we're at a state we understand
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            // Enable control
+            m_portMasterMotor.enableControl();
+            m_starboardMasterMotor.enableControl();
             // @TODO Explicitly set maximum output
         }
     }
@@ -248,7 +256,8 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY();
                 double rotation = -(m_driveStick.getX() * TURN_MULTIPLIER);
-                if (Math.abs(forward) > 3 || Math.abs(rotation) > 3) {
+                if (Math.abs(forward) > 3 || Math.abs(rotation) > 3)
+                {
                     m_robotDrive.arcadeDrive(forward, rotation);
                 }
                 else
@@ -269,6 +278,7 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            m_portMasterMotor.disableControl();
         }
     }
 
@@ -309,7 +319,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            setDefaultCommand(new ArcadeDriveCommand(this, m_driveStick));
+            setDefaultCommand(new ArcadeDriveCommand(this));
         }
     }
 

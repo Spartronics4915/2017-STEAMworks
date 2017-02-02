@@ -4,19 +4,16 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
 import com.ctre.CANTalon.TalonControlMode;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ArcadeDriveCommand extends Command
 {
 
     private final Drivetrain m_drivetrain;
-    private final Joystick m_driveStick;
 
-    public ArcadeDriveCommand(Drivetrain drivetrain, Joystick driveStick)
+    public ArcadeDriveCommand(Drivetrain drivetrain)
     {
         m_drivetrain = drivetrain;
-        m_driveStick = driveStick;
 
         requires(m_drivetrain);
     }
@@ -30,7 +27,6 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void execute()
     {
-        m_drivetrain.setDriveStick(m_driveStick);
         m_drivetrain.driveArcade(); // Run the Drivetrain.driveArcade method with the joystick information
     }
 
