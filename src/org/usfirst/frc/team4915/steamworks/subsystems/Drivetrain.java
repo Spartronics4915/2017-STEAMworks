@@ -83,10 +83,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
             m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
             m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
-            
+
             // Configure peak output voltages
-            m_portMasterMotor.configPeakOutputVoltage(12.0, 12.0);
-            m_starboardMasterMotor.configPeakOutputVoltage(12.0, 12.0);
+            m_portMasterMotor.configPeakOutputVoltage(12.0, -12.0);
+            m_starboardMasterMotor.configPeakOutputVoltage(12.0, -12.0);
 
             // Affects maximum acceleration
             m_portMasterMotor.setVoltageRampRate(48);
@@ -95,7 +95,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Enable break mode
             m_portMasterMotor.enableBrakeMode(true);
             m_starboardMasterMotor.enableBrakeMode(true);
-            
+
             // Stop
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
@@ -139,13 +139,12 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.exception(e, false);
             m_initialized = false;
         }
-        SmartDashboard.putString("Drivetrain_Status", (m_initialized ? 
-                        "initialized": "error"));
+        SmartDashboard.putString("Drivetrain_Status", (m_initialized ? "initialized" : "error"));
         //
-        // Right now the naming of smart dashboard keys is going by a convention 
-        // that I made up, which is 
+        // Right now the naming of smart dashboard keys is going by a convention
+        // that I made up, which is
         //      <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
-        // Comment from dbadb:  
+        // Comment from dbadb:
         //   since we have to manually lay out the smartdashboard,
         //   the value of this convention is less than a simpler naming
         //   strategy... If we can make the case for more programmatic
@@ -273,7 +272,7 @@ public class Drivetrain extends SpartronicsSubsystem
                 }
                 else
                 {
-                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled"+forward+" "+rotation);
+                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled" + forward + " " + rotation);
                 }
             }
             else
