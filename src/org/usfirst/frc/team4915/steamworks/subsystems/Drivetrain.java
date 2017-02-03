@@ -242,6 +242,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    // setDriveStick is presumably called once from OI after joystick initialization
     public void setDriveStick(Joystick s)
     {
         m_driveStick = s;
@@ -257,7 +258,9 @@ public class Drivetrain extends SpartronicsSubsystem
         return ticks / QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
-    // Not to be confused with CANTalon's setControlMode
+    // Not to be confused with CANTalon's setControlMode... The idea here is to
+    // make sure that we keep all the control-mode-specific settings under close
+    // management.
     public void setControlMode(TalonControlMode m,
             double fwdPeakV, double revPeakV,
             double P, double I, double D, double F)
@@ -307,7 +310,8 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
     // resetPosition: resets the sense/measurement of current position
-    //  In theory this should be the same as resetEncoder
+    //  In theory this should be the same as resetEncoder but for
+    //  clarity, we make the distinctions based on current control mode.
     public void resetPosition()
     {
         switch (getControlMode())
@@ -331,6 +335,12 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    // resetEncoder differs from resetPosition only in terms of units.
+    // Conceptually, resetPosition isn't meaningful unless the motor is
+    // running in Position control mode.  This point is only relevant
+    // if we need to reset position to a value other than 0.
+    // In any event, resetEncoder is private since client of resetPosition()
+    // shouldn't care about this subtlety.
     private void resetEncoder()
     {
         m_portMasterMotor.setEncPosition(0);
@@ -355,6 +365,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    // setClosedLoopTargetRevolutions - can be used for both Speed and Position modes.
+    // For speed mode, the units are required to be RPM.  for position mode, revolutions.
     public void setClosedLoopTargetRevolutions(double tg)
     {
         switch (getControlMode())
@@ -377,6 +389,9 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    // closedLoopTargetIsReached - is be ussed for both speed and position modes.
+    // We employ the get() method to obtain values since is returns its result in
+    // the mode-specific units.
     public boolean closedLoopTargetIsReached(double epsilon)
     {
         boolean result = true;
@@ -418,7 +433,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    // Uses arcade drive
+    // Uses arcade drive coupled with the drivestick
     public void driveArcade()
     {
         if (initialized())
@@ -443,6 +458,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    // driveArcadeDirect exposes minimal access to our robotdrive, can be used from autonomous
+    // commands since it doesn't use the joystick.
     public void driveArcadeDirect(double fwd, double rotation)
     {
         if (initialized())
@@ -455,17 +472,11 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
+            m_logger.info("Drivetrain stop method invoked.");
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
-        }
-    }
 
-    public void resetEncPosition() // WARNING: this routine doesn't take effect immediately...
-    {
-        if (initialized())
-        {
-            m_portMasterMotor.setEncPosition(0);
-            m_starboardMasterMotor.setEncPosition(0);
+            // XXX: should we disable here?
         }
     }
 
@@ -500,6 +511,9 @@ public class Drivetrain extends SpartronicsSubsystem
         return result;
     }
 
+    // getOpenLoopValue() returns encoder state in revolutions.  Presumably caller
+    //  has previously reset the the encoder with a call to resetPosition() and is
+    //  measuring a distance from that point.
     public double getOpenLoopValue()
     {
         double result = 0;
@@ -520,6 +534,7 @@ public class Drivetrain extends SpartronicsSubsystem
         return result;
     }
 
+    // getEncPosition is private since we really don't want clients to worry about ticks.
     private int getEncPosition()
     {
         // XXX: for now we only return one enc position... Should caller need access to
