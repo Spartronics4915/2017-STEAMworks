@@ -232,6 +232,11 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         return inches / WHEEL_CIRCUMFERENCE;
     }
+    
+    private double getTicksToRevolutions(int ticks)
+    {
+        return ticks/QUAD_ENCODER_TICKS_PER_REVOLUTION;
+    }
 
     // Not to be confused with CANTalon's setControlMode
     public void setControlMode(TalonControlMode m,
@@ -282,18 +287,6 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void resetEncoder()
-    {
-        m_portMasterMotor.setEncPosition(0);
-        m_starboardMasterMotor.setEncPosition(0);
-        performDelay();
-        if(m_portMasterMotor.getEncPosition() != 0 ||
-           m_starboardMasterMotor.getEncPosition() != 0)
-        {
-             m_logger.warning("resetEncoder latency!");
-        }
-    }
-    
     // resetPosition: resets the sense/measurement of current position
     //  In theory this should be the same as resetEncoder
     public void resetPosition()
@@ -312,12 +305,25 @@ public class Drivetrain extends SpartronicsSubsystem
                 break;
             case Speed:
             case PercentVbus:
+                resetEncoder();
             default:
                 m_logger.warning("Can't resetPosition for current control mode");
                 break;
         }
     }
     
+    private void resetEncoder()
+    {
+        m_portMasterMotor.setEncPosition(0);
+        m_starboardMasterMotor.setEncPosition(0);
+        performDelay();
+        if(m_portMasterMotor.getEncPosition() != 0 ||
+           m_starboardMasterMotor.getEncPosition() != 0)
+        {
+             m_logger.warning("resetEncoder latency!");
+        }
+    }
+   
     private void performDelay()
     {
         try
@@ -475,7 +481,27 @@ public class Drivetrain extends SpartronicsSubsystem
         return result;
     }
 
-    public int getEncPosition()
+    public double getOpenLoopValue()
+    {
+        double result = 0;
+        if(initialized())
+        {
+            switch(getControlMode())
+            {
+                case PercentVbus:
+                    result = getTicksToRevolutions(this.getEncPosition());
+                    break;
+                case Speed:
+                case Position:
+                default:
+                    m_logger.warning("can't get open loop value for current control mode");
+                    break; // fall through, return 0
+            }           
+        }
+        return result;
+    }
+    
+    private int getEncPosition()
     {
         // XXX: for now we only return one enc position... Should caller need access to
         //      a specific motor, we should add a parameter

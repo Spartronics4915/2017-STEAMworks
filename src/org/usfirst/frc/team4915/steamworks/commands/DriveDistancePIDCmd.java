@@ -97,7 +97,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     @Override
     public double pidGet()
     {
-        return m_drivetrain.getClosedLoopValue(false);
+        return m_drivetrain.getOpenLoopValue();
     }
 
     // PIDOutput -----------------------------------------------------------------------
