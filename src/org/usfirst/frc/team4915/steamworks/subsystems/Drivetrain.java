@@ -45,7 +45,7 @@ public class Drivetrain extends SpartronicsSubsystem
     // PID Turning with IMU
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
-    private static final double turnKp = 0.09;
+    private static final double turnKp = 0.12;
     private static final double turnKi = 0;
     private static final double turnKd = 0.30;
     private static final double turnKf = 0.001;
@@ -268,7 +268,7 @@ public class Drivetrain extends SpartronicsSubsystem
                 double rotation = m_driveStick.getX();
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
-                    // To keep motor saftey happy
+                    // To keep motor safety happy
                     forward = 0.0;
                     rotation = 0.0;
                 }
