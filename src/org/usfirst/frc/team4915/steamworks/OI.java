@@ -2,12 +2,8 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
-import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
-import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
-import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
-import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
+import org.usfirst.frc.team4915.steamworks.commands.*;
+import org.usfirst.frc.team4915.steamworks.subsystems.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import commandgroups.TurnSequenceCommandGroup;
@@ -31,12 +27,16 @@ public class OI
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
+    public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
+    public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
+    
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
 
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
+    
     public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
     public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
@@ -97,6 +97,8 @@ public class OI
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
         m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
+        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
     }
 
     private void initIntakeOI()
