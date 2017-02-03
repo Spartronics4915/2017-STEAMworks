@@ -6,6 +6,7 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -39,7 +40,7 @@ public class LauncherOnCommand extends Command
 
         m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
         m_launcher.setAgitatorSpeed(Launcher.DEFAULT_AGITATOR_SPEED);
-
+        SmartDashboard.putString("Launcher Status: ", "Executed");
         //m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
     }
 
