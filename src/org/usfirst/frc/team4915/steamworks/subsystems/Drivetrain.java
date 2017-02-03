@@ -41,7 +41,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     // Logger
     public Logger m_logger;
-    
+
     private double m_target;
     private int m_targetReached;
 
@@ -50,7 +50,7 @@ public class Drivetrain extends SpartronicsSubsystem
     // PID Turning with IMU
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
-    
+
     private static final double turnKp = 0.09;
     private static final double turnKi = 0;
     private static final double turnKd = 0.30;
@@ -232,16 +232,16 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         return inches / WHEEL_CIRCUMFERENCE;
     }
-    
+
     private double getTicksToRevolutions(int ticks)
     {
-        return ticks/QUAD_ENCODER_TICKS_PER_REVOLUTION;
+        return ticks / QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     // Not to be confused with CANTalon's setControlMode
     public void setControlMode(TalonControlMode m,
-                                double fwdPeakV, double revPeakV,
-                                double P, double I, double D, double F)
+            double fwdPeakV, double revPeakV,
+            double P, double I, double D, double F)
     {
         if (initialized())
         {
@@ -250,14 +250,14 @@ public class Drivetrain extends SpartronicsSubsystem
             double rampRate = 36; // measured in volts/sec
             int profile = 0;
 
-            switch(m)
+            switch (m)
             {
                 case PercentVbus:
                     rampRate = 36;
                     break;
                 case Position:
                     rampRate = 12;
-                    if(F != 0)
+                    if (F != 0)
                         m_logger.warning("setControlMode: nonzero feedforward term unexpected");
                     break;
                 case Speed:
@@ -277,31 +277,31 @@ public class Drivetrain extends SpartronicsSubsystem
 
             m_portMasterMotor.setPID(P, I, D, F, izone, rampRate, profile);
             m_starboardMasterMotor.setPID(P, I, D, F, izone, rampRate, profile);
-            
+
             m_portMasterMotor.setProfile(0); // defensive programming
             m_starboardMasterMotor.setProfile(0);
 
             // Explicitly set maximum output
             m_portMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
-            m_starboardMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);            
+            m_starboardMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
         }
     }
-    
+
     // resetPosition: resets the sense/measurement of current position
     //  In theory this should be the same as resetEncoder
     public void resetPosition()
     {
-        switch(getControlMode())
+        switch (getControlMode())
         {
             case Position:
                 m_portMasterMotor.setPosition(0);
                 m_starboardMasterMotor.setPosition(0);
                 performDelay();
-                if(m_portMasterMotor.getPosition() != 0 ||
-                   m_starboardMasterMotor.getPosition() != 0)
-                 {
-                      m_logger.warning("resetPosition latency!");
-                 }
+                if (m_portMasterMotor.getPosition() != 0 ||
+                        m_starboardMasterMotor.getPosition() != 0)
+                {
+                    m_logger.warning("resetPosition latency!");
+                }
                 break;
             case Speed:
             case PercentVbus:
@@ -311,19 +311,19 @@ public class Drivetrain extends SpartronicsSubsystem
                 break;
         }
     }
-    
+
     private void resetEncoder()
     {
         m_portMasterMotor.setEncPosition(0);
         m_starboardMasterMotor.setEncPosition(0);
         performDelay();
-        if(m_portMasterMotor.getEncPosition() != 0 ||
-           m_starboardMasterMotor.getEncPosition() != 0)
+        if (m_portMasterMotor.getEncPosition() != 0 ||
+                m_starboardMasterMotor.getEncPosition() != 0)
         {
-             m_logger.warning("resetEncoder latency!");
+            m_logger.warning("resetEncoder latency!");
         }
     }
-   
+
     private void performDelay()
     {
         try
@@ -333,16 +333,16 @@ public class Drivetrain extends SpartronicsSubsystem
         catch (InterruptedException e)
         {
             m_logger.exception(e, false);
-        } 
+        }
     }
-    
+
     public void setClosedLoopTargetRevolutions(double tg)
     {
-        switch(getControlMode())
+        switch (getControlMode())
         {
             case Speed:
             case Position:
-                if(m_target != tg)
+                if (m_target != tg)
                 {
                     m_target = tg;
                     m_targetReached = 0;
@@ -357,19 +357,19 @@ public class Drivetrain extends SpartronicsSubsystem
                 break;
         }
     }
-    
+
     public boolean closedLoopTargetIsReached(double epsilon)
     {
         boolean result = true;
-        switch(getControlMode())
+        switch (getControlMode())
         {
             case Speed:
             case Position:
-                if(Math.abs(m_portMasterMotor.get() - m_target) < epsilon &&
-                   Math.abs(m_starboardMasterMotor.get() - m_target) < epsilon)
+                if (Math.abs(m_portMasterMotor.get() - m_target) < epsilon &&
+                        Math.abs(m_starboardMasterMotor.get() - m_target) < epsilon)
                 {
                     m_targetReached++;
-                    if(m_targetReached < 5)
+                    if (m_targetReached < 5)
                         result = false;
                     // otherwise true and we're there!
                 }
@@ -423,10 +423,10 @@ public class Drivetrain extends SpartronicsSubsystem
             }
         }
     }
-    
+
     public void driveArcadeDirect(double fwd, double rotation)
     {
-        if(initialized())
+        if (initialized())
         {
             m_robotDrive.arcadeDrive(fwd, rotation);
         }
@@ -449,20 +449,20 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.setEncPosition(0);
         }
     }
-    
+
     // getClosedLoopValue: returns the average of the current motor states
     //  NB: use with care, especially for PID control. If the two motor
     //      encoders are way out of sync, we could get into trouble.
-    public double getClosedLoopValue(boolean takeAverage) 
+    public double getClosedLoopValue(boolean takeAverage)
     {
         double result = 0;
-        if(initialized())
+        if (initialized())
         {
-            switch(getControlMode())
+            switch (getControlMode())
             {
                 case Speed:
                 case Position:
-                    if(takeAverage)
+                    if (takeAverage)
                     {
                         double x = m_portMasterMotor.get();
                         double y = m_starboardMasterMotor.get();
@@ -484,9 +484,9 @@ public class Drivetrain extends SpartronicsSubsystem
     public double getOpenLoopValue()
     {
         double result = 0;
-        if(initialized())
+        if (initialized())
         {
-            switch(getControlMode())
+            switch (getControlMode())
             {
                 case PercentVbus:
                     result = getTicksToRevolutions(this.getEncPosition());
@@ -496,11 +496,11 @@ public class Drivetrain extends SpartronicsSubsystem
                 default:
                     m_logger.warning("can't get open loop value for current control mode");
                     break; // fall through, return 0
-            }           
+            }
         }
         return result;
     }
-    
+
     private int getEncPosition()
     {
         // XXX: for now we only return one enc position... Should caller need access to
