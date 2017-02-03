@@ -266,14 +266,13 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY();
                 double rotation = m_driveStick.getX();
-                if (Math.abs(forward) > 0.02 | Math.abs(rotation) > 0.02)
+                if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
-                    m_robotDrive.arcadeDrive(forward, rotation);
+                    // To keep motor saftey happy
+                    forward = 0.0;
+                    rotation = 0.0;
                 }
-                else
-                {
-                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled" + forward + " " + rotation);
-                }
+                m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
             {
