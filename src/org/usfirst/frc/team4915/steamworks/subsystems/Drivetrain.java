@@ -18,16 +18,16 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
-    Since port and starboard never change, they are unambiguous references that are independent of a mariner’s orientation, and, 
+    Since port and starboard never change, they are unambiguous references that are independent of a mariner's orientation, and, 
     thus, mariners use these nautical terms instead of left and right to avoid confusion. When looking forward, toward the bow of a ship, 
     port and starboard refer to the left and right sides, respectively.
 
     In the early days of boating, before ships had rudders on their centerlines, boats were controlled using a steering oar. Most sailors 
     were right handed, so the steering oar was placed over or through the right side of the stern. Sailors began calling the right side the 
-    steering side, which soon became "starboard" by combining two Old English words: stéor (meaning "steer") and bord (meaning "the side of a boat").
+    steering side, which soon became "starboard" by combining two Old English words: steor (meaning "steer") and bord (meaning "the side of a boat").
 
     As the size of boats grew, so did the steering oar, making it much easier to tie a boat up to a dock on the side opposite the oar. This 
-    side became known as larboard, or "the loading side." Over time, larboard—too easily confused with starboard—was replaced with port. 
+    side became known as larboard, or "the loading side." Over time, larboard - too easily confused with starboard - was replaced with port. 
     After all, this was the side that faced the port, allowing supplies to be ported aboard by porters.
 */
 
