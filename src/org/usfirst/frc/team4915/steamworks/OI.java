@@ -38,9 +38,9 @@ public class OI
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
 
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 4); //8
-    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 4); //12
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 4); //10
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
 
     private Logger m_logger;
     private Robot m_robot;
@@ -97,7 +97,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 180));
+        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
     }
 
     private void initIntakeOI()

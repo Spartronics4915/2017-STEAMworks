@@ -43,7 +43,8 @@ public class Launcher extends SpartronicsSubsystem
             m_launcherMotor.setP(0); //(Proportion off target speed * 1023) / Worst Error
             m_launcherMotor.setI(0);
             m_launcherMotor.setD(0);
-
+            
+            
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
             m_agitatorMotor.changeControlMode(TalonControlMode.Speed);
 
