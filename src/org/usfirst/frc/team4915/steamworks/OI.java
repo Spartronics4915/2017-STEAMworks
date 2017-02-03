@@ -87,7 +87,7 @@ public class OI
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
         //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
-        m_autoButton.whenReleased(new AutoDriveStraightCommand(m_robot.getDrivetrain(), 1));
+        m_autoButton.whenReleased(new AutoDriveStraightCommand(m_robot.getDrivetrain(), 19));
         
         m_logger.info("Drivetrain initialized");
     }

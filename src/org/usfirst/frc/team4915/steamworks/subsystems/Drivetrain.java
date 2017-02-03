@@ -20,7 +20,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double TURN_MULTIPLIER = -0.55; // Used to make turning smoother
     
     private static final int MAX_ENC_ERROR = 200;
-    
+    private static final double WHEEL_DIAMETER = 6;
     private static final int MAX_OUTPUT_VOLTAGE = 12;
 
     private Joystick m_driveStick;
@@ -33,9 +33,6 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private RobotDrive m_robotDrive;
     public Logger m_logger;
-    
-    private int m_destinationPositionPort;
-    private int m_destinationPositionStarboard;
 
     public Drivetrain()
     {
@@ -82,7 +79,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.setInverted(true);
             m_starboardMasterMotor.setInverted(true);
             
-            // Invert the encoder and motor output of starboard motor (master AND follower)
+            // Invert the motor output of starboard motor
             m_starboardMasterMotor.reverseOutput(false);
             m_portMasterMotor.reverseOutput(false);
 
@@ -109,16 +106,28 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void driveStraight(double inches) {
+    public void driveStraight(double inches)
+    {
         
-        m_portMasterMotor.set(inches);
-        m_starboardMasterMotor.set(inches);
+        m_portMasterMotor.set(inchesToRotations(inches));
+        m_starboardMasterMotor.set(inchesToRotations(inches));
+    }
+    
+    public double inchesToRotations(double inches)
+    {
+        return inches/(Math.PI*WHEEL_DIAMETER);
     }
     
     public void setPosition(int port, int starboard)
     {
         m_portMasterMotor.setPosition(port);
         m_starboardMasterMotor.setPosition(starboard);
+        
+        while(!isSetToZero()){}; //wait for motors to be set, TODO: change that. its not a good solution
+    }
+    public boolean isSetToZero()
+    {
+        return (m_portMasterMotor.getPosition() == 0 && m_starboardMasterMotor.getPosition() == 0);
     }
     
     public void setDesiredDistance(double inches)
@@ -147,7 +156,8 @@ public class Drivetrain extends SpartronicsSubsystem
         m_logger.info("desired starboard position" + starboardPosition + ticks);
     }
     
-    public double ticksToRotations(int ticks) {
+    public double ticksToRotations(int ticks)
+    {
         return (double)ticks/QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
     
