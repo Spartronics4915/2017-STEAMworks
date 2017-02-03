@@ -21,8 +21,9 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void initialize()
     {
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0);
-
+        m_drivetrain.m_logger.info("ArcadeDriveCommand initialize");;
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0, 
+                                    0, 0, 0, 0 /* zero PIDF  */);
     }
 
     @Override
@@ -36,4 +37,18 @@ public class ArcadeDriveCommand extends Command
     {
         return false;
     }
+    
+    @Override
+    public void interrupted()
+    {
+        m_drivetrain.m_logger.info("ArcadeDriveCommand interrupted");
+        end();
+    }
+
+    @Override
+    public void end()
+    {
+        m_drivetrain.m_logger.info("ArcadeDriveCommand end");        
+    }
+    
 }
