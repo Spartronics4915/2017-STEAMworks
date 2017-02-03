@@ -23,6 +23,8 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
+    private static final double WHEEL_DIAMETER = 6;
+    private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     private Joystick m_driveStick; // Joystick for ArcadeDrive
 
@@ -39,12 +41,16 @@ public class Drivetrain extends SpartronicsSubsystem
 
     // Logger
     public Logger m_logger;
+    
+    private double m_target;
+    private int m_targetReached;
 
     // IMU
     private BNO055 m_imu;
     // PID Turning with IMU
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
+    
     private static final double turnKp = 0.09;
     private static final double turnKi = 0;
     private static final double turnKd = 0.30;
@@ -54,7 +60,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // We'll get a value for this after OI is inited
-
+        m_target = 0;
         try
         {
             // Create new CANTalons for all our drivetrain motors
@@ -222,26 +228,157 @@ public class Drivetrain extends SpartronicsSubsystem
         m_driveStick = s;
     }
 
-    public int getTicksPerRev()
+    public double getInchesToRevolutions(double inches)
     {
-        return QUAD_ENCODER_TICKS_PER_REVOLUTION;
+        return inches / WHEEL_CIRCUMFERENCE;
     }
 
     // Not to be confused with CANTalon's setControlMode
-    public void setControlMode(TalonControlMode m, double forwardPeakVoltage, double reversePeakVoltage)
+    public void setControlMode(TalonControlMode m,
+                                double fwdPeakV, double revPeakV,
+                                double P, double I, double D, double F)
     {
         if (initialized())
         {
             // Change the control mode
+            int izone = 0; // integration zone
+            double rampRate = 36; // measured in volts/sec
+            int profile = 0;
+
+            switch(m)
+            {
+                case PercentVbus:
+                    rampRate = 36;
+                    break;
+                case Position:
+                    rampRate = 12;
+                    if(F != 0)
+                        m_logger.warning("setControlMode: nonzero feedforward term unexpected");
+                    break;
+                case Speed:
+                    rampRate = 12;
+                    break;
+                default:
+                    m_logger.warning("setControlMode: " + m + " unexpected");
+                    break;
+            }
+
             m_portMasterMotor.changeControlMode(m);
             m_starboardMasterMotor.changeControlMode(m);
+
             // Set so we're at a state we understand
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+
+            m_portMasterMotor.setPID(P, I, D, F, izone, rampRate, profile);
+            m_starboardMasterMotor.setPID(P, I, D, F, izone, rampRate, profile);
+            
+            m_portMasterMotor.setProfile(0); // defensive programming
+            m_starboardMasterMotor.setProfile(0);
+
             // Explicitly set maximum output
-            m_portMasterMotor.configPeakOutputVoltage(forwardPeakVoltage, reversePeakVoltage);
-            m_starboardMasterMotor.configPeakOutputVoltage(forwardPeakVoltage, reversePeakVoltage);
+            m_portMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
+            m_starboardMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);            
         }
+    }
+    
+    public void resetEncoder()
+    {
+        m_portMasterMotor.setEncPosition(0);
+        m_starboardMasterMotor.setEncPosition(0);
+        performDelay();
+        if(m_portMasterMotor.getEncPosition() != 0 ||
+           m_starboardMasterMotor.getEncPosition() != 0)
+        {
+             m_logger.warning("resetEncoder latency!");
+        }
+    }
+    
+    // resetPosition: resets the sense/measurement of current position
+    //  In theory this should be the same as resetEncoder
+    public void resetPosition()
+    {
+        switch(getControlMode())
+        {
+            case Position:
+                m_portMasterMotor.setPosition(0);
+                m_starboardMasterMotor.setPosition(0);
+                performDelay();
+                if(m_portMasterMotor.getPosition() != 0 ||
+                   m_starboardMasterMotor.getPosition() != 0)
+                 {
+                      m_logger.warning("resetPosition latency!");
+                 }
+                break;
+            case Speed:
+            case PercentVbus:
+            default:
+                m_logger.warning("Can't resetPosition for current control mode");
+                break;
+        }
+    }
+    
+    private void performDelay()
+    {
+        try
+        {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e)
+        {
+            m_logger.exception(e, false);
+        } 
+    }
+    
+    public void setClosedLoopTargetRevolutions(double tg)
+    {
+        switch(getControlMode())
+        {
+            case Speed:
+            case Position:
+                if(m_target != tg)
+                {
+                    m_target = tg;
+                    m_targetReached = 0;
+                    m_logger.debug("new target: " + tg);
+                }
+                m_portMasterMotor.set(tg);
+                m_starboardMasterMotor.set(tg);
+                break;
+            case PercentVbus:
+            default:
+                m_logger.warning("Can't set closed loop target for current control mode");
+                break;
+        }
+    }
+    
+    public boolean closedLoopTargetIsReached(double epsilon)
+    {
+        boolean result = true;
+        switch(getControlMode())
+        {
+            case Speed:
+            case Position:
+                if(Math.abs(m_portMasterMotor.get() - m_target) < epsilon &&
+                   Math.abs(m_starboardMasterMotor.get() - m_target) < epsilon)
+                {
+                    m_targetReached++;
+                    if(m_targetReached < 5)
+                        result = false;
+                    // otherwise true and we're there!
+                }
+                else
+                {
+                    m_targetReached = 0;
+                    result = false;
+                }
+                break;
+            case PercentVbus:
+            default:
+                m_logger.warning("Can't check target for current control mode");
+                break;
+        }
+        return result;
     }
 
     public TalonControlMode getControlMode()
@@ -266,19 +403,26 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = m_driveStick.getY();
                 double rotation = m_driveStick.getX();
-                if (Math.abs(forward) > 0.02 | Math.abs(rotation) > 0.02)
+                if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
-                    m_robotDrive.arcadeDrive(forward, rotation);
+                    // To keep motor saftey happy
+                    forward = 0.0;
+                    rotation = 0.0;
                 }
-                else
-                {
-                    m_logger.debug("joystick is within deadzone for both axies so driving is disabled" + forward + " " + rotation);
-                }
+                m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
             {
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
+        }
+    }
+    
+    public void driveArcadeDirect(double fwd, double rotation)
+    {
+        if(initialized())
+        {
+            m_robotDrive.arcadeDrive(fwd, rotation);
         }
     }
 
@@ -298,6 +442,37 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
         }
+    }
+    
+    // getClosedLoopValue: returns the average of the current motor states
+    //  NB: use with care, especially for PID control. If the two motor
+    //      encoders are way out of sync, we could get into trouble.
+    public double getClosedLoopValue(boolean takeAverage) 
+    {
+        double result = 0;
+        if(initialized())
+        {
+            switch(getControlMode())
+            {
+                case Speed:
+                case Position:
+                    if(takeAverage)
+                    {
+                        double x = m_portMasterMotor.get();
+                        double y = m_starboardMasterMotor.get();
+                        result = (x + y) * .5; // we assume we're driving straight
+                    }
+                    else
+                    {
+                        result = m_portMasterMotor.get();
+                    }
+                    break;
+                default:
+                    m_logger.warning("can't get closed loop value for current control mode");
+                    break; // fall through, return 0
+            }
+        }
+        return result;
     }
 
     public int getEncPosition()

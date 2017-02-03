@@ -27,7 +27,8 @@ public class TurnDegreesIMU extends Command
     {
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0);
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
+                                    0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees); // We will parameterize this value in the constructor for command groups probably
         m_drivetrain.m_logger.debug("initalized");
     }
