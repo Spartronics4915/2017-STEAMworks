@@ -2,6 +2,9 @@ package org.usfirst.frc.team4915.steamworks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 // Logger:
 //  a simple class to route all logging through.
@@ -41,6 +44,9 @@ public class Logger
 
     private static List<Logger> s_allLoggers = new ArrayList<>();
     private static Logger s_sharedLogger;
+    private static DateFormat s_dateFormat = new SimpleDateFormat("hh:mm:ss");
+    // NB: changing the date-format may negatively impact downstream/display
+    //     code that may depend upon this format.
 
     private Level m_loglevel; // per-instance
     private String m_namespace;
@@ -114,7 +120,11 @@ public class Logger
 
     private void logMsg(String lvl, String msg)
     {
-        System.out.println(m_namespace + " " + lvl + ": " + msg);
+        Date now = new Date();
+        String nowstr = s_dateFormat.format(now);
+        System.out.println(nowstr + " " + lvl + " " + m_namespace + ": " + msg);
+        // NB: changing the date-format may negatively impact downstream/display
+        //     code that may depend upon this format.
     }
 
     private boolean reportLevel(Level lev)
