@@ -37,9 +37,9 @@ public class OI
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
 
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8-1);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10-1);
 
     private Logger m_logger;
     private Robot m_robot;

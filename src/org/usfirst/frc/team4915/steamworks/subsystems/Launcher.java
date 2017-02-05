@@ -42,7 +42,7 @@ public class Launcher extends SpartronicsSubsystem
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
             m_launcherMotor.setF(.03188); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
             m_launcherMotor.setP(.09); //(Proportion off target speed * 1023) / Worst Error //.03188 BASE
-            m_launcherMotor.setI(0);
+            m_launcherMotor.setI(.0009); // start at 1 / 100th of P gain
             m_launcherMotor.setD(0);
             
             
@@ -111,6 +111,8 @@ public class Launcher extends SpartronicsSubsystem
     // Sets the launcher to a given speed
     public void setLauncherSpeed(double speed)
     {   
+        String msg = String.format("%f / %f", speed, m_launcherMotor.getSpeed());
+        SmartDashboard.putString("Launcher_LMotor_Status", msg);
         m_launcherMotor.set(speed);
         logMotor(m_launcherMotor);
     }
