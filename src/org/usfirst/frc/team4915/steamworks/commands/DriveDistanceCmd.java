@@ -25,7 +25,7 @@ public class DriveDistanceCmd extends Command
     {
         m_drivetrain.m_logger.info("DriveDistanceCmd initialize");;
         m_drivetrain.setControlMode(TalonControlMode.Position, 4.0, -4.0, 
-                                    1.0, 0, 0, 0 /* zero IDF  */);
+                                    0.56, 0, 0, 0 /* zero IDF  */);
         m_drivetrain.resetPosition();
     }
 
