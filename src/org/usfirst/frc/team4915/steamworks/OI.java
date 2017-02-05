@@ -2,18 +2,14 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeEncoderUpdateCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.DriveTicksCommand;
-import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
+import org.usfirst.frc.team4915.steamworks.commands.*;
+import org.usfirst.frc.team4915.steamworks.subsystems.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.InputStream;
 import java.util.jar.Attributes;
@@ -39,6 +35,16 @@ public class OI
     public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 5);
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 10);
     public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 6); 
+    
+
+    public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
+    public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
+    public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
+    
+
+    public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
+    
     
     private Logger m_logger;
     private Robot m_robot;
@@ -95,7 +101,10 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));    
+        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
+        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
+
     }
 
     private void initIntakeOI()
@@ -103,36 +112,50 @@ public class OI
         m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-        //m_intakeCount.whenPressed(new IntakeEncoderUpdateCommand(m_robot.getIntake()));
     }
 
     private void initLauncherOI()
     {
+    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
+    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
+    	
         // includes carousel
     }
 
-    private void initLoggers() {
+    private void initLoggers()
+    {
 
         /*
          * Get the shared instance, then throw away the result.
-         * This ensures that the shared logger is created, even if never used elsewhere.
+         * This ensures that the shared logger is created, even if never used
+         * elsewhere.
          */
         Logger.getSharedInstance();
 
         for (Logger logger : Logger.getAllLoggers())
         {
-            SendableChooser<Level> loggerChooser = new SendableChooser<>();
-            for (Level level : Level.values())
-            {
-                loggerChooser.addObject(logger.getNamespace() + " " + level.name(), level);
-            }
+            String key = "Loggers/" + logger.getNamespace();
+            Level desired;
 
-            SmartDashboard.putData("Logger for " + logger.getNamespace(), loggerChooser);
-
-            Level desired = loggerChooser.getSelected();
-            if (desired == null)
+            if (!SmartDashboard.containsKey(key))
             {
+                // First time this logger has been sent to SmartDashboard
+                SmartDashboard.putString(key, logger.getLogLevel().name());
                 desired = Level.DEBUG;
+            }
+            else
+            {
+                String choice = SmartDashboard.getString(key, "DEBUG");
+                Level parsed = Level.valueOf(choice);
+                if (parsed == null)
+                {
+                    m_logger.error("The choice '" + choice + "' for logger " + logger.getNamespace() + " isn't a valid value.");
+                    desired = Level.DEBUG;
+                }
+                else
+                {
+                    desired = parsed;
+                }
             }
             logger.setLogLevel(desired);
         }
