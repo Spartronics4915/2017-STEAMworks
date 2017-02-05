@@ -40,10 +40,13 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            
+            /*
             m_launcherMotor.setF(.03188); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
-            m_launcherMotor.setP(.09); //(Proportion off target speed * 1023) / Worst Error //.03188 BASE
-            m_launcherMotor.setI(.0009); // start at 1 / 100th of P gain
+            m_launcherMotor.setP(.03188); //(.09 currently) (Proportion off target speed * 1023) / Worst Error //.03188 BASE
+            m_launcherMotor.setI(0); // (.0009 currently) start at 1 / 100th of P gain
             m_launcherMotor.setD(0);
+            */
             
             
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
@@ -70,10 +73,11 @@ public class Launcher extends SpartronicsSubsystem
     private void logMotor(CANTalon motor)
     {
         double speed = motor.get();
+        double tgt = SmartDashboard.getNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
         double motorOutput = motor.getOutputVoltage() / motor.getBusVoltage();
         if (motor.equals(m_launcherMotor))
         {
-            m_logger.debug("Launcher Target Speed: " + DEFAULT_LAUNCHER_SPEED + " Actual Speed:  " + speed);
+            m_logger.debug("Launcher Target Speed: " + tgt + " Actual Speed:  " + speed);
             m_logger.debug("Launcher Error: " + motor.getClosedLoopError() + " Launcher Motor Output: " + motorOutput);
             SmartDashboard.putString("Launcher Status: ", "Initialized");
         }
@@ -92,7 +96,8 @@ public class Launcher extends SpartronicsSubsystem
         {
             if (isOn)
             {
-                setLauncherSpeed(DEFAULT_LAUNCHER_SPEED);
+                SmartDashboard.putNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
+                updateLauncherSpeed();
                 setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
                 m_logger.info("Launcher.setLauncher:ON");
                 m_logger.info("Launcher.setAgitator:ON");
@@ -101,7 +106,7 @@ public class Launcher extends SpartronicsSubsystem
             }
             else
             {
-                setLauncherSpeed(0);
+                m_launcherMotor.set(0);
                 setAgitatorSpeed(0);
                 m_logger.info("Launcher.setLauncher:OFF");
             }
@@ -109,17 +114,20 @@ public class Launcher extends SpartronicsSubsystem
     }
 
     // Sets the launcher to a given speed
-    public void setLauncherSpeed(double speed)
+    public void updateLauncherSpeed()
     {   
-        String msg = String.format("%f / %f", speed, m_launcherMotor.getSpeed());
-        SmartDashboard.putString("Launcher_LMotor_Status", msg);
+        double speed = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         m_launcherMotor.set(speed);
-        logMotor(m_launcherMotor);
+
+        String msg = String.format("%.0f / %.0f", m_launcherMotor.getSpeed(), speed );
+        SmartDashboard.putString("Launcher_MSG", msg);
+        // logMotor(m_launcherMotor);
     }
 
     // Sets the agitator to a given speed
     public void setAgitatorSpeed(double speed)
     {
+        SmartDashboard.putString("Agitator Status: ", "Initialized");
         m_agitatorMotor.set(speed);
     }
 

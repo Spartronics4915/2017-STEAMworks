@@ -37,10 +37,8 @@ public class LauncherOnCommand extends Command
     // Called repeatedly when this Command is scheduled to run
     protected void execute()
     {
-
-        m_launcher.setLauncherSpeed(Launcher.DEFAULT_LAUNCHER_SPEED);
+        m_launcher.updateLauncherSpeed();
         m_launcher.setAgitatorSpeed(Launcher.DEFAULT_AGITATOR_SPEED);
-        SmartDashboard.putString("Launcher Status: ", "Executed");
         //m_logger.debug("rawZ = " + rawZ + ", speed = " + speed);
     }
 
