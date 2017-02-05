@@ -15,7 +15,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     private double m_inches, m_revs;
     private PIDController m_pidController;
 
-    private static final double k_P = 1, k_D = 0, k_I = 0, k_F = 0;
+    private static final double k_P = 1.7, k_D = 0, k_I = 0, k_F = 0;
 
     public DriveDistancePIDCmd(Drivetrain drivetrain, double inches)
     {
@@ -54,6 +54,10 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     @Override
     public boolean isFinished()
     {
+        if (m_pidController.onTarget()) 
+        {
+            m_drivetrain.m_logger.debug("DriveDistancePIDCmd PID is on target");
+        }
         return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
     }
 

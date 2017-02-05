@@ -106,8 +106,8 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION); // This is actual ticks, so it *shouldn't* be multiplied by 4
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION);
 
-            m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
-            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
+            m_portMasterMotor.setInverted(true); // Set direction so that the port motor is inverted
+            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is inverted
 
             // Configure peak output voltages
             m_portMasterMotor.configPeakOutputVoltage(12.0, -12.0);
@@ -255,7 +255,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private double getTicksToRevolutions(int ticks)
     {
-        return ticks / QUAD_ENCODER_TICKS_PER_REVOLUTION;
+        return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     // Not to be confused with CANTalon's setControlMode... The idea here is to
@@ -541,7 +541,7 @@ public class Drivetrain extends SpartronicsSubsystem
         //      a specific motor, we should add a parameter
         if (initialized())
         {
-            return m_portMasterMotor.getEncPosition();
+            return m_starboardMasterMotor.getEncPosition(); // We're sampling the starboard motor because it's not inverted
         }
         else
         {
@@ -555,6 +555,7 @@ public class Drivetrain extends SpartronicsSubsystem
         if (m_imu.isInitialized()) // Make sure that the IMU is initialized
         {
             SmartDashboard.putNumber("Drivetrain_IMU_Heading", this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
+            SmartDashboard.putNumber("Drivetrain_Encoder_Value", this.getEncPosition());
         }
     }
 

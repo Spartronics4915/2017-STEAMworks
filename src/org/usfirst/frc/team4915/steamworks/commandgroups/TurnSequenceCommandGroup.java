@@ -1,5 +1,6 @@
-package commandgroups;
+package org.usfirst.frc.team4915.steamworks.commandgroups;
 
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
@@ -33,6 +34,7 @@ public class TurnSequenceCommandGroup extends CommandGroup
         // arm.
         addSequential(new TurnDegreesIMU(m_drivetrain, 45));
         addSequential(new TurnDegreesIMU(m_drivetrain, -45));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 57.3));
         addSequential(new TurnDegreesIMU(m_drivetrain, 180));
 
     }

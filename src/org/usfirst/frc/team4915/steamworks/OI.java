@@ -2,11 +2,11 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
+import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
-import commandgroups.TurnSequenceCommandGroup;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
@@ -96,9 +96,9 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
+        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
     }
 
     private void initIntakeOI()
