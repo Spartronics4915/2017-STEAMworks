@@ -42,7 +42,7 @@ public class Logger
     private static List<Logger> s_allLoggers = new ArrayList<>();
     private static Logger s_sharedLogger;
 
-    private int m_loglevel; // per-instance
+    private Level m_loglevel; // per-instance
     private String m_namespace;
 
     public static List<Logger> getAllLoggers()
@@ -62,7 +62,7 @@ public class Logger
     public Logger(String nm, Level lev)
     {
         m_namespace = nm;
-        m_loglevel = lev.ordinal();
+        m_loglevel = lev;
         s_allLoggers.add(this);
     }
 
@@ -119,7 +119,7 @@ public class Logger
 
     private boolean reportLevel(Level lev)
     {
-        return lev.ordinal() >= m_loglevel;
+        return lev.ordinal() >= m_loglevel.ordinal();
     }
 
     public String getNamespace()
@@ -127,8 +127,13 @@ public class Logger
         return m_namespace;
     }
 
+    public Level getLogLevel()
+    {
+        return m_loglevel;
+    }
+
     public void setLogLevel(Level level)
     {
-        m_loglevel = level.ordinal();
+        m_loglevel = level;
     }
 }
