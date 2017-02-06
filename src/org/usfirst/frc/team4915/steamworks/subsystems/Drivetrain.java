@@ -327,8 +327,10 @@ public class Drivetrain extends SpartronicsSubsystem
                 }
                 break;
             case Speed:
+                break;
             case PercentVbus:
                 resetEncoder();
+                break;
             default:
                 m_logger.warning("Can't resetPosition for current control mode");
                 break;

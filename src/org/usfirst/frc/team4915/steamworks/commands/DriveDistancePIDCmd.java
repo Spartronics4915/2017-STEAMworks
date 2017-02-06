@@ -14,6 +14,10 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     private final Drivetrain m_drivetrain;
     private double m_inches, m_revs;
     private PIDController m_pidController;
+    
+    private double m_heading;
+    private static final double m_KP = .3;
+    private static final double MAx_DEGREES_ERROR = 1;
 
     private static final double k_P = 1.7, k_D = 0, k_I = 0, k_F = 0;
 
@@ -39,6 +43,8 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
+        
+        m_heading = m_drivetrain.getIMUNormalizedHeading();
     }
 
     @Override
@@ -106,7 +112,22 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     @Override
     public void pidWrite(double output)
     {
-        m_drivetrain.driveArcadeDirect(output, 0/* no rotation */);
+        m_drivetrain.driveArcadeDirect(output, getIMUCorrection());
+    }
+    
+    public double getIMUCorrection()
+    {
+        double deltaHeading = m_heading - m_drivetrain.getIMUNormalizedHeading(); //difference to the original direction
+        if(deltaHeading > MAx_DEGREES_ERROR)
+        {
+            //TODO: 
+            return deltaHeading * (-m_KP);
+        } else if (deltaHeading < -MAx_DEGREES_ERROR)
+        {
+            //TODO: 
+            return deltaHeading * m_KP;
+        }
+        return 0;
     }
 
 }
