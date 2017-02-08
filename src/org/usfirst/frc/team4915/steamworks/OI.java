@@ -1,10 +1,22 @@
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
-import org.usfirst.frc.team4915.steamworks.commands.*;
-import org.usfirst.frc.team4915.steamworks.subsystems.*;
+import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
+import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
+import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
+import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -12,11 +24,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.hal.HAL;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-import java.io.IOException;
 
 public class OI
 {
@@ -31,6 +38,10 @@ public class OI
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
+
+    public final JoystickButton m_replayRecord = new JoystickButton(m_auxStick, 6);
+    public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
+    public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 8);
     
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
@@ -106,6 +117,9 @@ public class OI
         m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
         m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
+        m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
+        m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
+        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
