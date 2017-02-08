@@ -66,8 +66,8 @@ public class Drivetrain extends SpartronicsSubsystem
     private IMUPIDSource m_imuPIDSource;
 
     private static final double turnKp = 0.12;
-    private static final double turnKi = 0;
-    private static final double turnKd = 0.30;
+    private static final double turnKi = 0.01;
+    private static final double turnKd = 0.1;
     private static final double turnKf = 0.001;
 
     public Drivetrain()
@@ -148,7 +148,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setPercentTolerance(0.6); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setAbsoluteTolerance(1); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);

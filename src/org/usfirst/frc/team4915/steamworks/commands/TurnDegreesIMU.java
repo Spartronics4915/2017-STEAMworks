@@ -14,6 +14,7 @@ public class TurnDegreesIMU extends Command
 
     private final Drivetrain m_drivetrain;
     private double m_degrees;
+    private int targetCounter;
 
     public TurnDegreesIMU(Drivetrain drivetrain, double degrees)
     {
@@ -25,6 +26,7 @@ public class TurnDegreesIMU extends Command
     @Override
     protected void initialize()
     {
+        targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
@@ -43,7 +45,25 @@ public class TurnDegreesIMU extends Command
     @Override
     protected boolean isFinished()
     {
-        return m_drivetrain.isIMUTurnFinished(); // We're done when the IMU turn is done
+        if (m_drivetrain.isIMUTurnFinished())
+        {
+            m_drivetrain.m_logger.debug(targetCounter+"");
+            targetCounter++;
+            if (targetCounter > 20) // Make sure that we're on target for a while
+            {
+                return m_drivetrain.isIMUTurnFinished(); // We're done when the IMU turn is done
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            targetCounter = 0;
+            return false;
+        }
+//        return m_drivetrain.isIMUTurnFinished();
     }
 
     @Override
@@ -58,6 +78,5 @@ public class TurnDegreesIMU extends Command
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
         m_drivetrain.m_logger.debug("interrupted");
-        // Should we put a log message here?
     }
 }
