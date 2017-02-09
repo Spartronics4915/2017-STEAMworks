@@ -3,8 +3,6 @@ package org.usfirst.frc.team4915.steamworks.subsystems;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
 
@@ -26,7 +24,6 @@ public class Climber extends SpartronicsSubsystem
     //Shows climber speed 
     private static final double CLIMBER_SPEED = 0.75;
     
-    DigitalInput limitSwitchClimber = new DigitalInput(8);
     
     private CANTalon m_climberMotor;
 
@@ -58,10 +55,10 @@ public class Climber extends SpartronicsSubsystem
 
     public void setClimber(State state)
     {
-        SmartDashboard.putString("Climber LimitSwitch State: ", ""+limitSwitchClimber.get());
-        m_logger.info("Climber LimitSwitch State: " + limitSwitchClimber.get());
+        SmartDashboard.putString("Climber LimitSwitch State: ", "" + m_climberMotor.isFwdLimitSwitchClosed());
+        m_logger.info("Climber LimitSwitch State: " + m_climberMotor.isFwdLimitSwitchClosed());
         
-        if(limitSwitchClimber.get())
+        if (m_climberMotor.isFwdLimitSwitchClosed())
         {
                 m_logger.info("Climber motor off");
                 m_climberMotor.set(0);
