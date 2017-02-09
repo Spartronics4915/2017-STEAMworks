@@ -27,7 +27,7 @@ public class OI
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
-    public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
+    public final JoystickButton m_driveDistancePIDBackwards = new JoystickButton(m_auxStick, 4);//just a test button
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
     
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
@@ -97,8 +97,8 @@ public class OI
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
         m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
-        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
+        m_driveDistancePIDBackwards.whenReleased(new DriveDistancePIDCmd(m_robot.getDrivetrain(), -144));; // needs tweaking!
+        m_driveDistancePID.whenReleased(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 144));; // needs tweaking!
     }
 
     private void initIntakeOI()

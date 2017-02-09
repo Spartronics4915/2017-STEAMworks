@@ -16,8 +16,8 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     private PIDController m_pidController;
     
     private double m_heading;
-    private static final double m_KP = .3;
-    private static final double MAx_DEGREES_ERROR = 1;
+    private static final double m_KP = .5;
+    private static final double MAx_DEGREES_ERROR = .5;
 
     private static final double k_P = 1.7, k_D = 0, k_I = 0, k_F = 0;
 
@@ -38,13 +38,14 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     public void initialize()
     {
         m_drivetrain.m_logger.info("DriveDistancePIDCmd initialize");
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0,
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
         
-        m_heading = m_drivetrain.getIMUNormalizedHeading();
+        m_heading = m_drivetrain.getIMUHeading();
+        m_drivetrain.m_logger.info("inintial direction: " + m_heading);
     }
 
     @Override
@@ -117,15 +118,34 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     
     public double getIMUCorrection()
     {
-        double deltaHeading = m_heading - m_drivetrain.getIMUNormalizedHeading(); //difference to the original direction
-        if(deltaHeading > MAx_DEGREES_ERROR)
+        double currentHeading;
+        double error;
+        
+        currentHeading = m_drivetrain.getIMUHeading();
+        m_drivetrain.m_logger.info("Current heading: " + currentHeading);
+        
+        error = currentHeading - m_heading; //difference to the original direction
+        
+        //recalculate the error in case you turn more than 180 dggrees
+        if(error > 180)
         {
-            //TODO: 
-            return deltaHeading * (-m_KP);
-        } else if (deltaHeading < -MAx_DEGREES_ERROR)
+            error -= 360;
+        }
+        else if(error < -180)
         {
-            //TODO: 
-            return deltaHeading * m_KP;
+            error += 180;
+        }
+        m_drivetrain.m_logger.info("headinig error: " + error);
+        
+        if(error >= MAx_DEGREES_ERROR)
+        {
+            m_drivetrain.m_logger.info("correction: " + error * -m_KP);
+            return error/180 * -m_KP;
+        } 
+        else if (error <= -MAx_DEGREES_ERROR)
+        {
+            m_drivetrain.m_logger.info("correction: " + error * -m_KP);
+            return error/180 * -m_KP;
         }
         return 0;
     }
