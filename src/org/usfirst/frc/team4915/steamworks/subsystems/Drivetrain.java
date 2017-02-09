@@ -65,9 +65,9 @@ public class Drivetrain extends SpartronicsSubsystem
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
 
-    private static final double turnKp = 0.09;
-    private static final double turnKi = 0;
-    private static final double turnKd = 0.30;
+    private static final double turnKp = 0.12;
+    private static final double turnKi = 0.01;
+    private static final double turnKd = 0.1;
     private static final double turnKf = 0.001;
 
     public Drivetrain()
@@ -106,8 +106,8 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION); // This is actual ticks, so it *shouldn't* be multiplied by 4
             m_starboardMasterMotor.configEncoderCodesPerRev(QUAD_ENCODER_CODES_PER_REVOLUTION);
 
-            m_portMasterMotor.setInverted(true); // Set direction so that the port motor is *not* inverted
-            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is *not* inverted
+            m_portMasterMotor.setInverted(true); // Set direction so that the port motor is inverted
+            m_starboardMasterMotor.setInverted(true); // Set direction so that the starboard motor is inverted
 
             // Configure peak output voltages
             m_portMasterMotor.configPeakOutputVoltage(12.0, -12.0);
@@ -148,7 +148,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setPercentTolerance(0.6); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setAbsoluteTolerance(1); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -255,7 +255,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private double getTicksToRevolutions(int ticks)
     {
-        return ticks / QUAD_ENCODER_TICKS_PER_REVOLUTION;
+        return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     // Not to be confused with CANTalon's setControlMode... The idea here is to
@@ -445,7 +445,7 @@ public class Drivetrain extends SpartronicsSubsystem
                 double rotation = m_driveStick.getX();
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
-                    // To keep motor saftey happy
+                    // To keep motor safety happy
                     forward = 0.0;
                     rotation = 0.0;
                 }
@@ -541,7 +541,7 @@ public class Drivetrain extends SpartronicsSubsystem
         //      a specific motor, we should add a parameter
         if (initialized())
         {
-            return m_portMasterMotor.getEncPosition();
+            return m_starboardMasterMotor.getEncPosition(); // We're sampling the starboard motor because it's not inverted
         }
         else
         {
@@ -555,6 +555,7 @@ public class Drivetrain extends SpartronicsSubsystem
         if (m_imu.isInitialized()) // Make sure that the IMU is initialized
         {
             SmartDashboard.putNumber("Drivetrain_IMU_Heading", this.getIMUNormalizedHeading()); // Send data to the SmartDashboard with the normalized IMU heading
+            SmartDashboard.putNumber("Drivetrain_Encoder_Value", this.getEncPosition());
         }
     }
 

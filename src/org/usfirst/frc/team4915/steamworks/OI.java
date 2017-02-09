@@ -2,6 +2,7 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
+import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
@@ -9,8 +10,10 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.hal.HAL;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.io.IOException;
@@ -57,17 +60,22 @@ public class OI
         // Init loggers last, as this uses special values generated when other loggers are created.
         initLoggers();
 
-        /* VERSION STRING!! */
+        // Version string and related information
         try (InputStream manifest = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))
         {
             // build a version string
             Attributes attributes = new Manifest(manifest).getMainAttributes();
             String buildStr = "by: " + attributes.getValue("Built-By") +
                     "  on: " + attributes.getValue("Built-At") +
-                    "  vers:" + attributes.getValue("Code-Version");
+                    "  <" + attributes.getValue("Code-Version") + ">";
             SmartDashboard.putString("Build", buildStr);
-            m_logger.notice("Build " + buildStr);
-            ;
+
+            m_logger.notice("=================================================");
+            m_logger.notice("Initialized in station " + HAL.getAllianceStation());
+            m_logger.notice(Instant.now().toString());
+            m_logger.notice("Built " + buildStr);
+            m_logger.notice("=================================================");
+
         }
         catch (IOException e)
         {
@@ -96,9 +104,9 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));    
+        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
+        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
     }
 
     private void initIntakeOI()
