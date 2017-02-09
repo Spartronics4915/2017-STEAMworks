@@ -447,7 +447,7 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = m_driveStick.getY(GenericHID.Hand.kLeft);
+                double forward = triggerAxis();
                 double rotation = m_driveStick.getX(GenericHID.Hand.kLeft);
                 m_logger.debug("Forward Value" + forward);
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
@@ -467,6 +467,22 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
+        }
+    }
+    
+    public double triggerAxis()
+    {
+        if(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight) > 0)
+        {
+            return -(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight));
+        }
+        else if(m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft) > 0)
+        {
+            return (m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft));
+        }
+        else
+        {
+            return 0;
         }
     }
 
