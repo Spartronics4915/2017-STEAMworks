@@ -217,15 +217,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void debugIMU()
-    {
-        m_logger.debug("onTarget: " + m_turningPIDController.onTarget() + "heading: " + m_imu.getHeading() + "PID: " + m_turningPIDController.get());
-        System.out.println("I should be outputting debug information.");
-    }
-
     public boolean isIMUTurnFinished()
     {
-        debugIMU();
         return m_turningPIDController.onTarget();
     }
 

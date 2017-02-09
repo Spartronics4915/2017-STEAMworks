@@ -39,7 +39,6 @@ public class TurnDegreesIMU extends Command
     protected void execute()
     {
         // We shouldn't have to do anything here because all of the PID control stuff runs in another thread
-        m_drivetrain.debugIMU();
     }
 
     @Override
