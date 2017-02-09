@@ -28,20 +28,24 @@ public class OI
     public final Joystick m_driveStick = new Joystick(DRIVE_STICK_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
 
+    //Auto test button
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
     
+    //Intake buttons
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
 
+    //Launcher buttons
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
     
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
-    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
+    //Climber Button
+    public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 8);
+    public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 12);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_auxStick, 10);
 
     private Logger m_logger;
     private Robot m_robot;
