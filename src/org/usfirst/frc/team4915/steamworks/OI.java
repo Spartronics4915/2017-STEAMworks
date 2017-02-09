@@ -44,7 +44,7 @@ public class OI
     
     //Climber Button
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 8);
-    public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 12);
+    public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 2);
     public final JoystickButton m_climberSlow = new JoystickButton(m_auxStick, 10);
 
     private Logger m_logger;
