@@ -169,31 +169,41 @@ public class Drivetrain extends SpartronicsSubsystem
             // Set a max output in volts for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
-            String[] forwardFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Forward", "").split(",");
-            String[] rotationFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Rotation", "").split(",");
-            List<Double> forwardProgram = Arrays.asList(forwardFromDashboard).stream()
-                    .map(Double::parseDouble)
-                    .collect(Collectors.toList());
-            List<Double> rotationProgram = Arrays.asList(rotationFromDashboard).stream()
-                    .map(Double::parseDouble)
-                    .collect(Collectors.toList());
-
-            if (forwardProgram.size() == rotationProgram.size())
+            try
             {
-                m_replayForward.clear();
-                m_replayRotation.clear();
+                String[] forwardFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Forward", "").split(",");
+                String[] rotationFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Rotation", "").split(",");
+                if (forwardFromDashboard.length != 0 && rotationFromDashboard.length != 0)
+                {
+                    List<Double> forwardProgram = Arrays.asList(forwardFromDashboard).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                    List<Double> rotationProgram = Arrays.asList(rotationFromDashboard).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
 
-                // Copying the contents of the temporary lists into the cleared m_
-                // lists because if we simply m_replayForward = forwardProgram it
-                // throws errors about assigning to final variables.
-                m_replayForward.addAll(forwardProgram);
-                m_replayRotation.addAll(rotationProgram);
+                    if (forwardProgram.size() == rotationProgram.size())
+                    {
+                        m_replayForward.clear();
+                        m_replayRotation.clear();
+
+                        // Copying the contents of the temporary lists into the cleared m_
+                        // lists because if we simply m_replayForward = forwardProgram it
+                        // throws errors about assigning to final variables.
+                        m_replayForward.addAll(forwardProgram);
+                        m_replayRotation.addAll(rotationProgram);
+                    }
+                    else
+                    {
+                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
+                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromDashboard));
+                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromDashboard));
+                    }
+                }
             }
-            else
+            catch (NumberFormatException e)
             {
-                m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
-                m_logger.debug("Forward array: " + Arrays.toString(forwardFromDashboard));
-                m_logger.debug("Rotation array: " + Arrays.toString(rotationFromDashboard));
+                m_logger.error("Badly formatted number in replay string");
             }
 
             // Debug stuff so everyone knows that we're initialized
