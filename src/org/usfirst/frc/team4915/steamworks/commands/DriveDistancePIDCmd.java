@@ -54,7 +54,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     @Override
     public boolean isFinished()
     {
-        if (m_pidController.onTarget()) 
+        if (m_pidController.onTarget())
         {
             m_drivetrain.m_logger.debug("DriveDistancePIDCmd PID is on target");
         }
