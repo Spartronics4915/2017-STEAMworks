@@ -78,7 +78,7 @@ public class OI
             Attributes attributes = new Manifest(manifest).getMainAttributes();
             String buildStr = "by: " + attributes.getValue("Built-By") +
                     "  on: " + attributes.getValue("Built-At") +
-                    "  <" + attributes.getValue("Code-Version") + ">";
+                    "  (" + attributes.getValue("Code-Version") + ")";
             SmartDashboard.putString("Build", buildStr);
 
             m_logger.notice("=================================================");
