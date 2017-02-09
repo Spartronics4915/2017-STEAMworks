@@ -32,10 +32,11 @@ public class TurnSequenceCommandGroup extends CommandGroup
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-        addSequential(new TurnDegreesIMU(m_drivetrain, 45));
-        addSequential(new TurnDegreesIMU(m_drivetrain, -45));
-        addSequential(new DriveDistancePIDCmd(m_drivetrain, 57.3));
-        addSequential(new TurnDegreesIMU(m_drivetrain, 180));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 38.5));
+        addSequential(new TurnDegreesIMU(m_drivetrain, -90));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 60));
+        addSequential(new TurnDegreesIMU(m_drivetrain, -123));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 51.5));
 
     }
 }
