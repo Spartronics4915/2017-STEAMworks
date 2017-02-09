@@ -103,7 +103,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
+        m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
         m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
     }
