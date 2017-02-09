@@ -41,7 +41,7 @@ public class OI
 
     public final JoystickButton m_replayRecord = new JoystickButton(m_auxStick, 6);
     public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
-    public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 8);
+    public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 9);
     
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);

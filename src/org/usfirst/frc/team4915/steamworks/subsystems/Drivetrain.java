@@ -1,5 +1,9 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -171,14 +175,18 @@ public class Drivetrain extends SpartronicsSubsystem
 
             try
             {
-                String[] forwardFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Forward", "").split(",");
-                String[] rotationFromDashboard = SmartDashboard.getString("Drivetrain_Replay_Rotation", "").split(",");
-                if (forwardFromDashboard.length != 0 && rotationFromDashboard.length != 0)
+                String[] forwardFromFile = new String(
+                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward")))
+                                .split(",");
+                String[] rotationFromFile = new String(
+                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation")))
+                                .split(",");
+                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
                 {
-                    List<Double> forwardProgram = Arrays.asList(forwardFromDashboard).stream()
+                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
                             .map(Double::parseDouble)
                             .collect(Collectors.toList());
-                    List<Double> rotationProgram = Arrays.asList(rotationFromDashboard).stream()
+                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
                             .map(Double::parseDouble)
                             .collect(Collectors.toList());
 
@@ -196,14 +204,18 @@ public class Drivetrain extends SpartronicsSubsystem
                     else
                     {
                         m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
-                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromDashboard));
-                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromDashboard));
+                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
+                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
                     }
                 }
             }
             catch (NumberFormatException e)
             {
                 m_logger.error("Badly formatted number in replay string");
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, false);
             }
 
             // Debug stuff so everyone knows that we're initialized
@@ -647,21 +659,13 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.notice("(After " + delta + " seconds, " + m_replayForward.size() + " entries)");
 
             m_isRecording = false;
-
-            // Only save the recording if the existing one is empty
-            if (SmartDashboard.getString("Drivetrain_Replay_Forward", "").equals(""))
-            {
-                saveRecording();
-            }
+            saveRecording();
         }
     }
 
     private void saveRecording()
     {
         m_logger.notice("Saved the recording");
-        m_logger.debug("Old recording:");
-        m_logger.debug("Forward:  " + SmartDashboard.getString("Drivetrain_Replay_Forward", ""));
-        m_logger.debug("Rotation: " + SmartDashboard.getString("Drivetrain_Replay_Rotation", ""));
         // This takes all the Doubles in m_replayForward, converts them to a list of Strings,
         // then collects them back into one string by "joining" them together with commas.
         String forward = m_replayForward.stream()
@@ -670,8 +674,19 @@ public class Drivetrain extends SpartronicsSubsystem
         String rotation = m_replayRotation.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
-        SmartDashboard.putString("Drivetrain_Replay_Forward", forward);
-        SmartDashboard.putString("Drivetrain_Replay_Rotation", rotation);
+        try
+        {
+            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward"), forward.getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation"), rotation.getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        }
+        catch (IOException e)
+        {
+            m_logger.warning("Old Forward:  " + forward);
+            m_logger.warning("Old Rotation: " + rotation);
+            m_logger.exception(e, false);
+        }
     }
 
     public List<Double> getReplayForward()
