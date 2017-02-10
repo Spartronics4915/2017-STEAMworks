@@ -1,22 +1,31 @@
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
-import org.usfirst.frc.team4915.steamworks.commands.*;
-import org.usfirst.frc.team4915.steamworks.subsystems.*;
+import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
+import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
+import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
+import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
+import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.hal.HAL;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-import java.io.IOException;
 
 public class OI
 {
@@ -31,9 +40,12 @@ public class OI
     //Auto test button
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
-    public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
-    
-    //Intake buttons
+    public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5)
+      
+    public final JoystickButton m_replayRecord = new JoystickButton(m_auxStick, 6);
+    public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
+    public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 9);
+  
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
@@ -41,11 +53,11 @@ public class OI
     //Launcher buttons
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
-    
-    //Climber Button
-    public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 8);
-    public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 2);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_auxStick, 10);
+
+    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 8);
+    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 12);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 10);
+  
 
     private Logger m_logger;
     private Robot m_robot;
@@ -70,11 +82,12 @@ public class OI
             Attributes attributes = new Manifest(manifest).getMainAttributes();
             String buildStr = "by: " + attributes.getValue("Built-By") +
                     "  on: " + attributes.getValue("Built-At") +
-                    "  <" + attributes.getValue("Code-Version") + ">";
+                    "  (" + attributes.getValue("Code-Version") + ")";
             SmartDashboard.putString("Build", buildStr);
 
             m_logger.notice("=================================================");
             m_logger.notice("Initialized in station " + HAL.getAllianceStation());
+            SmartDashboard.putString("AllianceStation", allianceToString(HAL.getAllianceStation()));
             m_logger.notice(Instant.now().toString());
             m_logger.notice("Built " + buildStr);
             m_logger.notice("=================================================");
@@ -107,9 +120,14 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
-        m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
-        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));; // needs tweaking!
+        m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
+        ; // needs tweaking!
+        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));
+        ; // needs tweaking!
+        m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
+        m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
+        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain()));
     }
 
     private void initIntakeOI()
@@ -121,9 +139,9 @@ public class OI
 
     private void initLauncherOI()
     {
-    	m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
-    	m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
-    	
+        m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
+        m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
+
         // includes carousel
     }
 
@@ -165,4 +183,25 @@ public class OI
             logger.setLogLevel(desired);
         }
     }
+
+    private String allianceToString(AllianceStationID a)
+    {
+        switch (a)
+        {
+            case Blue1:
+                return "Blue1";
+            case Blue2:
+                return "Blue2";
+            case Blue3:
+                return "Blue3";
+            case Red1:
+                return "Red1";
+            case Red2:
+                return "Red2";
+            case Red3:
+                return "Red3";
+        }
+        return "unknown";
+    }
+
 }

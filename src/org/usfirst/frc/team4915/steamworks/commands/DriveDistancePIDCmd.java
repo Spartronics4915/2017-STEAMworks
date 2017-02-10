@@ -35,7 +35,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     {
         m_drivetrain.m_logger.info("DriveDistancePIDCmd initialize");
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
-                0.0, 0, 0, 0 /* zero PIDF */);
+                0.0, 0, 0, 0 /* zero PIDF (We're not using Talon PID Control */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
@@ -54,7 +54,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
     @Override
     public boolean isFinished()
     {
-        if (m_pidController.onTarget()) 
+        if (m_pidController.onTarget())
         {
             m_drivetrain.m_logger.debug("DriveDistancePIDCmd PID is on target");
         }
