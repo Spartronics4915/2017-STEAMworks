@@ -19,7 +19,7 @@ public class Launcher extends SpartronicsSubsystem
 {
 
     //the "perfect" static speed that always makes goal
-    public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
+    public static final double DEFAULT_LAUNCHER_SPEED = 4000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
     public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm (CtreMagEncoder) 
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
@@ -36,13 +36,13 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
             m_launcherMotor.reverseSensor(false);
-            m_launcherMotor.setInverted(true);
+            //m_launcherMotor.setInverted(true); // the true one isnt inverted
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
             
             /* changeable fpid values in smartdashboard
-            m_launcherMotor.setF(.03188); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
+            m_launcherMotor.setF(.03527); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
             m_launcherMotor.setP(.03188); //(.09 currently) (Proportion off target speed * 1023) / Worst Error //.03188 BASE
             m_launcherMotor.setI(0); // (.0009 currently) start at 1 / 100th of P gain
             m_launcherMotor.setD(0);
@@ -96,7 +96,7 @@ public class Launcher extends SpartronicsSubsystem
         {
             if (isOn)
             {
-                SmartDashboard.putNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
+                //SmartDashboard.putNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
                 updateLauncherSpeed();
                 setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
                 logMotor(m_launcherMotor);

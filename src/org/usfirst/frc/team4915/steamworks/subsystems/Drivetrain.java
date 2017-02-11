@@ -1,12 +1,21 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.sensors.BNO055;
 import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
@@ -16,6 +25,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
     Since port and starboard never change, they are unambiguous references that are independent of a mariner's orientation, and, 
@@ -70,11 +80,18 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double turnKd = 0.1;
     private static final double turnKf = 0.001;
 
+    // Replay
+    private boolean m_isRecording = false;
+    private Instant m_startedRecordingAt;
+    private final List<Double> m_replayForward = new ArrayList<>();
+    private final List<Double> m_replayRotation = new ArrayList<>();
+
     public Drivetrain()
     {
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // We'll get a value for this after OI is inited
         m_target = 0;
+
         try
         {
             // Create new CANTalons for all our drivetrain motors
@@ -148,13 +165,58 @@ public class Drivetrain extends SpartronicsSubsystem
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setAbsoluteTolerance(1); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setAbsoluteTolerance(3); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
 
             // Set a max output in volts for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
+
+            try
+            {
+                String[] forwardFromFile = new String(
+                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward")))
+                                .split(",");
+                String[] rotationFromFile = new String(
+                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation")))
+                                .split(",");
+                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
+                {
+                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+
+                    if (forwardProgram.size() == rotationProgram.size())
+                    {
+                        m_replayForward.clear();
+                        m_replayRotation.clear();
+
+                        // Copying the contents of the temporary lists into the cleared m_
+                        // lists because if we simply m_replayForward = forwardProgram it
+                        // throws errors about assigning to final variables.
+                        m_replayForward.addAll(forwardProgram);
+                        m_replayRotation.addAll(rotationProgram);
+                    }
+                    else
+                    {
+                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
+                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
+                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
+                    }
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                m_logger.error("Badly formatted number in replay string");
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, false);
+            }
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
@@ -217,15 +279,8 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void debugIMU()
-    {
-        m_logger.debug("onTarget: " + m_turningPIDController.onTarget() + "heading: " + m_imu.getHeading() + "PID: " + m_turningPIDController.get());
-        System.out.println("I should be outputting debug information.");
-    }
-
     public boolean isIMUTurnFinished()
     {
-        debugIMU();
         return m_turningPIDController.onTarget();
     }
 
@@ -449,6 +504,11 @@ public class Drivetrain extends SpartronicsSubsystem
                     forward = 0.0;
                     rotation = 0.0;
                 }
+                if (m_isRecording)
+                {
+                    m_replayForward.add(forward);
+                    m_replayRotation.add(rotation);
+                }
                 m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
@@ -458,8 +518,9 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    // driveArcadeDirect exposes minimal access to our robotdrive, can be used from autonomous
-    // commands since it doesn't use the joystick.
+    // driveArcadeDirect exposes minimal access to our robotdrive, can be used
+    // from autonomous commands since it doesn't use the joystick. This method
+    // also does not record any inputs, use the non-direct version for that.
     public void driveArcadeDirect(double fwd, double rotation)
     {
         if (initialized())
@@ -475,6 +536,8 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.info("Drivetrain stop method invoked.");
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            // Is this the right thing to do?
+            stopRecording();
 
             // XXX: should we disable here?
         }
@@ -566,6 +629,67 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             setDefaultCommand(new ArcadeDriveCommand(this));
         }
+    }
+
+    public void startRecording()
+    {
+        m_startedRecordingAt = Instant.now();
+        m_logger.notice("Started recording at " + m_startedRecordingAt);
+
+        // Get rid of the last program
+        m_replayForward.clear();
+        m_replayRotation.clear();
+
+        m_isRecording = true;
+    }
+
+    public void stopRecording()
+    {
+        if (m_isRecording)
+        {
+            m_logger.notice("Stopped recording at " + Instant.now());
+            long delta = m_startedRecordingAt.until(Instant.now(), ChronoUnit.SECONDS);
+            m_logger.notice("(After " + delta + " seconds, " + m_replayForward.size() + " entries)");
+
+            m_isRecording = false;
+            saveRecording();
+        }
+    }
+
+    private void saveRecording()
+    {
+        m_logger.notice("Saved the recording");
+        // This takes all the Doubles in m_replayForward, converts them to a list of Strings,
+        // then collects them back into one string by "joining" them together with commas.
+        String forward = m_replayForward.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        String rotation = m_replayRotation.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        try
+        {
+            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward"), forward.getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation"), rotation.getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        }
+        catch (IOException e)
+        {
+            m_logger.warning("Old Forward:  " + forward);
+            m_logger.warning("Old Rotation: " + rotation);
+            m_logger.exception(e, false);
+        }
+    }
+
+    public List<Double> getReplayForward()
+    {
+        return m_replayForward;
+    }
+
+    public List<Double> getReplayRotation()
+    {
+        return m_replayRotation;
     }
 
 }
