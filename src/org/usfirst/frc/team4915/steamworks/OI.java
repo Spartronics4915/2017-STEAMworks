@@ -12,8 +12,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.LauncherOffCommand;
-import org.usfirst.frc.team4915.steamworks.commands.LauncherOnCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
@@ -58,8 +57,8 @@ public class OI
     public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 9);
 
-    public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
-    public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
+    public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 1);
+    public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
 
     public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 7);       
     public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 9);     
@@ -160,9 +159,10 @@ public class OI
 
     private void initLauncherOI()
     {
-        m_launcherOn.whenPressed(new LauncherOnCommand(m_robot.getLauncher()));
-        m_launcherOff.whenPressed(new LauncherOffCommand(m_robot.getLauncher()));
 
+    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), true));
+    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), false));
+    	
         // includes carousel
     }
 
