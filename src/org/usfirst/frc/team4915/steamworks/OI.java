@@ -30,14 +30,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class OI
 {
-
     // Ports for joysticks
     public static final int DRIVE_CONTROLLER_PORT = 0;
+
     public static final int AUX_STICK_PORT = 1;
     public static final int ALT_DRIVE_STICK_PORT = 2;
 
     public final XboxController m_driveStick = new XboxController(DRIVE_CONTROLLER_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
+
     public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
 
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
@@ -48,10 +49,11 @@ public class OI
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 10);
     public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 6); 
     
+    //Auto test button
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
-
+      
     public final JoystickButton m_replayRecord = new JoystickButton(m_auxStick, 6);
     public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 9);
@@ -67,6 +69,7 @@ public class OI
     public final JoystickButton m_altClimberOff = new JoystickButton(m_altDriveStick, 12);       
     public final JoystickButton m_altClimberSlow = new JoystickButton(m_altDriveStick, 10);
     
+
     private Logger m_logger;
     private Robot m_robot;
 
