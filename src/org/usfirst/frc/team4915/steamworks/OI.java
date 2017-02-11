@@ -32,11 +32,13 @@ public class OI
 {
 
     // Ports for joysticks
-    public static final int DRIVE_STICK_PORT = 0;
+    public static final int DRIVE_CONTROLLER_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
+    public static final int ALT_DRIVE_STICK_PORT = 2;
 
-    public final XboxController m_driveStick = new XboxController(DRIVE_STICK_PORT);
+    public final XboxController m_driveStick = new XboxController(DRIVE_CONTROLLER_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
+    public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
 
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
@@ -46,7 +48,6 @@ public class OI
     public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 10);
     public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 6); 
     
-
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
@@ -58,6 +59,14 @@ public class OI
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
 
+    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 7);       
+    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 9);     
+    public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 11);
+    
+    public final JoystickButton m_altClimberOn = new JoystickButton(m_altDriveStick, 8);      
+    public final JoystickButton m_altClimberOff = new JoystickButton(m_altDriveStick, 12);       
+    public final JoystickButton m_altClimberSlow = new JoystickButton(m_altDriveStick, 10);
+    
     private Logger m_logger;
     private Robot m_robot;
 
@@ -114,11 +123,16 @@ public class OI
         m_climberOn.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.ON));
         m_climberOff.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.OFF));
         m_climberSlow.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.SLOW));
+        
+        //Alternate drivestick buttons
+        m_altClimberOn.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.ON));
+        m_altClimberOff.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.OFF));
+        m_altClimberSlow.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.SLOW));
     }
 
     private void initDrivetrainOI()
     {
-        m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
         m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
@@ -134,6 +148,11 @@ public class OI
         m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
+        
+        //Alternate drivestick buttons
+        m_altIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+        m_altIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+        m_altIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
     }
 
     private void initLauncherOI()

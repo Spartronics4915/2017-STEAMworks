@@ -55,6 +55,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
+    private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
 
 
     // Port motors
@@ -304,9 +305,10 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
 
-    public void setDriveStick(XboxController s) // setDriveStick is presumably called once from OI after joystick initialization
+    public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
+        m_altDriveStick = j;
     }
 
     public double getInchesToRevolutions(double inches)
@@ -502,9 +504,9 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = triggerAxis();
-                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft);
-                m_logger.debug("Forward Value" + forward);
+                double forward = triggerAxis() + m_altDriveStick.getY();
+                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
                     // To keep motor safety happy
