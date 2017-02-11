@@ -506,7 +506,7 @@ public class Drivetrain extends SpartronicsSubsystem
                 }
                 if (m_isRecording)
                 {
-                    m_replayForward.add(forward);
+                    m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
                 }
                 m_robotDrive.arcadeDrive(forward, rotation);
