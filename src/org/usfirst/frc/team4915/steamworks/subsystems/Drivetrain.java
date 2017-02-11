@@ -134,7 +134,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     BNO055.vector_type_t.VECTOR_EULER);
 
             // PID Turning with the IMUPIDSource and controller
-            m_imuPIDSource = new IMUPIDSource(m_imu, false); // Make a new IMUPIDSource that we can use with a PIDController that gets a non-normalized heading
+            m_imuPIDSource = new IMUPIDSource(m_imu); // Make a new IMUPIDSource that we can use with a PIDController
             m_turningPIDController = new PIDController(turnKp, turnKi, turnKd, turnKf,
                     m_imuPIDSource,
                     new PIDOutput()
@@ -147,8 +147,8 @@ public class Drivetrain extends SpartronicsSubsystem
                     }); // A PID Controller which has an inline method for PID output
             // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
-            m_turningPIDController.setInputRange(0, 360); // We do this so that the PIDController takes inputs consistent with our IMU's non-normalized outputs
-            m_turningPIDController.setAbsoluteTolerance(3); // This is the tolerance for error (in degrees) for reaching our target
+            m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
+            m_turningPIDController.setAbsoluteTolerance(3); // This is the tolerance for error for reaching our target
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -166,7 +166,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
         SmartDashboard.putString("Drivetrain_Status", (m_initialized ? "initialized" : "error"));
         //
-        // Right now the naming of these smart dashboard keys is going by a convention
+        // Right now the naming of smart dashboard keys is going by a convention
         // that I made up, which is
         //      <SUBSYSTEM>_<INFORMATION SOURCE>_<NAME OF INFORMATION>
         // Comment from dbadb:
@@ -194,48 +194,17 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
     // We call this absolute because we do not turn 180 degrees, we turn *to* 180 degrees
-    public void startIMUTurnAbsolute(double degreesAbsolute)
+    public void startIMUTurnAbsolute(double degrees)
     {
         if (m_imu.isInitialized())
         {
             m_turningPIDController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
-            m_turningPIDController.setSetpoint(degreesAbsolute); // Set the point we want to turn to
+            m_turningPIDController.setSetpoint(degrees); // Set the point we want to turn to
             m_turningPIDController.enable(); // Enable the PIDController (we should start turning)
         }
         else
         {
-            m_logger.warning("can't start a absolute IMU turn because the IMU isn't initalized");
-        }
-    }
-    
-    // We call this delta because we turn 180, not *to* 180 degrees
-    public void startIMUTurnDelta(double degreesDelta)
-    {
-        double imuHeading;
-        double imuTarget;
-        if (m_imu.isInitialized())
-        {
-            imuHeading = m_imu.getHeading();
-            m_turningPIDController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
-            if (imuHeading+degreesDelta>360) // If we're going over 360 degrees, wrap around
-            {
-                imuTarget = (imuHeading+degreesDelta)-360;
-            }
-            else if (imuHeading+degreesDelta<0) // If we're going under 0 degrees, wrap around
-            {
-                imuTarget = (imuHeading+degreesDelta)+360;
-            }
-            else // There isn't anything funny about where we're going so don't wrap
-            {
-                imuTarget = imuHeading+degreesDelta;
-            }
-            imuTarget = Math.max(0, Math.min(imuTarget, 360)); // Make sure we don't go over 360 or under 0, just to be defensive
-            m_turningPIDController.setSetpoint(imuTarget); // Set the point we want to turn to
-            m_turningPIDController.enable(); // Enable the PIDController (we should start turning)
-        }
-        else
-        {
-            m_logger.warning("can't start a delta IMU turn because the IMU isn't initalized");
+            m_logger.warning("can't start an IMU turn because the IMU isn't initalized");
         }
     }
 

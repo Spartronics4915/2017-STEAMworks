@@ -26,12 +26,12 @@ public class TurnDegreesIMU extends Command
     @Override
     protected void initialize()
     {
-        m_targetCounter = 0; // Make sure that this is 0
+        m_targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
-        m_drivetrain.startIMUTurnDelta(m_degrees); // We're turning with a delta, not to an absolute heading
+        m_drivetrain.startIMUTurnAbsolute(m_degrees);
         m_drivetrain.m_logger.debug("initalized");
     }
 
@@ -62,6 +62,7 @@ public class TurnDegreesIMU extends Command
             m_targetCounter = 0;
             return false;
         }
+//        return m_drivetrain.isIMUTurnFinished();
     }
 
     @Override
