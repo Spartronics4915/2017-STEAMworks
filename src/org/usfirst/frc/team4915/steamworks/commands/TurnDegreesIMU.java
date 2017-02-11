@@ -14,6 +14,7 @@ public class TurnDegreesIMU extends Command
 
     private final Drivetrain m_drivetrain;
     private double m_degrees;
+    private int m_targetCounter;
 
     public TurnDegreesIMU(Drivetrain drivetrain, double degrees)
     {
@@ -25,11 +26,12 @@ public class TurnDegreesIMU extends Command
     @Override
     protected void initialize()
     {
+        m_targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
-                                    0, 0, 0, 0 /* zeros since we're not in closed-loop */);
-        m_drivetrain.startIMUTurnAbsolute(m_degrees); // We will parameterize this value in the constructor for command groups probably
+                0, 0, 0, 0 /* zeros since we're not in closed-loop */);
+        m_drivetrain.startIMUTurnAbsolute(m_degrees);
         m_drivetrain.m_logger.debug("initalized");
     }
 
@@ -37,13 +39,30 @@ public class TurnDegreesIMU extends Command
     protected void execute()
     {
         // We shouldn't have to do anything here because all of the PID control stuff runs in another thread
-        m_drivetrain.debugIMU();
     }
 
     @Override
     protected boolean isFinished()
     {
-        return m_drivetrain.isIMUTurnFinished(); // We're done when the IMU turn is done
+        if (m_drivetrain.isIMUTurnFinished())
+        {
+            m_drivetrain.m_logger.debug(m_targetCounter+"");
+            m_targetCounter++;
+            if (m_targetCounter > 20) // Make sure that we're on target for a while
+            {
+                return m_drivetrain.isIMUTurnFinished(); // We're done when the IMU turn is done
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            m_targetCounter = 0;
+            return false;
+        }
+//        return m_drivetrain.isIMUTurnFinished();
     }
 
     @Override
@@ -58,6 +77,5 @@ public class TurnDegreesIMU extends Command
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
         m_drivetrain.m_logger.debug("interrupted");
-        // Should we put a log message here?
     }
 }
