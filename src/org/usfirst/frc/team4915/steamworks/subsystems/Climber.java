@@ -1,5 +1,9 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
@@ -24,7 +28,6 @@ public class Climber extends SpartronicsSubsystem
     //Shows climber speed 
     private static final double CLIMBER_SPEED = 0.75;
     
-    
     private CANTalon m_climberMotor;
 
     private Logger m_logger;
@@ -46,7 +49,7 @@ public class Climber extends SpartronicsSubsystem
             m_initialized = false;
         }
     }
-    
+
     @Override
     protected void initDefaultCommand()
     {
