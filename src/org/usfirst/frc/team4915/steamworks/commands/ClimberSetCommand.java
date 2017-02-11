@@ -31,7 +31,6 @@ public class ClimberSetCommand extends Command
     public void execute()
     {
         m_climber.setClimber(m_state);
-        m_climber.logClimberLimitSwitchState();
     }
 
     @Override
