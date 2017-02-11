@@ -43,6 +43,10 @@ public class ClimberSetCommand extends Command
     @Override
     public void initialize()
     {
+        String nm = m_climber.getStateString(m_state);
+        m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
+        SmartDashboard.putString("Climber State", nm);
+        SmartDashboard.putNumber("Climber Speed",  m_climber.getClimberSpeed(m_state));
         climbersafetySwitch();
     }
 
@@ -60,7 +64,7 @@ public class ClimberSetCommand extends Command
             currentJump = m_readCurrent.get(m_readCurrent.size() - 1);
             if(currentJump > safetyValue)
             {
-             safe = false;   
+                safe = false;   
             }
             m_readCurrent.clear();
         }
@@ -77,12 +81,14 @@ public class ClimberSetCommand extends Command
     @Override
     public void interrupted()
     {
+        m_climber.m_logger.notice("interrupted ClimberSetCommand " + m_climber.getStateString(m_state));
         end();
     }
 
     @Override
     public void end()
     {
+        m_climber.m_logger.notice("end ClimberSetCommand " + m_climber.getStateString(m_state));
         m_climber.setClimber(Climber.State.OFF);
     }
 

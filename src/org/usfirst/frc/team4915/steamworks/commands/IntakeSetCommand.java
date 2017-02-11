@@ -24,8 +24,10 @@ public class IntakeSetCommand extends Command
     @Override
     public void initialize()
     {
-        //SmartDashboard.putString("Intake Status: ", "Initialized");
-        //m_logger.debug("Intake Status: Initialized");
+        String nm = m_intake.getStateString(m_state);
+        m_intake.m_logger.notice("initialize IntakeSetCommand " + nm); 
+        SmartDashboard.putString("Intake State", nm);
+        SmartDashboard.putNumber("Intake Speed", m_intake.getIntakeSpeed(m_state));
     }
     
     @Override
@@ -37,18 +39,22 @@ public class IntakeSetCommand extends Command
     @Override
     public boolean isFinished()
     {
-        return false;
+        return false; // we rely on buttons to control our lifetime
     }
 
     @Override
     public void interrupted()
     {
+        m_intake.m_logger.notice("interrupted IntakeSetCommand " + 
+                                m_intake.getStateString(m_state));
         end();
     }
     
     @Override
     public void end()
     {
+        m_intake.m_logger.notice("end InakeSetCommand " + 
+                                m_intake.getStateString(m_state));
         m_intake.setIntake(Intake.State.OFF);
     }
 }
