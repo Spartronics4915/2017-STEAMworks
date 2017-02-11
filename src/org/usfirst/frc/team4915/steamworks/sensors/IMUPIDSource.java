@@ -9,10 +9,12 @@ public class IMUPIDSource implements PIDSource
 {
 
     private BNO055 m_imu;
+    private boolean m_normalized;
 
-    public IMUPIDSource(BNO055 imu)
+    public IMUPIDSource(BNO055 imu, boolean useNormalized)
     {
         this.m_imu = imu;
+        this.m_normalized = useNormalized; // A normalized heading is -180 to 180 degrees and a non-normalized one is 0 to 360 degrees
     }
 
     public void setPIDSourceType(PIDSourceType pidSource)
@@ -30,11 +32,25 @@ public class IMUPIDSource implements PIDSource
 
     public double pidGet()
     {
-        return this.m_imu.getNormalizedHeading();
+        if (m_normalized)
+        {
+            return this.m_imu.getNormalizedHeading();
+        }
+        else
+        {
+            return this.m_imu.getHeading();
+        }
     }
 
     public double getHeading()
     {
-        return this.m_imu.getNormalizedHeading();
+        if (m_normalized)
+        {
+            return this.m_imu.getNormalizedHeading();
+        }
+        else
+        {
+            return this.m_imu.getHeading();
+        }
     }
 }
