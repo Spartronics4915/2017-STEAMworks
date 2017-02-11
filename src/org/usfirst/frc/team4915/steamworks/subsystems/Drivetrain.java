@@ -464,7 +464,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     forward = 0.0;
                     rotation = 0.0;
                 }
-                //m_logger.info("driveArcade forward = " + forward + " rotation = " + rotation);
+                m_logger.info("driveArcade forward = " + forward + " rotation = " + rotation);
                 m_robotDrive.arcadeDrive(forward, rotation);
             }
             else

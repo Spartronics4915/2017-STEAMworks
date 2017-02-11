@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.commands.AutoDriveDistanceCommand;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
@@ -33,7 +34,9 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 9);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 11);
-
+    public final JoystickButton m_intakeCount = new JoystickButton(m_driveStick, 5);
+    public final JoystickButton m_autoButton = new JoystickButton(m_auxStick, 8);
+    public final JoystickButton m_autoButton2 = new JoystickButton(m_auxStick, 9);
     public final JoystickButton m_launcherOn = new JoystickButton(m_driveStick, 8);
     public final JoystickButton m_launcherOff = new JoystickButton(m_driveStick, 10);
     
@@ -96,6 +99,10 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
+        //m_ticksOn.toggleWhenPressed(new DriveTicksCommand(m_robot.getDrivetrain()));
+        m_autoButton.whenReleased(new AutoDriveDistanceCommand(m_robot.getDrivetrain(), 19));
+        
+        m_logger.info("Drivetrain initialized");
         m_turnIMUStart.whenPressed(new TurnDegreesIMU(m_robot.getDrivetrain(), 45));
         m_driveDistancePIDBackwards.whenReleased(new DriveDistancePIDCmd(m_robot.getDrivetrain(), -144));; // needs tweaking!
         m_driveDistancePID.whenReleased(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 144));; // needs tweaking!
@@ -154,4 +161,5 @@ public class OI
             logger.setLogLevel(desired);
         }
     }
+    
 }

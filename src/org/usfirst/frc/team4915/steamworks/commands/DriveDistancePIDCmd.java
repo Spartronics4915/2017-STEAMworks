@@ -122,7 +122,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         double error;
         
         currentHeading = m_drivetrain.getIMUHeading();
-        m_drivetrain.m_logger.info("Current heading: " + currentHeading);
+        m_drivetrain.m_logger.debug("Current heading: " + currentHeading);
         
         error = currentHeading - m_heading; //difference to the original direction
         
@@ -135,16 +135,16 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         {
             error += 180;
         }
-        m_drivetrain.m_logger.info("headinig error: " + error);
+        m_drivetrain.m_logger.debug("headinig error: " + error);
         
         if(error >= MAx_DEGREES_ERROR)
         {
-            m_drivetrain.m_logger.info("correction: " + error * -m_KP);
+            m_drivetrain.m_logger.debug("correction: " + error * -m_KP);
             return error/180 * -m_KP;
         } 
         else if (error <= -MAx_DEGREES_ERROR)
         {
-            m_drivetrain.m_logger.info("correction: " + error * -m_KP);
+            m_drivetrain.m_logger.debug("correction: " + error * -m_KP);
             return error/180 * -m_KP;
         }
         return 0;
