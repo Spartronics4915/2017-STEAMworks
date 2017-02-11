@@ -46,7 +46,14 @@ public class Climber extends SpartronicsSubsystem
             m_initialized = false;
         }
     }
-
+    
+    //allows logging from the climber command
+    public void logClimberLimitSwitchState()
+    {
+        SmartDashboard.putString("Climber LimitSwitch State: ", "" + m_climberMotor.isFwdLimitSwitchClosed());
+        m_logger.info("Climber LimitSwitch State: " + m_climberMotor.isFwdLimitSwitchClosed());
+    }
+    
     @Override
     protected void initDefaultCommand()
     {
@@ -55,15 +62,14 @@ public class Climber extends SpartronicsSubsystem
 
     public void setClimber(State state)
     {
-        SmartDashboard.putString("Climber LimitSwitch State: ", "" + m_climberMotor.isFwdLimitSwitchClosed());
-        m_logger.info("Climber LimitSwitch State: " + m_climberMotor.isFwdLimitSwitchClosed());
-        
         if (m_climberMotor.isFwdLimitSwitchClosed())
         {
-                m_logger.info("Climber motor off");
-                m_climberMotor.set(0);
+                SmartDashboard.putString("Climber LimitSwitch State: ", "" + m_climberMotor.isFwdLimitSwitchClosed());
                 SmartDashboard.putNumber("Climber Speed", 0);
-         
+                m_logger.info("Climber LimitSwitch State: " + m_climberMotor.isFwdLimitSwitchClosed());
+                m_logger.info("Climber motor off");
+                //Set to stop once limit switch activated need to change later
+                m_climberMotor.set(0);         
         }
         else if (initialized())
         {

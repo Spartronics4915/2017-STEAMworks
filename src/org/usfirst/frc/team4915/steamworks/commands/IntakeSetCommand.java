@@ -3,6 +3,7 @@ package org.usfirst.frc.team4915.steamworks.commands;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -12,7 +13,7 @@ public class IntakeSetCommand extends Command
 
     private final Intake m_intake;
     private final Intake.State m_state;
-
+    
     public IntakeSetCommand(Intake intake, Intake.State state)
     {
         m_intake = intake;
@@ -21,11 +22,12 @@ public class IntakeSetCommand extends Command
     }
 
     @Override
-    public void end()
+    public void initialize()
     {
-        m_intake.setIntake(Intake.State.OFF);
+        //SmartDashboard.putString("Intake Status: ", "Initialized");
+        //m_logger.debug("Intake Status: Initialized");
     }
-
+    
     @Override
     public void execute()
     {
@@ -33,8 +35,9 @@ public class IntakeSetCommand extends Command
     }
 
     @Override
-    public void initialize()
+    public boolean isFinished()
     {
+        return false;
     }
 
     @Override
@@ -42,10 +45,10 @@ public class IntakeSetCommand extends Command
     {
         end();
     }
-
+    
     @Override
-    public boolean isFinished()
+    public void end()
     {
-        return false;
+        m_intake.setIntake(Intake.State.OFF);
     }
 }

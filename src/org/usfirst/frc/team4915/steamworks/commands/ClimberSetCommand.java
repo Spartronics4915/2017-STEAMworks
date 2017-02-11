@@ -4,6 +4,7 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber.State;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -22,20 +23,21 @@ public class ClimberSetCommand extends Command
     }
 
     @Override
-    public void end()
+    public void initialize()
     {
-        m_climber.setClimber(Climber.State.OFF);
     }
 
     @Override
     public void execute()
     {
         m_climber.setClimber(m_state);
+        m_climber.logClimberLimitSwitchState();
     }
 
     @Override
-    public void initialize()
+    public boolean isFinished()
     {
+        return false;
     }
 
     @Override
@@ -45,8 +47,9 @@ public class ClimberSetCommand extends Command
     }
 
     @Override
-    public boolean isFinished()
+    public void end()
     {
-        return false;
+        m_climber.setClimber(Climber.State.OFF);
     }
+
 }
