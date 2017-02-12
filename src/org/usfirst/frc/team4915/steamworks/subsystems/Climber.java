@@ -1,5 +1,9 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
@@ -23,10 +27,10 @@ public class Climber extends SpartronicsSubsystem
 
     //Shows climber speed 
     private static final double CLIMBER_SPEED = 0.75;
-
+    
     private CANTalon m_climberMotor;
 
-    private Logger m_logger;
+    public Logger m_logger;
 
     public Climber()
     {
@@ -37,7 +41,7 @@ public class Climber extends SpartronicsSubsystem
             m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Climber initialized");
-            SmartDashboard.putString("Climber Status: ", "Initialized");
+            SmartDashboard.putString("Climber Status", "Initialized");
         }
         catch (Exception e)
         {
@@ -51,32 +55,36 @@ public class Climber extends SpartronicsSubsystem
     {
 
     }
+    
+    public String getStateString(State s)
+    {
+        switch(s)
+        {
+            case OFF:
+                return "OFF";
+            case ON:
+                return "ON";
+            case SLOW:
+                return "SLOW";
+        }
+        return null;
+    }
+    
+    public double getClimberSpeed(State s) {
+        switch(s)
+        {
+            case ON: return CLIMBER_SPEED;
+            case SLOW: return CLIMBER_SPEED * .5;
+            case OFF: return 0;
+        }
+        return 0;
+    }
 
-    public void setClimber(State state)
+    public void setClimber(State s) // NB: this is called during execute! (limit log / dashboard traffic)
     {
         if (initialized())
         {
-            SmartDashboard.putString("Climber State: ", state.name());
-            m_logger.info("Climber Status" + state.name());
-            switch (state)
-            {
-                //Shows that SLOW is half of climber speed
-                case ON:
-                    m_logger.info("Climber motor on");
-                    m_climberMotor.set(CLIMBER_SPEED);
-                    SmartDashboard.putNumber("Climber Speed", CLIMBER_SPEED);
-                    break;
-                case SLOW:
-                    m_logger.info("Climber motor in slow");
-                    m_climberMotor.set(CLIMBER_SPEED / 2);
-                    SmartDashboard.putNumber("Climber Speed", CLIMBER_SPEED / 2);
-                    break;
-                case OFF:
-                default:
-                    m_logger.info("Climber motor off");
-                    m_climberMotor.set(0);
-                    SmartDashboard.putNumber("Climber Speed", 0);
-            }
+            m_climberMotor.set(getClimberSpeed(s));
         }
 
     }

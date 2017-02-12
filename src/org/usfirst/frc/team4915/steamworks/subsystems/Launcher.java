@@ -19,7 +19,7 @@ public class Launcher extends SpartronicsSubsystem
 {
 
     //the "perfect" static speed that always makes goal
-    public static final double DEFAULT_LAUNCHER_SPEED = 4000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
+    public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
     public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm (CtreMagEncoder) 
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
