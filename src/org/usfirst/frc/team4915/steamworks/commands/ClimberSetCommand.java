@@ -43,11 +43,8 @@ public class ClimberSetCommand extends Command
     @Override
     public void initialize()
     {
-        String nm = m_climber.getStateString(m_state);
-        m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
-        SmartDashboard.putString("Climber State", nm);
-        SmartDashboard.putNumber("Climber Speed",  m_climber.getClimberSpeed(m_state));
-        climbersafetySwitch();
+        //Disabled for now to ensure no breaking of code
+        //climbersafetySwitch();
     }
 
     @Override
@@ -56,7 +53,7 @@ public class ClimberSetCommand extends Command
         m_climber.setClimber(m_state);
         if(m_climberIsRecording && m_timeSinceRecording >= 1 && counter == 100)
         {
-            /*TEMPORARY MAY CAUSE PROBLEMS: 
+            /* TEMPORARY MAY CAUSE PROBLEMS: 
              * sets the safety value to the first of the array this may miss something
              * Checks the last value stored
              * Still doesn't write the arraylist to memory for later viewing*/
