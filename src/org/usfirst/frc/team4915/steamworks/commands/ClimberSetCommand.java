@@ -43,6 +43,10 @@ public class ClimberSetCommand extends Command
     @Override
     public void initialize()
     {
+        String nm = m_climber.getStateString(m_state);
+        m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
+        SmartDashboard.putString("Climber State", nm);
+        SmartDashboard.putNumber("Climber Speed",  m_climber.getClimberSpeed(m_state));
         //Disabled for now to ensure no breaking of code
         //climbersafetySwitch();
     }
