@@ -180,50 +180,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Set a max output in volts for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
-            try
-            {
-                String[] forwardFromFile = new String(
-                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward")))
-                                .split(",");
-                String[] rotationFromFile = new String(
-                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation")))
-                                .split(",");
-                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
-                {
-                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
-                            .map(Double::parseDouble)
-                            .collect(Collectors.toList());
-                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
-                            .map(Double::parseDouble)
-                            .collect(Collectors.toList());
-
-                    if (forwardProgram.size() == rotationProgram.size())
-                    {
-                        m_replayForward.clear();
-                        m_replayRotation.clear();
-
-                        // Copying the contents of the temporary lists into the cleared m_
-                        // lists because if we simply m_replayForward = forwardProgram it
-                        // throws errors about assigning to final variables.
-                        m_replayForward.addAll(forwardProgram);
-                        m_replayRotation.addAll(rotationProgram);
-                    }
-                    else
-                    {
-                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
-                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
-                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
-                    }
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                m_logger.error("Badly formatted number in replay string");
-            }
-            catch (IOException e)
-            {
-                m_logger.exception(e, false);
-            }
+            loadReplay();
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
@@ -672,18 +629,80 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (m_isRecording)
         {
-            m_logger.notice("Stopped recording at " + Instant.now());
-            long delta = m_startedRecordingAt.until(Instant.now(), ChronoUnit.SECONDS);
+            Instant now = Instant.now();
+            m_logger.notice("Stopped recording at " + now);
+            long delta = m_startedRecordingAt.until(now, ChronoUnit.SECONDS);
             m_logger.notice("(After " + delta + " seconds, " + m_replayForward.size() + " entries)");
 
             m_isRecording = false;
-            saveRecording();
+            if (saveRecording(now.toString()))
+            {
+                SmartDashboard.putString("AutoStrategyOptions", SmartDashboard.getString("AutoStrategyOptions", "") + ",Replay: " + now.toString());
+            }
         }
     }
 
-    private void saveRecording()
+    public void loadReplay()
     {
-        m_logger.notice("Saved the recording");
+        String strategy = SmartDashboard.getString("AutoStrategy", "");
+        if (strategy.equals("") || strategy.equals("None"))
+        {
+            m_logger.notice("No strategy selected, not loading a replay.");
+            m_replayForward.clear();
+            m_replayRotation.clear();
+            return;
+        }
+        if (strategy.startsWith("Replay: "))
+        {
+            try
+            {
+                strategy = strategy.replaceFirst("Replay: ", "");
+                m_logger.notice("Loading " + strategy + " from disk...");
+                List<String> lines = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Recordings", strategy));
+                String[] forwardFromFile = lines.get(0).split(",");
+                String[] rotationFromFile = lines.get(1).split(",");
+                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
+                {
+                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+
+                    if (forwardProgram.size() == rotationProgram.size())
+                    {
+                        m_replayForward.clear();
+                        m_replayRotation.clear();
+
+                        // Copying the contents of the temporary lists into the cleared m_
+                        // lists because if we simply m_replayForward = forwardProgram it
+                        // throws errors about assigning to final variables.
+                        m_replayForward.addAll(forwardProgram);
+                        m_replayRotation.addAll(rotationProgram);
+                    }
+                    else
+                    {
+                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
+                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
+                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
+                    }
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                m_logger.error("Badly formatted number in replay string");
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, false);
+            }
+        }
+    }
+
+    private boolean saveRecording(String name)
+    {
+        m_logger.notice("Saving the recording...");
         // This takes all the Doubles in m_replayForward, converts them to a list of Strings,
         // then collects them back into one string by "joining" them together with commas.
         String forward = m_replayForward.stream()
@@ -692,18 +711,20 @@ public class Drivetrain extends SpartronicsSubsystem
         String rotation = m_replayRotation.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
+        List<String> both = Arrays.asList(new String[] {forward, rotation});
         try
         {
-            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward"), forward.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation"), rotation.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            Files.createDirectories(Paths.get(System.getProperty("user.home"), "Recordings"));
+            Files.write(Paths.get(System.getProperty("user.home"), "Recordings", name), both, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            return true;
         }
         catch (IOException e)
         {
+            m_logger.error("Couldn't save!");
             m_logger.warning("Old Forward:  " + forward);
             m_logger.warning("Old Rotation: " + rotation);
             m_logger.exception(e, false);
+            return false;
         }
     }
 
