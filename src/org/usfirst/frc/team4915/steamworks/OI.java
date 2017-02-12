@@ -2,9 +2,16 @@ package org.usfirst.frc.team4915.steamworks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
@@ -15,7 +22,6 @@ import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
-import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
@@ -31,46 +37,53 @@ public class OI
 {
     // Ports for joysticks
     public static final int DRIVE_CONTROLLER_PORT = 0;
-
     public static final int AUX_STICK_PORT = 1;
     public static final int ALT_DRIVE_STICK_PORT = 2;
 
     public final XboxController m_driveStick = new XboxController(DRIVE_CONTROLLER_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
-
     public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
 
+    
+    //Drive Controller buttons
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
-    public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 3);
- 
-    public final JoystickButton m_climberOn = new JoystickButton(m_driveStick, 5);
-    public final JoystickButton m_climberOff = new JoystickButton(m_driveStick, 10);
-    public final JoystickButton m_climberSlow = new JoystickButton(m_driveStick, 6); 
+    public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 4);
+
+    
+    //Aux Stick Buttons
+    public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
+    public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 10);
+    public final JoystickButton m_climberSlow = new JoystickButton(m_auxStick, 9);
+    
+    public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 3);
+    public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
+    
+    public final JoystickButton m_auxIntakeOn = new JoystickButton(m_auxStick, 6);
+    public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
+    public final JoystickButton m_auxIntakeReverse = new JoystickButton(m_auxStick, 8);
+    
+    
+    //Alt Drive Stick Buttons
+    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 3);       
+    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 4);     
+    public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 6);
+    
+    public final JoystickButton m_replayRecord = new JoystickButton(m_altDriveStick, 7);
+    public final JoystickButton m_replayStop = new JoystickButton(m_altDriveStick, 8);
+    public final JoystickButton m_replayReplay = new JoystickButton(m_altDriveStick, 10);
     
     //Auto test button
-    public final JoystickButton m_turnIMUStart = new JoystickButton(m_auxStick, 3);
-    public final JoystickButton m_driveDistance = new JoystickButton(m_auxStick, 4);
-    public final JoystickButton m_driveDistancePID = new JoystickButton(m_auxStick, 5);
-      
-    public final JoystickButton m_replayRecord = new JoystickButton(m_auxStick, 6);
-    public final JoystickButton m_replayStop = new JoystickButton(m_auxStick, 7);
-    public final JoystickButton m_replayReplay = new JoystickButton(m_auxStick, 9);
-
-    public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 1);
-    public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
-
-    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 7);       
-    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 9);     
-    public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 11);
-    
-    public final JoystickButton m_altClimberOn = new JoystickButton(m_altDriveStick, 8);      
-    public final JoystickButton m_altClimberOff = new JoystickButton(m_altDriveStick, 12);       
-    public final JoystickButton m_altClimberSlow = new JoystickButton(m_altDriveStick, 10);
+    public final JoystickButton m_turnIMUStart = new JoystickButton(m_altDriveStick, 9);
+    public final JoystickButton m_driveDistance = new JoystickButton(m_altDriveStick, 11);
+    public final JoystickButton m_driveDistancePID = new JoystickButton(m_altDriveStick, 12);
     
 
     private Logger m_logger;
     private Robot m_robot;
+
+    private Set<Command> m_autoPresetOptions = new HashSet<>();
+    private Set<String> m_autoReplayOptions = new HashSet<>();
 
     public OI(Robot robot)
     {
@@ -113,11 +126,94 @@ public class OI
 
     public Command getAutoCommand()
     {
+        m_logger.info("Finding an autonomous command...");
+        String strategy = SmartDashboard.getString("AutoStrategy", "");
+        if (strategy.equals("None") || strategy.equals(""))
+        {
+            m_logger.warning("No autonomous strategy selected.");
+            return null;
+        }
+
+        if (strategy.startsWith("Preset: "))
+        {
+            String command = strategy.replaceFirst("Preset: ", "");
+            Set<Command> matches = m_autoPresetOptions.stream()
+                    .filter(preset -> preset.getName().equals(command))
+                    .collect(Collectors.toSet());
+            if (matches.isEmpty())
+            {
+                m_logger.error("No autonomous preset matches " + command);
+                return null;
+            }
+            if (matches.size() > 1)
+            {
+                m_logger.error("More than one preset matches autonomous choice \"" + command + "\": " + Arrays.toString(matches.toArray()));
+                return null;
+            }
+            m_logger.info("Found " + command);
+            return matches.iterator().next();
+        }
+
+        if (strategy.startsWith("Replay: "))
+        {
+            String replay = strategy.replaceFirst("Replay: ", "");
+            m_logger.debug("Searching for " + replay);
+            if (m_autoReplayOptions.contains(strategy))
+            {
+                m_logger.notice("Found a replay named " + replay);
+                return new ReplayCommand(m_robot.getDrivetrain());
+            }
+            m_logger.error("Didn't find " + replay);
+        }
         return null;
     }
 
     private void initAutoOI()
     {
+        m_autoPresetOptions.add(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+
+        Path root = Paths.get(System.getProperty("user.home"), "Recordings");
+        if (!Files.isDirectory(root))
+        {
+            try
+            {
+                Files.createDirectories(root);
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, true);
+            }
+        }
+        if (!Files.isWritable(root))
+        {
+            m_logger.error("Recordings folder isn't writable!");
+            return;
+        }
+        try
+        {
+            Files.list(root)
+                    .filter(Files::isReadable)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .forEach(file ->
+                    {
+                        m_autoReplayOptions.add("Replay: " + file);
+                        m_logger.debug("Autonomous option found: " + file);
+                    });
+        }
+        catch (IOException e)
+        {
+            m_logger.exception(e, true);
+        }
+
+        Set<String> display = new HashSet<>();
+        // Special value.
+        display.add("None");
+
+        display.addAll(m_autoReplayOptions);
+        m_autoPresetOptions.stream().map(Command::getName).map(name -> "Preset: " + name).forEach(display::add);
+
+        SmartDashboard.putString("AutoStrategyOptions", String.join(",", display));
     }
 
     private void initClimberOI()
@@ -125,11 +221,6 @@ public class OI
         m_climberOn.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.ON));
         m_climberOff.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.OFF));
         m_climberSlow.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.SLOW));
-        
-        //Alternate drivestick buttons
-        m_altClimberOn.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.ON));
-        m_altClimberOff.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.OFF));
-        m_altClimberSlow.whenPressed(new ClimberSetCommand(m_robot.getClimber(), Climber.State.SLOW));
     }
 
     private void initDrivetrainOI()
@@ -155,6 +246,11 @@ public class OI
         m_altIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_altIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_altIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
+        
+        //Aux Stick Buttons
+        m_auxIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+        m_auxIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+        m_auxIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
     }
 
     private void initLauncherOI()

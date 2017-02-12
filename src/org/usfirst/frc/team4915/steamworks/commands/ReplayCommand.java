@@ -24,6 +24,7 @@ public class ReplayCommand extends Command
     @Override
     public void end()
     {
+        m_drivetrain.m_logger.debug("ReplayCommand end");
     }
 
     @Override
@@ -50,6 +51,7 @@ public class ReplayCommand extends Command
         // Can't do this in the constructor or the lists will be empty. This
         // method is called when we run the command, but the constructor is
         // called very early, when OI is constructed.
+        m_drivetrain.loadReplay();
         m_replayForward = m_drivetrain.getReplayForward();
         m_replayRotation = m_drivetrain.getReplayRotation();
         m_currentStep = 0;
@@ -59,6 +61,7 @@ public class ReplayCommand extends Command
     @Override
     public void interrupted()
     {
+        m_drivetrain.m_logger.debug("ReplayCommand interrupted");
     }
 
     @Override
