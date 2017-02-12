@@ -25,6 +25,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
@@ -44,13 +47,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
+
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
     private static final double WHEEL_DIAMETER = 6;
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
-    private Joystick m_driveStick; // Joystick for ArcadeDrive
+    private XboxController m_driveStick;// Joystick for ArcadeDrive
+    private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
+
 
     // Port motors
     private CANTalon m_portFollowerMotor;
@@ -88,6 +94,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     public Drivetrain()
     {
+        
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // We'll get a value for this after OI is inited
         m_target = 0;
@@ -297,10 +304,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    // setDriveStick is presumably called once from OI after joystick initialization
-    public void setDriveStick(Joystick s)
+
+    public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
+        m_altDriveStick = j;
     }
 
     public double getInchesToRevolutions(double inches)
@@ -496,8 +504,9 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = m_driveStick.getY();
-                double rotation = m_driveStick.getX();
+                double forward = triggerAxis() + m_altDriveStick.getY();
+                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
                     // To keep motor safety happy
@@ -515,6 +524,22 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
+        }
+    }
+    
+    public double triggerAxis()
+    {
+        if(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight) > 0)
+        {
+            return -(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight));
+        }
+        else if(m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft) > 0)
+        {
+            return (m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft));
+        }
+        else
+        {
+            return 0;
         }
     }
 

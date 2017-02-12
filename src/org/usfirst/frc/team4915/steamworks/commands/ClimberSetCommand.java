@@ -61,7 +61,7 @@ public class ClimberSetCommand extends Command
             currentJump = m_readCurrent.get(m_readCurrent.size() - 1);
             if(currentJump > safetyValue)
             {
-             safe = false;   
+                safe = false;   
             }
             m_readCurrent.clear();
         }
@@ -78,12 +78,14 @@ public class ClimberSetCommand extends Command
     @Override
     public void interrupted()
     {
+        m_climber.m_logger.notice("interrupted ClimberSetCommand " + m_climber.getStateString(m_state));
         end();
     }
 
     @Override
     public void end()
     {
+        m_climber.m_logger.notice("end ClimberSetCommand " + m_climber.getStateString(m_state));
         m_climber.setClimber(Climber.State.OFF);
     }
 

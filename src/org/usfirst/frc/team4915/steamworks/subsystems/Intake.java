@@ -22,7 +22,7 @@ public class Intake extends SpartronicsSubsystem
 
     private CANTalon m_intakeMotor;
 
-    private Logger m_logger;
+    public Logger m_logger;
 
     public Intake()
     {
@@ -32,53 +32,50 @@ public class Intake extends SpartronicsSubsystem
             m_intakeMotor = new CANTalon(RobotMap.INTAKE_MOTOR);
             m_intakeMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Intake initialized");
-            SmartDashboard.putString("Intake Status: ", "Initialized");
+            SmartDashboard.putString("Intake Status", "Initialized");
         }
         catch (Exception e)
         {
             m_logger.exception(e, false);
             m_initialized = false;
+            SmartDashboard.putString("Intake Status", "Error");
         }
     }
-
+    
     @Override
     protected void initDefaultCommand()
     {
 
     }
+    
+    public double getIntakeSpeed(State s)
+    {
+        switch(s)
+        {
+            case ON:  return INTAKE_SPEED;
+            case REVERSE: return -INTAKE_SPEED;
+            case OFF: return 0;
+        
+        }
+        return 0;
+    }
 
-    public void setIntake(State state)
+    public String getStateString(State s)
+    {
+        switch(s)
+        {
+            case OFF: return "OFF";
+            case ON: return "ON";
+            case REVERSE: return "REVERSE";
+        }
+        return null;
+    }
+
+    public void setIntake(State state)  // this is called in execute, don't want to spew logs
     {
         if (initialized())
         {
-            //Records Intake status in dashboard and the logger
-            SmartDashboard.putString("Intake State: ", state.name());
-            m_logger.info("Intake Status" + state.name());
-            //Changes the current state of the Intake
-            switch (state)
-            {
-                /*
-                 * Modes Within the Intake Class:
-                 * On: Currently runs in speed mode
-                 * Reverse: Opposite direction of On
-                 * Off: turns intake off
-                 */
-                case ON:
-                    m_logger.info("Intake motor on");
-                    m_intakeMotor.set(INTAKE_SPEED);
-                    SmartDashboard.putNumber("Intake Speed", INTAKE_SPEED);
-                    break;
-                case REVERSE:
-                    m_logger.info("Intake motor in reverse");
-                    m_intakeMotor.set(-INTAKE_SPEED);
-                    SmartDashboard.putNumber("Intake Speed", -INTAKE_SPEED);
-                    break;
-                case OFF:
-                default:
-                    m_logger.info("Intake motor off");
-                    m_intakeMotor.set(0);
-                    SmartDashboard.putNumber("Intake Speed", 0);
-            }
+            m_intakeMotor.set(getIntakeSpeed(state));
         }
     }
 }

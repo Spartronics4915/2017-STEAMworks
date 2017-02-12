@@ -19,7 +19,7 @@ public class Launcher extends SpartronicsSubsystem
 {
 
     //the "perfect" static speed that always makes goal
-    public static final double DEFAULT_LAUNCHER_SPEED = 60; //60 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
+    public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
     public static final double DEFAULT_AGITATOR_SPEED = 60; //60 rpm (CtreMagEncoder) 
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
@@ -36,14 +36,19 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
             m_launcherMotor.reverseSensor(false);
+            //m_launcherMotor.setInverted(true); // the true one isnt inverted
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
-            m_launcherMotor.configPeakOutputVoltage(12.0f, 0.0f);
-            m_launcherMotor.setF(2.498); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
-            m_launcherMotor.setP(.1); //(Proportion off target speed * 1023) / Worst Error
-            m_launcherMotor.setI(0);
+            m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            
+            /* changeable fpid values in smartdashboard
+            m_launcherMotor.setF(.03527); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
+            m_launcherMotor.setP(.03188); //(.09 currently) (Proportion off target speed * 1023) / Worst Error //.03188 BASE
+            m_launcherMotor.setI(0); // (.0009 currently) start at 1 / 100th of P gain
             m_launcherMotor.setD(0);
-
+            */
+            
+            
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
             m_agitatorMotor.changeControlMode(TalonControlMode.Speed);
 
@@ -67,11 +72,12 @@ public class Launcher extends SpartronicsSubsystem
 
     private void logMotor(CANTalon motor)
     {
-        double speed = motor.getSpeed();
+        double speed = motor.get();
+        double tgt = SmartDashboard.getNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
         double motorOutput = motor.getOutputVoltage() / motor.getBusVoltage();
         if (motor.equals(m_launcherMotor))
         {
-            m_logger.debug("Launcher Target Speed: " + DEFAULT_LAUNCHER_SPEED + " Actual Speed:  " + speed);
+            m_logger.debug("Launcher Target Speed: " + tgt + " Actual Speed:  " + speed);
             m_logger.debug("Launcher Error: " + motor.getClosedLoopError() + " Launcher Motor Output: " + motorOutput);
             SmartDashboard.putString("Launcher Status: ", "Initialized");
         }
@@ -90,31 +96,36 @@ public class Launcher extends SpartronicsSubsystem
         {
             if (isOn)
             {
-                setLauncherSpeed(DEFAULT_LAUNCHER_SPEED);
+                //SmartDashboard.putNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
+                updateLauncherSpeed();
                 setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
-                m_logger.info("Launcher.setLauncher:ON");
-                m_logger.info("Launcher.setAgitator:ON");
                 logMotor(m_launcherMotor);
 
             }
             else
             {
-                setLauncherSpeed(0);
+                m_launcherMotor.set(0);
                 setAgitatorSpeed(0);
-                m_logger.info("Launcher.setLauncher:OFF");
             }
         }
     }
 
     // Sets the launcher to a given speed
-    public void setLauncherSpeed(double speed)
-    {
-        m_launcherMotor.set(speed);
+    public void updateLauncherSpeed()
+    {   
+        double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
+        m_launcherMotor.set(speedTarget);
+        double speedActual = m_launcherMotor.getSpeed();
+        SmartDashboard.putNumber("Launcher_ACT", speedActual);
+        String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
+        SmartDashboard.putString("Launcher_MSG", msg);
+        // logMotor(m_launcherMotor);
     }
 
     // Sets the agitator to a given speed
     public void setAgitatorSpeed(double speed)
     {
+        SmartDashboard.putString("Agitator Status: ", "Initialized");
         m_agitatorMotor.set(speed);
     }
 
