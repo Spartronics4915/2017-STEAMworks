@@ -40,6 +40,8 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            int allowableError = 4096 * 5 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
+            m_launcherMotor.setAllowableClosedLoopErr(allowableError); //4096 Native Units per rev * 5 revs per min
             
             /* changeable fpid values in smartdashboard
             m_launcherMotor.setF(.03527); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
@@ -56,6 +58,13 @@ public class Launcher extends SpartronicsSubsystem
             m_agitatorMotor.reverseSensor(false);
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            
+            int pulseWidthPos = m_agitatorMotor.getPulseWidthPosition(); //get the decoded pulse width encoder position
+            int pulseWidthUs = m_agitatorMotor.getPulseWidthRiseToFallUs(); //get the pulse width in us (microseconds), rise-to-fall
+            int periodUs = m_agitatorMotor.getPulseWidthRiseToRiseUs(); // get the periodin us (microseconds), rise-to-rise
+            int pusleWidthVel = m_agitatorMotor.getPulseWidthVelocity(); //get the measured velocity
+            
+            
             m_agitatorMotor.setF(0);
             m_agitatorMotor.setP(0);
             m_agitatorMotor.setI(0);
@@ -119,6 +128,7 @@ public class Launcher extends SpartronicsSubsystem
         SmartDashboard.putNumber("Launcher_ACT", speedActual);
         String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
         SmartDashboard.putString("Launcher_MSG", msg);
+        m_logger.debug("Raw error" + m_launcherMotor.getClosedLoopError());
         // logMotor(m_launcherMotor);
     }
 
