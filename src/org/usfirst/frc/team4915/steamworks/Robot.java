@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
+import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
@@ -97,6 +98,7 @@ public class Robot extends IterativeRobot
         {
             acmd.cancel();
         }
+        new LauncherCommand(m_launcher, false).start();
     }
 
     @Override

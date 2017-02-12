@@ -161,7 +161,7 @@ public class OI
             if (m_autoReplayOptions.contains(strategy))
             {
                 m_logger.notice("Found a replay named " + replay);
-                return new ReplayCommand(m_robot.getDrivetrain());
+                return new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher());
             }
             m_logger.error("Didn't find " + replay);
         }
@@ -211,7 +211,10 @@ public class OI
         display.add("None");
 
         display.addAll(m_autoReplayOptions);
-        m_autoPresetOptions.stream().map(Command::getName).map(name -> "Preset: " + name).forEach(display::add);
+        m_autoPresetOptions.stream()
+                .map(Command::getName)
+                .map(name -> "Preset: " + name)
+                .forEach(display::add);
 
         SmartDashboard.putString("AutoStrategyOptions", String.join(",", display));
     }
@@ -233,7 +236,7 @@ public class OI
         ; // needs tweaking!
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
-        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain()));
+        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
     }
 
     private void initIntakeOI()
