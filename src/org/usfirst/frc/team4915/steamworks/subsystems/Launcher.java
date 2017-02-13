@@ -117,7 +117,8 @@ public class Launcher extends SpartronicsSubsystem
                 if(isSingleShotDone()) 
                     return 0;
                 else
-                    return speedTarget;       
+                    return speedTarget;  
+            }
         }
         return 0;
     }
