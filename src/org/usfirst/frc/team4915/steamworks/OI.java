@@ -2,8 +2,8 @@ package org.usfirst.frc.team4915.steamworks;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.*;
+import org.usfirst.frc.team4915.steamworks.commands.groups.TurnSequenceCommandGroup;
 import org.usfirst.frc.team4915.steamworks.subsystems.*;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
@@ -45,6 +45,13 @@ public class OI
 
     private Logger m_logger;
     private Robot m_robot;
+    
+    public enum RobotPosition // For command groups
+    {
+        ONE,
+        TWO,
+        THREE
+    }
 
     public OI(Robot robot)
     {

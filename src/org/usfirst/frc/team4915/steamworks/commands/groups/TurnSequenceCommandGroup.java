@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4915.steamworks.commandgroups;
+package org.usfirst.frc.team4915.steamworks.commands.groups;
 
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
@@ -22,5 +22,6 @@ public class TurnSequenceCommandGroup extends CommandGroup
         addSequential(new DriveDistancePIDCmd(m_drivetrain, 103));
         addSequential(new TurnDegreesIMU(m_drivetrain, -123));
         addSequential(new DriveDistancePIDCmd(m_drivetrain, 3));
+        // Additional delays and shooting commands will go here
     }
 }
