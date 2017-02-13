@@ -18,6 +18,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -52,7 +53,7 @@ public class OI
     
     public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
-    
+    public final JoystickButton m_launcherSingle = new JoystickButton(m_auxStick, 4);
     public final JoystickButton m_auxIntakeOn = new JoystickButton(m_auxStick, 6);
     public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_auxIntakeReverse = new JoystickButton(m_auxStick, 8);
@@ -164,9 +165,9 @@ public class OI
     private void initLauncherOI()
     {
 
-    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), true));
-    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), false));
-    	
+    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON));
+    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
+    	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
         // includes carousel
     }
 
