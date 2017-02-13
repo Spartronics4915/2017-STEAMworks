@@ -34,6 +34,7 @@ public class IntakeSetCommand extends Command
     public void execute()
     {
         m_intake.setIntake(m_state);
+        SmartDashboard.putNumber("Intake Current", m_intake.getIntakeCurrent());
     }
 
     @Override

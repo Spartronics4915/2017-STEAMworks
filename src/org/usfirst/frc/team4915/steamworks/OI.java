@@ -2,9 +2,16 @@ package org.usfirst.frc.team4915.steamworks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
@@ -15,7 +22,6 @@ import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
-import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
@@ -77,6 +83,9 @@ public class OI
     private Logger m_logger;
     private Robot m_robot;
 
+    private Set<Command> m_autoPresetOptions = new HashSet<>();
+    private Set<String> m_autoReplayOptions = new HashSet<>();
+
     public OI(Robot robot)
     {
         m_robot = robot;
@@ -118,11 +127,94 @@ public class OI
 
     public Command getAutoCommand()
     {
+        m_logger.info("Finding an autonomous command...");
+        String strategy = SmartDashboard.getString("AutoStrategy", "");
+        if (strategy.equals("None") || strategy.equals(""))
+        {
+            m_logger.warning("No autonomous strategy selected.");
+            return null;
+        }
+
+        if (strategy.startsWith("Preset: "))
+        {
+            String command = strategy.replaceFirst("Preset: ", "");
+            Set<Command> matches = m_autoPresetOptions.stream()
+                    .filter(preset -> preset.getName().equals(command))
+                    .collect(Collectors.toSet());
+            if (matches.isEmpty())
+            {
+                m_logger.error("No autonomous preset matches " + command);
+                return null;
+            }
+            if (matches.size() > 1)
+            {
+                m_logger.error("More than one preset matches autonomous choice \"" + command + "\": " + Arrays.toString(matches.toArray()));
+                return null;
+            }
+            m_logger.info("Found " + command);
+            return matches.iterator().next();
+        }
+
+        if (strategy.startsWith("Replay: "))
+        {
+            String replay = strategy.replaceFirst("Replay: ", "");
+            m_logger.debug("Searching for " + replay);
+            if (m_autoReplayOptions.contains(strategy))
+            {
+                m_logger.notice("Found a replay named " + replay);
+                return new ReplayCommand(m_robot.getDrivetrain());
+            }
+            m_logger.error("Didn't find " + replay);
+        }
         return null;
     }
 
     private void initAutoOI()
     {
+        m_autoPresetOptions.add(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+
+        Path root = Paths.get(System.getProperty("user.home"), "Recordings");
+        if (!Files.isDirectory(root))
+        {
+            try
+            {
+                Files.createDirectories(root);
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, true);
+            }
+        }
+        if (!Files.isWritable(root))
+        {
+            m_logger.error("Recordings folder isn't writable!");
+            return;
+        }
+        try
+        {
+            Files.list(root)
+                    .filter(Files::isReadable)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .forEach(file ->
+                    {
+                        m_autoReplayOptions.add("Replay: " + file);
+                        m_logger.debug("Autonomous option found: " + file);
+                    });
+        }
+        catch (IOException e)
+        {
+            m_logger.exception(e, true);
+        }
+
+        Set<String> display = new HashSet<>();
+        // Special value.
+        display.add("None");
+
+        display.addAll(m_autoReplayOptions);
+        m_autoPresetOptions.stream().map(Command::getName).map(name -> "Preset: " + name).forEach(display::add);
+
+        SmartDashboard.putString("AutoStrategyOptions", String.join(",", display));
     }
 
     private void initClimberOI()
