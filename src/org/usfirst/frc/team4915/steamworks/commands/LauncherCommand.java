@@ -36,43 +36,36 @@ public class LauncherCommand extends Command
     protected void initialize()
     {
         m_logger.debug("LauncherCommand Initialized");
-        
 
-       
         m_launcher.setLauncher(m_state);
-        
-        if(m_state == LauncherState.SINGLE) {
+
+        if (m_state == LauncherState.SINGLE)
+        {
             m_initialPos = m_launcher.setAgitatorTarget();
         }
-        
-        
-        
-        
+
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute()
     {
         m_launcher.setLauncher(m_state);
-        
-        
-        
-       
+
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished()
     {
-        switch(m_state) {
-            case ON: return false;
-            case OFF: return true;
-            case SINGLE: return false;
+        switch (m_state)
+        {
+            case ON:
+                return false;
+            case OFF:
+                return true;
+            case SINGLE:
+                return false;
         }
         return false;
-    }
-        
-        
-        
     }
 
     // Called once after isFinished returns true
