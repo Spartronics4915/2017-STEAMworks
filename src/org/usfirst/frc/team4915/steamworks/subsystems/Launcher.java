@@ -2,6 +2,7 @@ package org.usfirst.frc.team4915.steamworks.subsystems;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
@@ -17,6 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Launcher extends SpartronicsSubsystem
 {
+    public static enum LauncherState
+    {
+        OFF,
+        ON,
+        SINGLE
+    }
 
     //the "perfect" static speed that always makes goal
     public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
@@ -24,6 +31,8 @@ public class Launcher extends SpartronicsSubsystem
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
+    private LauncherState m_state;
+    private int m_initialPos;
 
     public Launcher()
     {
@@ -40,6 +49,8 @@ public class Launcher extends SpartronicsSubsystem
 
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            int allowableError = 4096 * 5 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
+            m_launcherMotor.setAllowableClosedLoopErr(allowableError); //4096 Native Units per rev * 5 revs per min
             
             /* changeable fpid values in smartdashboard
             m_launcherMotor.setF(.03527); // (1023)/Native Units Per 100ms. See Talon Reference Manual pg 77
@@ -56,6 +67,14 @@ public class Launcher extends SpartronicsSubsystem
             m_agitatorMotor.reverseSensor(false);
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            
+            
+            int pulseWidthPos = m_agitatorMotor.getPulseWidthPosition(); //get the decoded pulse width encoder position
+            int pulseWidthUs = m_agitatorMotor.getPulseWidthRiseToFallUs(); //get the pulse width in us (microseconds), rise-to-fall
+            int periodUs = m_agitatorMotor.getPulseWidthRiseToRiseUs(); // get the periodin us (microseconds), rise-to-rise
+            int pusleWidthVel = m_agitatorMotor.getPulseWidthVelocity(); //get the measured velocity
+            
+            
             m_agitatorMotor.setF(0);
             m_agitatorMotor.setP(0);
             m_agitatorMotor.setI(0);
@@ -70,69 +89,67 @@ public class Launcher extends SpartronicsSubsystem
         }
     }
 
-    private void logMotor(CANTalon motor)
-    {
-        double speed = motor.get();
-        double tgt = SmartDashboard.getNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
-        double motorOutput = motor.getOutputVoltage() / motor.getBusVoltage();
-        if (motor.equals(m_launcherMotor))
-        {
-            m_logger.debug("Launcher Target Speed: " + tgt + " Actual Speed:  " + speed);
-            m_logger.debug("Launcher Error: " + motor.getClosedLoopError() + " Launcher Motor Output: " + motorOutput);
-            SmartDashboard.putString("Launcher Status: ", "Initialized");
-        }
-        else
-        {
-            m_logger.debug("Agitator Target Speed: " + DEFAULT_AGITATOR_SPEED + " Actual Speed:  " + speed);
-            m_logger.debug("Agitator Error: " + motor.getClosedLoopError() + " Agitator Motor Output: " + motorOutput);
-            SmartDashboard.putString("Agitator Status: ", "Initialized");
-        }
 
+    //Sets Launcher and Agitator to set speeds regarding state given from buttons
+    public void setLauncher(LauncherState state) 
+    {
+        if(initialized()) 
+        {
+            double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
+            double speedActual = m_launcherMotor.getSpeed();
+            SmartDashboard.putNumber("Launcher_ACT", speedActual);
+            String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
+            SmartDashboard.putString("Launcher_MSG", msg);
+            m_launcherMotor.set(getMotorSpeed(state, speedTarget));
+            m_agitatorMotor.set(getMotorSpeed(state, DEFAULT_AGITATOR_SPEED));
+        }
     }
-
-    public void setLauncher(boolean isOn)
+    
+    public double getMotorSpeed(LauncherState s, double speedTarget)
     {
-        if (initialized())
+        switch(s)
         {
-            if (isOn)
+            
+            case ON: return speedTarget;
+            case OFF: return 0;
+            case SINGLE:
             {
-                //SmartDashboard.putNumber("Launcher_TGT", DEFAULT_LAUNCHER_SPEED);
-                updateLauncherSpeed();
-                setAgitatorSpeed(DEFAULT_AGITATOR_SPEED);
-                logMotor(m_launcherMotor);
-
-            }
-            else
-            {
-                m_launcherMotor.set(0);
-                setAgitatorSpeed(0);
+                if(isSingleShotDone()) 
+                    return 0;
+                else
+                    return speedTarget;  
             }
         }
+        return 0;
     }
-
-    // Sets the launcher to a given speed
-    public void updateLauncherSpeed()
-    {   
-        double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
-        m_launcherMotor.set(speedTarget);
-        double speedActual = m_launcherMotor.getSpeed();
-        SmartDashboard.putNumber("Launcher_ACT", speedActual);
-        String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
-        SmartDashboard.putString("Launcher_MSG", msg);
-        // logMotor(m_launcherMotor);
-    }
-
-    // Sets the agitator to a given speed
-    public void setAgitatorSpeed(double speed)
-    {
-        SmartDashboard.putString("Agitator Status: ", "Initialized");
-        m_agitatorMotor.set(speed);
-    }
+    
+    
 
     public void initDefaultCommand()
+    
     {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
 
     }
+    
+    public boolean isSingleShotDone() 
+    {
+        m_logger.debug("Position: " + m_agitatorMotor.getPulseWidthPosition());
+        if(m_agitatorMotor.getPulseWidthPosition() >= (m_initialPos+90))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public int setAgitatorTarget()
+    {
+        if(m_state == LauncherState.SINGLE) {
+            m_initialPos = m_agitatorMotor.getPulseWidthPosition();
+        }
+        return 0;
+    }
+    
+
 }
