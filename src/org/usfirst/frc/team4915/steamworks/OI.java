@@ -6,12 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
@@ -82,7 +82,7 @@ public class OI
     private Logger m_logger;
     private Robot m_robot;
 
-    private Set<Command> m_autoPresetOptions = new HashSet<>();
+    private Map<String, Command> m_autoPresetOptions = new HashMap<>();
     private Set<String> m_autoReplayOptions = new HashSet<>();
 
     public OI(Robot robot)
@@ -136,22 +136,15 @@ public class OI
 
         if (strategy.startsWith("Preset: "))
         {
-            String command = strategy.replaceFirst("Preset: ", "");
-            Set<Command> matches = m_autoPresetOptions.stream()
-                    .filter(preset -> preset.getName().equals(command))
-                    .collect(Collectors.toSet());
-            if (matches.isEmpty())
+            String name = strategy.replaceFirst("Preset: ", "");
+            Command command = m_autoPresetOptions.get(name);
+            if (command == null)
             {
-                m_logger.error("No autonomous preset matches " + command);
+                m_logger.error("No autonomous preset matches " + name);
                 return null;
             }
-            if (matches.size() > 1)
-            {
-                m_logger.error("More than one preset matches autonomous choice \"" + command + "\": " + Arrays.toString(matches.toArray()));
-                return null;
-            }
-            m_logger.info("Found " + command);
-            return matches.iterator().next();
+            m_logger.info("Found " + name);
+            return command;
         }
 
         if (strategy.startsWith("Replay: "))
@@ -170,7 +163,7 @@ public class OI
 
     private void initAutoOI()
     {
-        m_autoPresetOptions.add(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+        m_autoPresetOptions.put("TurnSequence", new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
 
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
@@ -211,8 +204,8 @@ public class OI
         display.add("None");
 
         display.addAll(m_autoReplayOptions);
-        m_autoPresetOptions.stream()
-                .map(Command::getName)
+        m_autoPresetOptions.keySet()
+                .stream()
                 .map(name -> "Preset: " + name)
                 .forEach(display::add);
 
