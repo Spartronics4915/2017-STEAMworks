@@ -35,23 +35,20 @@ public class LauncherCommand extends Command
     // Called just before this Command runs the first time
     protected void initialize()
     {
-        m_logger.debug("LauncherCommand Initialized");
-
+        m_logger.debug("LauncherCommand Initialized to " + m_state);
+        m_launcher.setAgitatorTarget();
+        
         m_launcher.setLauncher(m_state);
-
-        if (m_state == LauncherState.SINGLE)
-        {
-            m_initialPos = m_launcher.setAgitatorTarget();
-        }
-
+        
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute()
     {
         m_launcher.setLauncher(m_state);
-
     }
+    
+    
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished()
@@ -63,6 +60,10 @@ public class LauncherCommand extends Command
             case OFF:
                 return true;
             case SINGLE:
+                if(m_launcher.isSingleShotDone()) 
+                {
+                    return true;
+                }
                 return false;
         }
         return false;
@@ -71,7 +72,7 @@ public class LauncherCommand extends Command
     // Called once after isFinished returns true
     protected void end()
     {
-
+        m_logger.notice("LauncherCommand End");
     }
 
     // Called when another command which requires one or more of the same
@@ -79,5 +80,6 @@ public class LauncherCommand extends Command
     protected void interrupted()
     {
         m_logger.info("LauncherCommand.interrupted");
+        end();
     }
 }
