@@ -70,6 +70,7 @@ public class TurnDegreesIMU extends Command
     {
         m_drivetrain.endIMUTurn();
         m_drivetrain.m_logger.debug("ended");
+        m_drivetrain.m_logger.info("TurnDegreesIMU should have just "+m_degrees+" degrees.");
     }
 
     @Override

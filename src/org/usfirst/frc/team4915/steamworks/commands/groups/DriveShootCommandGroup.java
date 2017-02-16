@@ -1,28 +1,37 @@
 package org.usfirst.frc.team4915.steamworks.commands.groups;
 
+import org.usfirst.frc.team4915.steamworks.RobotMap;
+import org.usfirst.frc.team4915.steamworks.OI.WallPosition;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMU;
+import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  *
  */
-public class DriveShootCommandGroup extends CommandGroup {
+public class DriveShootCommandGroup extends CommandGroup
+{
 
-    public DriveShootCommandGroup() {
-        // Add Commands here:
-        // e.g. addSequential(new Command1());
-        //      addSequential(new Command2());
-        // these will run in order.
-
-        // To run multiple commands at the same time,
-        // use addParallel()
-        // e.g. addParallel(new Command1());
-        //      addSequential(new Command2());
-        // Command1 and Command2 will run in parallel.
-
-        // A command group will require all of the subsystems that each member
-        // would require.
-        // e.g. if Command1 requires chassis, and Command2 requires arm,
-        // a CommandGroup containing them would require both the chassis and the
-        // arm.
+    public DriveShootCommandGroup(Drivetrain drivetrain, WallPosition wallPosition, int sideMultiplier)
+    { // These variables aren't used anywhere except for here, so should they use the member variable naming convention?
+        switch (wallPosition)
+        {
+            case ONE:
+                addSequential(new DriveDistancePIDCmd(drivetrain, 25));
+                addSequential(new TurnDegreesIMU(drivetrain, 90*sideMultiplier));
+                addSequential(new DriveDistancePIDCmd(drivetrain, 248-RobotMap.ROBOT_LENGTH));
+            case TWO:
+                addSequential(new DriveDistancePIDCmd(drivetrain, 25));
+                addSequential(new TurnDegreesIMU(drivetrain, 90*sideMultiplier));
+                addSequential(new DriveDistancePIDCmd(drivetrain, 124-RobotMap.ROBOT_LENGTH));
+            case THREE:
+                // TODO: To be measured
+                addSequential(new DriveDistancePIDCmd(drivetrain, 25));
+        }
+        // These commands are always run
+        addSequential(new TurnDegreesIMU(drivetrain, 133.7*sideMultiplier));
+        addSequential(new DriveDistancePIDCmd(drivetrain, 15)); // TODO: This number needs to be measured
     }
 }

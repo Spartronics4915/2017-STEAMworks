@@ -1,29 +1,24 @@
 package org.usfirst.frc.team4915.steamworks.commands.groups;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import org.usfirst.frc.team4915.steamworks.OI.RobotPosition;
+import org.usfirst.frc.team4915.steamworks.OI.WallPosition;
+import org.usfirst.frc.team4915.steamworks.RobotMap;
+import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
 /**
- *
+ * Drive across the baseline
  */
 public class DriveCrossCommandGroup extends CommandGroup {
 
-    public DriveCrossCommandGroup(RobotPosition position) {
-        // Add Commands here:
-        // e.g. addSequential(new Command1());
-        //      addSequential(new Command2());
-        // these will run in order.
-
-        // To run multiple commands at the same time,
-        // use addParallel()
-        // e.g. addParallel(new Command1());
-        //      addSequential(new Command2());
-        // Command1 and Command2 will run in parallel.
-
-        // A command group will require all of the subsystems that each member
-        // would require.
-        // e.g. if Command1 requires chassis, and Command2 requires arm,
-        // a CommandGroup containing them would require both the chassis and the
-        // arm.
+    public DriveCrossCommandGroup(Drivetrain drivetrain, WallPosition wallPosition) { // These variables aren't used anywhere except for here, so should they use the member variable naming convention?
+        switch (wallPosition) {
+            case ONE:
+                addSequential(new DriveDistancePIDCmd(drivetrain, 95 + RobotMap.ROBOT_LENGTH));
+            case TWO:
+                addSequential(new DriveDistancePIDCmd(drivetrain, 95 + RobotMap.ROBOT_LENGTH));
+            case THREE:
+                addSequential(new DriveDistancePIDCmd(drivetrain, 93.3 - RobotMap.ROBOT_LENGTH));
+        }
     }
 }
