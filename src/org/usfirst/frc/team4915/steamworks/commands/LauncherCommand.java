@@ -18,7 +18,6 @@ public class LauncherCommand extends Command
     private final Launcher m_launcher;
     private Logger m_logger;
     private final Launcher.LauncherState m_state;
-    private int m_initialPos;
 
     public LauncherCommand(Launcher launcher, Launcher.LauncherState state)
     {
@@ -28,7 +27,6 @@ public class LauncherCommand extends Command
         m_launcher = launcher;
         m_logger = new Logger("Launcher", Logger.Level.DEBUG);
         m_state = state;
-        m_initialPos = m_launcher.getAgitator().getPulseWidthPosition();
         requires(m_launcher);
     }
 
