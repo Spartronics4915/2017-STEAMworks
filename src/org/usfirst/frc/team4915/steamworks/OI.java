@@ -25,6 +25,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -184,10 +185,19 @@ public class OI
         }
         try
         {
+            String alliance = DriverStation.getInstance().getAlliance().toString();
+            if (alliance == null)
+            {
+                m_logger.error("We're not on an alliance?");
+                return;
+            }
+            String other = alliance.equals("Blue") ? "Red" : "Blue";
             Files.list(root)
                     .filter(Files::isReadable)
                     .map(Path::getFileName)
                     .map(Path::toString)
+                    // Hide replays meant for the other alliance
+                    .filter(filename -> !filename.contains(other))
                     .forEach(file ->
                     {
                         m_autoReplayOptions.add("Replay: " + file);
