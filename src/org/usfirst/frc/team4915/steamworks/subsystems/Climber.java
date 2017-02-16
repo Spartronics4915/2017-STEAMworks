@@ -56,6 +56,11 @@ public class Climber extends SpartronicsSubsystem
 
     }
     
+    public double getClimberCurrent()
+    {
+        return m_climberMotor.getOutputCurrent();
+    }
+    
     public String getStateString(State s)
     {
         switch(s)

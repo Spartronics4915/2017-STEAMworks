@@ -261,7 +261,19 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-
+    public double getIMUHeading()
+    {
+        if (m_imu.isInitialized())
+        {
+            return m_imu.getHeading();
+        }
+        else
+        {
+            m_logger.warning("can't get IMU heading because the IMU isn't initalized");
+            return 0;
+        }
+    }
+    
     public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
