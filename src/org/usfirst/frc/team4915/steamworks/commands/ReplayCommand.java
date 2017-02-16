@@ -3,6 +3,7 @@ package org.usfirst.frc.team4915.steamworks.commands;
 import java.util.List;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -10,14 +11,17 @@ public class ReplayCommand extends Command
 {
 
     private final Drivetrain m_drivetrain;
+    private final Launcher m_launcher;
     private List<Double> m_replayForward;
     private List<Double> m_replayRotation;
     private int m_currentStep;
+    private int m_launchAt = 0;
     private boolean m_finished = false;
 
-    public ReplayCommand(Drivetrain drivetrain)
+    public ReplayCommand(Drivetrain drivetrain, Launcher launcher)
     {
         m_drivetrain = drivetrain;
+        m_launcher = launcher;
         requires(m_drivetrain);
     }
 
@@ -30,6 +34,11 @@ public class ReplayCommand extends Command
     @Override
     public void execute()
     {
+        if (m_launchAt != 0 && m_currentStep == m_launchAt)
+        {
+            m_drivetrain.m_logger.notice("Launching");
+            new LauncherCommand(m_launcher, true).start();
+        }
         if (m_currentStep++ >= m_replayForward.size())
         {
             m_finished = true;
@@ -55,6 +64,7 @@ public class ReplayCommand extends Command
         m_replayForward = m_drivetrain.getReplayForward();
         m_replayRotation = m_drivetrain.getReplayRotation();
         m_currentStep = 0;
+        m_launchAt = m_drivetrain.getReplayLaunch();
         m_finished = false;
     }
 
