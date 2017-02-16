@@ -100,37 +100,19 @@ public class Launcher extends SpartronicsSubsystem
             SmartDashboard.putNumber("Launcher_ACT", speedActual);
             String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
             SmartDashboard.putString("Launcher_MSG", msg);
-            m_launcherMotor.set(getMotorSpeed(state, speedTarget));
-            m_agitatorMotor.set(getMotorSpeed(state, DEFAULT_AGITATOR_SPEED));
+            m_launcherMotor.set(getLauncherSpeed(speedTarget));
+            m_agitatorMotor.set(getAgitatorSpeed(DEFAULT_AGITATOR_SPEED));
         }
     }
     
-    public double getMotorSpeed(LauncherState s, double speedTarget)
+    public double getLauncherSpeed(double speedTarget)
     {
-        switch(s)
-        {
-            
-            case ON: return speedTarget;
-            case OFF: return 0;
-            case SINGLE:
-            {
-                if(isSingleShotDone()) 
-                    return 0;
-                else
-                    return speedTarget;  
-            }
-        }
-        return 0;
+        return speedTarget;
     }
-    
-    
 
-    public void initDefaultCommand()
-    
+    public double getAgitatorSpeed(double speedTarget)
     {
-        // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
-
+        return speedTarget;
     }
     
     public boolean isSingleShotDone() 
@@ -143,6 +125,11 @@ public class Launcher extends SpartronicsSubsystem
         return false;
     }
 
+    public CANTalon getAgitator()
+    {
+        return m_agitatorMotor;
+    }
+
     public int setAgitatorTarget()
     {
         if(m_state == LauncherState.SINGLE) {
@@ -151,5 +138,11 @@ public class Launcher extends SpartronicsSubsystem
         return 0;
     }
     
+    public void initDefaultCommand()
+    
+    {
+        // Set the default command for a subsystem here.
+        // setDefaultCommand(new MySpecialCommand());
 
+    }
 }
