@@ -32,6 +32,6 @@ public class DriveShootCommandGroup extends CommandGroup
         }
         // These commands are always run
         addSequential(new TurnDegreesIMU(drivetrain, 133.7*sideMultiplier));
-        addSequential(new DriveDistancePIDCmd(drivetrain, 15)); // TODO: This number needs to be measured
+        addSequential(new DriveDistancePIDCmd(drivetrain, 10)); // TODO: This number needs to be measured
     }
 }

@@ -14,6 +14,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
+import org.usfirst.frc.team4915.steamworks.commands.groups.DriveShootCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.groups.TurnSequenceCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
@@ -237,7 +238,7 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
-        m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+        m_turnIMUStart.whenPressed(new DriveShootCommandGroup(m_robot.getDrivetrain(), WallPosition.THREE, 1));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
         m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));
