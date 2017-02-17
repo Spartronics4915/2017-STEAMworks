@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -37,7 +38,7 @@ public class ReplayCommand extends Command
         if (m_launchAt != 0 && m_currentStep == m_launchAt)
         {
             m_drivetrain.m_logger.notice("Launching");
-            new LauncherCommand(m_launcher, true).start();
+            new LauncherCommand(m_launcher, LauncherState.ON).start();
         }
         if (m_currentStep++ >= m_replayForward.size())
         {
