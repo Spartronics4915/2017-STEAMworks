@@ -20,18 +20,18 @@ public class DriveShootCommandGroup extends CommandGroup
         {
             case ONE:
                 addSequential(new DriveDistancePIDCmd(drivetrain, 25));
-                addSequential(new TurnDegreesIMU(drivetrain, 90*sideMultiplier));
-                addSequential(new DriveDistancePIDCmd(drivetrain, 248-RobotMap.ROBOT_LENGTH));
+                addSequential(new TurnDegreesIMU(drivetrain, 90 * sideMultiplier));
+                addSequential(new DriveDistancePIDCmd(drivetrain, 248 - RobotMap.ROBOT_LENGTH));
             case TWO:
                 addSequential(new DriveDistancePIDCmd(drivetrain, 25));
-                addSequential(new TurnDegreesIMU(drivetrain, 90*sideMultiplier));
-                addSequential(new DriveDistancePIDCmd(drivetrain, 124-RobotMap.ROBOT_LENGTH));
+                addSequential(new TurnDegreesIMU(drivetrain, 90 * sideMultiplier));
+                addSequential(new DriveDistancePIDCmd(drivetrain, 124 - RobotMap.ROBOT_LENGTH));
             case THREE:
                 // TODO: To be measured
                 addSequential(new DriveDistancePIDCmd(drivetrain, 25));
         }
         // These commands are always run
-        addSequential(new TurnDegreesIMU(drivetrain, 133.7*sideMultiplier));
+        addSequential(new TurnDegreesIMU(drivetrain, 133.7 * sideMultiplier));
         addSequential(new DriveDistancePIDCmd(drivetrain, 10)); // TODO: This number needs to be measured
     }
 }
