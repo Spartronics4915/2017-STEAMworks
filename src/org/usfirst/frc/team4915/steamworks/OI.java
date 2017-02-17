@@ -6,12 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.groups.DriveShootCommandGroup;
@@ -27,7 +27,10 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.DriverStation;
+<<<<<<< HEAD
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+=======
+>>>>>>> c88117ea0285c4435016786c208dfff098e1b5c1
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -92,7 +95,7 @@ public class OI
         THREE
     }
 
-    private Set<Command> m_autoPresetOptions = new HashSet<>();
+    private Map<String, Command> m_autoPresetOptions = new HashMap<>();
     private Set<String> m_autoReplayOptions = new HashSet<>();
 
     public OI(Robot robot)
@@ -146,22 +149,15 @@ public class OI
 
         if (strategy.startsWith("Preset: "))
         {
-            String command = strategy.replaceFirst("Preset: ", "");
-            Set<Command> matches = m_autoPresetOptions.stream()
-                    .filter(preset -> preset.getName().equals(command))
-                    .collect(Collectors.toSet());
-            if (matches.isEmpty())
+            String name = strategy.replaceFirst("Preset: ", "");
+            Command command = m_autoPresetOptions.get(name);
+            if (command == null)
             {
-                m_logger.error("No autonomous preset matches " + command);
+                m_logger.error("No autonomous preset matches " + name);
                 return null;
             }
-            if (matches.size() > 1)
-            {
-                m_logger.error("More than one preset matches autonomous choice \"" + command + "\": " + Arrays.toString(matches.toArray()));
-                return null;
-            }
-            m_logger.info("Found " + command);
-            return matches.iterator().next();
+            m_logger.info("Found " + name);
+            return command;
         }
 
         if (strategy.startsWith("Replay: "))
@@ -171,7 +167,7 @@ public class OI
             if (m_autoReplayOptions.contains(strategy))
             {
                 m_logger.notice("Found a replay named " + replay);
-                return new ReplayCommand(m_robot.getDrivetrain());
+                return new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher());
             }
             m_logger.error("Didn't find " + replay);
         }
@@ -180,10 +176,8 @@ public class OI
 
     private void initAutoOI()
     {
-        // Add selectable autonomous commands or command groups here
-        m_autoPresetOptions.add(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
-        
-        // For saving autonomous recordings
+        m_autoPresetOptions.put("TurnSequence", new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
+
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -203,10 +197,19 @@ public class OI
         }
         try
         {
+            String alliance = DriverStation.getInstance().getAlliance().toString();
+            if (alliance == null)
+            {
+                m_logger.error("We're not on an alliance?");
+                return;
+            }
+            String other = alliance.equals("Blue") ? "Red" : "Blue";
             Files.list(root)
                     .filter(Files::isReadable)
                     .map(Path::getFileName)
                     .map(Path::toString)
+                    // Hide replays meant for the other alliance
+                    .filter(filename -> !filename.contains(other))
                     .forEach(file ->
                     {
                         m_autoReplayOptions.add("Replay: " + file);
@@ -223,7 +226,10 @@ public class OI
         display.add("None");
 
         display.addAll(m_autoReplayOptions);
-        m_autoPresetOptions.stream().map(Command::getName).map(name -> "Preset: " + name).forEach(display::add);
+        m_autoPresetOptions.keySet()
+                .stream()
+                .map(name -> "Preset: " + name)
+                .forEach(display::add);
 
         SmartDashboard.putString("AutoStrategyOptions", String.join(",", display));
     }
@@ -245,7 +251,7 @@ public class OI
         ; // needs tweaking!
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
-        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain()));
+        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
     }
 
     private void initIntakeOI()

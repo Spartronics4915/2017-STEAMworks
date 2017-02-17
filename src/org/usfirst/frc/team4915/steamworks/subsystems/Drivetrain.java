@@ -21,13 +21,12 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
@@ -91,6 +90,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    private int m_replayLaunch = 0;
 
     public Drivetrain()
     {
@@ -673,6 +673,24 @@ public class Drivetrain extends SpartronicsSubsystem
                 List<String> lines = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Recordings", strategy));
                 String[] forwardFromFile = lines.get(0).split(",");
                 String[] rotationFromFile = lines.get(1).split(",");
+                if (lines.size() > 2)
+                {
+                    m_replayLaunch = Integer.valueOf(lines.get(2));
+                    if (m_replayLaunch >= forwardFromFile.length || m_replayLaunch < 0)
+                    {
+                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunch + "), max " + forwardFromFile.length);
+                        m_replayLaunch = 0;
+                    }
+                    else
+                    {
+                        m_logger.debug("Will launch at step number " + m_replayLaunch);
+                    }
+                }
+                else
+                {
+                    m_logger.debug("Won't try to launch.");
+                }
+
                 if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
                 {
                     List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
@@ -748,6 +766,11 @@ public class Drivetrain extends SpartronicsSubsystem
     public List<Double> getReplayRotation()
     {
         return m_replayRotation;
+    }
+
+    public int getReplayLaunch()
+    {
+        return m_replayLaunch;
     }
 
 }
