@@ -27,10 +27,6 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 
 import edu.wpi.first.wpilibj.DriverStation;
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-=======
->>>>>>> c88117ea0285c4435016786c208dfff098e1b5c1
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
