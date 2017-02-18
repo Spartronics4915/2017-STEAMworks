@@ -27,23 +27,26 @@ public class Launcher extends SpartronicsSubsystem
 
     //the "perfect" static speed that always makes goal
     public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
-    public static final double DEFAULT_AGITATOR_SPEED = .2; //60; //60 rpm (CtreMagEncoder) 
+    public static final double DEFAULT_AGITATOR_SPEED = .62; //60 rpm (CtreMagEncoder) 
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
     private LauncherState m_state;
-    private int m_initialPos;
+    private double m_initialPos;
+    private int m_startupCount;
 
     public Launcher()
     {
         m_logger = new Logger("Launcher", Logger.Level.DEBUG);
         try
         {
-            int allowableError = 4096 * 5 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
-            m_launcherMotor.setAllowableClosedLoopErr(allowableError); //4096 Native Units per rev * 5 revs per min
+            
             m_state = LauncherState.OFF;
+            m_startupCount = 0;
             m_logger.info("Launcher initialized 1");
             m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
+            int allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
+            m_launcherMotor.setAllowableClosedLoopErr(allowableError); //4096 Native Units per rev * 5 revs per min
             m_launcherMotor.changeControlMode(TalonControlMode.Speed);
             m_launcherMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
             m_launcherMotor.reverseSensor(false);
@@ -61,14 +64,17 @@ public class Launcher extends SpartronicsSubsystem
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
             m_agitatorMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_agitatorMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
-            m_agitatorMotor.reverseSensor(false);
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
+            m_agitatorMotor.reverseSensor(false);
             
-            m_agitatorMotor.setF(.0305);
+            /*
+            m_agitatorMotor.setF(.00061);
             m_agitatorMotor.setP(0.06);
             m_agitatorMotor.setI(0.0);
             m_agitatorMotor.setD(0.6);
+            */
+            
 
 
             m_logger.info("Launcher initialized");
@@ -86,14 +92,21 @@ public class Launcher extends SpartronicsSubsystem
     {
         if(initialized()) 
         {
+            if(m_state != state && state == LauncherState.ON)
+            {
+                m_startupCount = 0;
+                m_logger.debug("startupCount = 0");
+            }
             m_state = state;
             double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
+            double agitatorSpeedTarget = SmartDashboard.getNumber("Agitator_TGT", Launcher.DEFAULT_AGITATOR_SPEED);
             double speedActual = m_launcherMotor.getSpeed();
             SmartDashboard.putNumber("Launcher_ACT", speedActual);
             String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
             SmartDashboard.putString("Launcher_MSG", msg);
             m_launcherMotor.set(getLauncherSpeed(speedTarget));
-            m_agitatorMotor.set(getAgitatorSpeed(DEFAULT_AGITATOR_SPEED));         }
+            m_agitatorMotor.set(getAgitatorSpeed(agitatorSpeedTarget));     
+        }
     }
     
     public double getLauncherSpeed(double speedTarget)
@@ -126,7 +139,7 @@ public class Launcher extends SpartronicsSubsystem
                 } 
                 else 
                 {
-                    return speedTarget;
+                    return speedTarget-.1; //returns a value of speedTarget - 1/10th of the maximum voltage 
                 }
         }
         return 0;
@@ -134,11 +147,13 @@ public class Launcher extends SpartronicsSubsystem
     
     private boolean isLauncherAtSpeed()
     {
-        final double epsilon = 20; // allow 10 RPM of slop.
+        final double epsilon = 100; // allow 400 RPM of slop.
         double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         double speedActual = m_launcherMotor.getSpeed();
-        if (speedActual >= speedTarget - epsilon && speedActual <= speedTarget + epsilon)
+        if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
         {
+            m_startupCount++;
+            if(m_startupCount<15) return false;
             return true;
         }
         return false;
@@ -147,8 +162,8 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isSingleShotDone() 
     {
-        int CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        if(CurrentPosition >= (m_initialPos + 1024)) /// we think this should be 1024, not 256...
+        double CurrentPosition = m_agitatorMotor.get();
+        if(CurrentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
         {
             m_logger.debug("isSingleShotDone returning true: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
             return true;
@@ -159,15 +174,18 @@ public class Launcher extends SpartronicsSubsystem
     public void setAgitatorTarget()
     {
         if(m_state == LauncherState.SINGLE) {
-            m_initialPos = m_agitatorMotor.getPulseWidthPosition();
+            m_initialPos = m_agitatorMotor.get();
         }
     }
     
-    public int getInitialPos() 
+    public double getInitialPos() 
     {
         return m_initialPos;
     }
     
+    public CANTalon getAgitator() {
+        return m_agitatorMotor;        
+    }
     public void initDefaultCommand()
     
     {
