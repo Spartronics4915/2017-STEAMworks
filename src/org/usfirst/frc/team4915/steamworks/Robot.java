@@ -67,6 +67,7 @@ public class Robot extends IterativeRobot
     public void autonomousInit()
     {
         Command acmd = m_oi.getAutoCommand();
+        m_logger.notice("autonomous initalized.");
         if (acmd != null)
         {
             acmd.start();
@@ -96,6 +97,7 @@ public class Robot extends IterativeRobot
     public void teleopInit()
     {
         Command acmd = m_oi.getAutoCommand();
+        m_logger.notice("teleop initalized.");
         if (acmd != null)
         {
             acmd.cancel();

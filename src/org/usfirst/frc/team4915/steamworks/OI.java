@@ -14,10 +14,10 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commandgroups.TurnSequenceCommandGroup;
+import org.usfirst.frc.team4915.steamworks.commands.groups.GenericCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
-import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class OI
 {
+
     // Ports for joysticks
     public static final int DRIVE_CONTROLLER_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
@@ -47,7 +48,6 @@ public class OI
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
     public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
 
-    
     //Drive Controller buttons
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
@@ -55,37 +55,42 @@ public class OI
     
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
 
-    
     //Aux Stick Buttons
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
     public final JoystickButton m_climberOff = new JoystickButton(m_auxStick, 10);
     public final JoystickButton m_climberSlow = new JoystickButton(m_auxStick, 9);
-    
+
     public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
     public final JoystickButton m_launcherSingle = new JoystickButton(m_auxStick, 4);
+
     public final JoystickButton m_auxIntakeOn = new JoystickButton(m_auxStick, 6);
     public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_auxIntakeReverse = new JoystickButton(m_auxStick, 8);
-    
-    
+
     //Alt Drive Stick Buttons
-    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 3);       
-    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 4);     
+    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 3);
+    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 4);
     public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 6);
-    
+
     public final JoystickButton m_replayRecord = new JoystickButton(m_altDriveStick, 7);
     public final JoystickButton m_replayStop = new JoystickButton(m_altDriveStick, 8);
     public final JoystickButton m_replayReplay = new JoystickButton(m_altDriveStick, 10);
-    
+
     //Auto test button
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_altDriveStick, 9);
     public final JoystickButton m_driveDistance = new JoystickButton(m_altDriveStick, 11);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_altDriveStick, 12);
-    
 
     private Logger m_logger;
     private Robot m_robot;
+
+    public enum WallPosition // For command groups
+    {
+        ONE,
+        TWO,
+        THREE
+    }
 
     private Map<String, Command> m_autoPresetOptions = new HashMap<>();
     private Set<String> m_autoReplayOptions = new HashSet<>();
@@ -168,8 +173,20 @@ public class OI
 
     private void initAutoOI()
     {
-        m_autoPresetOptions.put("TurnSequence", new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
-
+        // You can't put commas into the names of these because that's how they're deliniated
+        m_autoPresetOptions.put("Cross Baseline Positons 1+3", new GenericCommandGroup(m_robot.getDrivetrain(), this,
+                -95,0,0,0,0)); // This is the length from the diamond plate to the baseline
+        m_autoPresetOptions.put("Place Gear Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                -(93.3-(RobotMap.ROBOT_LENGTH+1)),0,0,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive and Shoot Position 1", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,90,248-RobotMap.ROBOT_WIDTH,135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,90,124-(RobotMap.ROBOT_WIDTH/2),135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,135,24,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive, Shoot, and Cross Baseline Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,135,24,-90,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -236,10 +253,9 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
-        m_turnIMUStart.whenPressed(new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));
+        m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
@@ -256,12 +272,12 @@ public class OI
         m_intakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_intakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-        
+
         //Alternate drivestick buttons
         m_altIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_altIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_altIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
-        
+
         //Aux Stick Buttons
         m_auxIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
         m_auxIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
@@ -270,7 +286,6 @@ public class OI
 
     private void initLauncherOI()
     {
-
     	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON));
     	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
     	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
@@ -316,7 +331,7 @@ public class OI
         }
     }
 
-    private String allianceToString(AllianceStationID a)
+    private String allianceToString(AllianceStationID a) // This is used with a network table value
     {
         switch (a)
         {
@@ -334,6 +349,20 @@ public class OI
                 return "Red3";
         }
         return "unknown";
+    }
+
+    public int getSideMultiplier()
+    {
+        switch (DriverStation.getInstance().getAlliance())
+        {
+            case Blue:
+                return -1;
+            case Red:
+                return 1;
+            default:
+                m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
+                return 1;
+        }
     }
 
 }
