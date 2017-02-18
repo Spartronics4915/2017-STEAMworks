@@ -14,6 +14,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
+import org.usfirst.frc.team4915.steamworks.commands.groups.DriveCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.groups.GenericCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
@@ -190,6 +191,8 @@ public class OI
                 60,Double.NaN,0,Double.NaN,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         m_autoPresetOptions.put("Ten Feet", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
                 120,Double.NaN,0,Double.NaN,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "35", "Turn", "135", "Drive", "30", "Shoot", "10", "Drive", "-30", "Turn", "0", "Drive", "60"));
         
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
