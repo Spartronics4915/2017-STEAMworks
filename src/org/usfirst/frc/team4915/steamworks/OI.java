@@ -183,9 +183,11 @@ public class OI
         m_autoPresetOptions.put("Drive and Shoot Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
                 35,90,124-(RobotMap.ROBOT_WIDTH/2),135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
         m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                35,135,24,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
-        m_autoPresetOptions.put("Drive, Shoot, and Cross Baseline Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,135,30,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
                 35,135,24,-90,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("PID Tuner", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                45,Double.NaN,Double.NaN,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))

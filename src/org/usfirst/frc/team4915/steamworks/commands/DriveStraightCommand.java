@@ -20,7 +20,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private static final double m_KP = .1875;
     private static final double MAX_DEGREES_ERROR = .125;
 
-    private static final double k_P = 1.7, k_D = 0, k_I = 0, k_F = 0;
+    private static final double k_P = 1.7, k_D = 0, k_I = 0, k_F = 0; // P was 1.7
 
     public DriveStraightCommand(Drivetrain drivetrain, double inches)
     {
@@ -40,7 +40,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     public void initialize()
     {
         m_drivetrain.m_logger.info("DriveStraightCommand initialize");
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0,
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0, // This was 3 and -3
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
