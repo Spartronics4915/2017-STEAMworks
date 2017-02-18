@@ -473,9 +473,9 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void setLightOutput(Boolean lightsAreCool)
+    public void setLightOutput(Boolean ReverseEnabled)
     {
-        m_lightOutput.set(lightsAreCool);
+        m_lightOutput.set(ReverseEnabled);
     }
     
     // Uses arcade drive coupled with the drivestick
