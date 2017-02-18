@@ -15,7 +15,7 @@ import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.groups.DriveShootCommandGroup;
-import org.usfirst.frc.team4915.steamworks.commands.groups.TurnSequenceCommandGroup;
+import org.usfirst.frc.team4915.steamworks.commands.groups.GenericCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
@@ -171,8 +171,18 @@ public class OI
 
     private void initAutoOI()
     {
-        m_autoPresetOptions.put("TurnSequence", new TurnSequenceCommandGroup(m_robot.getDrivetrain()));
-
+        // You can't put commas into the names of these because that's how they're deliniated
+        m_autoPresetOptions.put("Cross Baseline Positons 1+3", new GenericCommandGroup(m_robot.getDrivetrain(), this,
+                -95,0,0,0,0)); // This is the length from the diamond plate to the baseline
+        m_autoPresetOptions.put("Place Gear Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                -(93.3-(RobotMap.ROBOT_LENGTH+1)),0,0,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive and Shoot Position 1", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                25,90,248-RobotMap.ROBOT_WIDTH,133.7,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,90,124-(RobotMap.ROBOT_WIDTH/2),133.7,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                25,133.7,23,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {

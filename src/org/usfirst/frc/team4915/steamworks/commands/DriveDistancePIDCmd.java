@@ -30,7 +30,7 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         m_pidController = new PIDController(k_P, k_D, k_I, k_F, this, this);
         m_pidController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
         m_pidController.setInputRange(-5 * Math.abs(m_revs), 5 * Math.abs(m_revs)); // We limit our input range to revolutions, either direction
-        m_pidController.setPercentTolerance(0.6); // This is the tolerance for error for reaching our target
+        m_pidController.setPercentTolerance(1); // This is the tolerance for error for reaching our target
 
         requires(m_drivetrain);
     }
@@ -44,9 +44,10 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
+        m_drivetrain.m_logger.debug("DriveDistancePIDCmd I should drive "+m_revs+" revolutions.");
         
         m_heading = m_drivetrain.getIMUHeading();
-        m_drivetrain.m_logger.info("Initial direction: " + m_heading);
+        m_drivetrain.m_logger.info("DriveDistancePIDCmd Initial direction: " + m_heading);
     }
 
     @Override
@@ -85,7 +86,6 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
             m_pidController.reset();
             assert (!m_pidController.isEnabled()); // docs say we're disabled now
         }
-        m_drivetrain.m_logger.info("Final direction: " + m_heading);
         m_drivetrain.m_logger.info("DriveDistancePIDCmd end");
         m_drivetrain.stop();
     }
@@ -126,7 +126,6 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         double error;
         
         currentHeading = m_drivetrain.getIMUHeading();
-        m_drivetrain.m_logger.debug("Current heading: " + currentHeading);
         
         error = currentHeading - m_heading; //difference to the original direction
         
@@ -139,14 +138,12 @@ public class DriveDistancePIDCmd extends Command implements PIDSource, PIDOutput
         {
             error += 180;
         }
-        m_drivetrain.m_logger.debug("Heading error: " + error);
         
         double correction = 0.0;
         
         if (error >= MAX_DEGREES_ERROR || error <= -MAX_DEGREES_ERROR)
         {
         	correction = Math.copySign(m_KP, error * m_revs); // Adjust for direction
-            m_drivetrain.m_logger.debug("Correction: " + correction);
         } 
 
         return correction;

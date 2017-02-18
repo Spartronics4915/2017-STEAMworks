@@ -12,11 +12,12 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  */
 public class GenericCommandGroup extends CommandGroup {
     int sideMultiplier;
-    public GenericCommandGroup(Drivetrain drivetrain, OI oi, double[] parameters) {
-        addSequential(new DriveDistancePIDCmd(drivetrain, parameters[0]));
-        addSequential(new TurnDegreesIMU(drivetrain, parameters[1]*oi.getSideMultiplier()));
-        addSequential(new DriveDistancePIDCmd(drivetrain, parameters[2]));
-        addSequential(new TurnDegreesIMU(drivetrain, parameters[3]*oi.getSideMultiplier()));
-        addSequential(new DriveDistancePIDCmd(drivetrain, parameters[3]));
+    public GenericCommandGroup(Drivetrain drivetrain, OI oi, double param1, double param2, double param3, double param4, double param5) {
+        // It's more elegant to use an array or list here, but arrays suck in Java and I don't have time to deal with a list
+        addSequential(new DriveDistancePIDCmd(drivetrain, param1));
+        addSequential(new TurnDegreesIMU(drivetrain, param2*oi.getSideMultiplier()));
+        addSequential(new DriveDistancePIDCmd(drivetrain, param3));
+        addSequential(new TurnDegreesIMU(drivetrain, param4*oi.getSideMultiplier()));
+        addSequential(new DriveDistancePIDCmd(drivetrain, param5));
     }
 }
