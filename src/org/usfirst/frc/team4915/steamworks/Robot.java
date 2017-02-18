@@ -23,6 +23,7 @@ public class Robot extends IterativeRobot
     private Intake m_intake;
     private OI m_oi;
     private Climber m_climber;
+    
 
     private Launcher m_launcher;
 
@@ -101,7 +102,7 @@ public class Robot extends IterativeRobot
         {
             acmd.cancel();
         }
-        new LauncherCommand(m_launcher, LauncherState.ON).start();
+        //new LauncherCommand(m_launcher, LauncherState.OFF).start();
     }
 
     @Override
