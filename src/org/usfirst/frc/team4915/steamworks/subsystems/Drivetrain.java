@@ -20,7 +20,7 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
@@ -55,6 +55,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
+    
+    private static final int LIGHT_OUTPUT_PORT = 0;
+    private final DigitalOutput m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
+
 
 
     // Port motors
@@ -469,6 +473,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    public void setLightOutput(Boolean lightsAreCool)
+    {
+        m_lightOutput.set(lightsAreCool);
+    }
+    
     // Uses arcade drive coupled with the drivestick
     public void driveArcade()
     {
