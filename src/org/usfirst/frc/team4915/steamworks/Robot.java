@@ -5,6 +5,8 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
+import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -20,7 +22,7 @@ public class Robot extends IterativeRobot
     private Intake m_intake;
     private OI m_oi;
     private Climber m_climber;
-    
+    private Cameras m_cameras;
 
     private Launcher m_launcher;
 
@@ -31,6 +33,7 @@ public class Robot extends IterativeRobot
         m_intake = new Intake();
         m_drivetrain = new Drivetrain();
         m_climber = new Climber();
+        m_cameras = new Cameras();
         m_launcher = new Launcher();
         m_oi = new OI(this); // make sure OI is last
     }
@@ -55,10 +58,14 @@ public class Robot extends IterativeRobot
     {
         return m_drivetrain;
     }
-    
+
+    public Cameras getCameras() {
+        return m_cameras;
+    }
+
     public Launcher getLauncher() {
-		return m_launcher;
-	}
+        return m_launcher;
+    }
 
     @Override
     public void autonomousInit()

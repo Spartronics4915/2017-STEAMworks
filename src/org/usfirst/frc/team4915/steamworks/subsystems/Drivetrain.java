@@ -57,7 +57,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
     
     private static final int LIGHT_OUTPUT_PORT = 0;
-    private final DigitalOutput m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
+    private DigitalOutput m_lightOutput;
 
 
 
@@ -189,9 +189,15 @@ public class Drivetrain extends SpartronicsSubsystem
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
             loadReplay();
+            
+            m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
+            SmartDashboard.putString("ReverseEnabled", "Disabled");
+
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
+            
+            
         }
         catch (Exception e)
         {
@@ -473,10 +479,6 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    public void setLightOutput(Boolean ReverseEnabled)
-    {
-        m_lightOutput.set(ReverseEnabled);
-    }
     
     // Uses arcade drive coupled with the drivestick
     public void driveArcade()
@@ -518,12 +520,17 @@ public class Drivetrain extends SpartronicsSubsystem
     public void setReverse()
     {
         
-        m_reverseIsOn = true;        
+        m_reverseIsOn = true;
+        m_lightOutput.set(true);
+        SmartDashboard.putString("ReverseEnabled", "Enabled");
+
     }
     
     public void resetReverse()
     {
         m_reverseIsOn = false;
+        m_lightOutput.set(false);
+        SmartDashboard.putString("ReverseEnabled", "Disabled");
     }
     
     public double triggerAxis()
