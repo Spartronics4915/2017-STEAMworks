@@ -26,7 +26,7 @@ public class ReverseArcadeDriveCommand extends Command
     {
         m_drivetrain.m_logger.info("ReverseArcadeDriveCommand end");
         m_drivetrain.resetReverse();
-        SmartDashboard.putBoolean("Reverse is on: ", false);
+        SmartDashboard.putBoolean("DrivetrainReverseEnabled", false);
     }
 
     
