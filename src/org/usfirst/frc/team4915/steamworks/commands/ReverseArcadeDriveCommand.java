@@ -3,7 +3,6 @@ package org.usfirst.frc.team4915.steamworks.commands;
 import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -26,8 +25,6 @@ public class ReverseArcadeDriveCommand extends Command
     {
         m_drivetrain.m_logger.info("ReverseArcadeDriveCommand end");
         m_drivetrain.resetReverse();
-        SmartDashboard.putBoolean("DrivetrainReverseEnabled", false);
-        m_drivetrain.setLightOutput(false);
     }
 
     
@@ -43,8 +40,6 @@ public class ReverseArcadeDriveCommand extends Command
         m_drivetrain.m_logger.info("ReverseArcadeDriveCommand initialize");;
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0, 
                                     0, 0, 0, 0 /* zero PIDF  */);
-        m_drivetrain.setLightOutput(true);
-        SmartDashboard.putBoolean("Reverse is on: ", true);
     }
 
     

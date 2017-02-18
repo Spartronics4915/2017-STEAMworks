@@ -262,9 +262,6 @@ public class OI
         m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
         
         m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain()));
-
-        
-
     }
 
     private void initIntakeOI()
