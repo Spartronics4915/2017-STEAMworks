@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
@@ -16,28 +15,12 @@ public class ClimberSetCommand extends Command
 {
     private final Climber m_climber;
     private final Climber.State m_state;
-    
-    private double currentJump;
-    //testing needed to find the current
-    private double safetyValue;
-    private int counter = 0;
-    
-    private boolean safe = true;
-    public boolean m_climberIsRecording = false;
-    private double m_timeSinceRecording;
-    private final List<Double> m_readCurrent = new ArrayList<>();
 
     public ClimberSetCommand(Climber climber, State on)
     {
         m_climber = climber;
         m_state = on;
         requires(m_climber);
-    }
-    
-    public void climbersafetySwitch()
-    {
-        m_readCurrent.clear();
-        m_climberIsRecording = true;
     }
 
     @Override
@@ -47,36 +30,21 @@ public class ClimberSetCommand extends Command
         m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
         SmartDashboard.putString("Climber State", nm);
         SmartDashboard.putNumber("Climber Speed",  m_climber.getClimberSpeed(m_state));
-        //Disabled for now to ensure no breaking of code
-        //climbersafetySwitch();
     }
 
     @Override
     public void execute()
     {
         m_climber.setClimber(m_state);
-        if(m_climberIsRecording && m_timeSinceRecording >= 1 && counter == 100)
-        {
-            /* TEMPORARY MAY CAUSE PROBLEMS: 
-             * sets the safety value to the first of the array this may miss something
-             * Checks the last value stored
-             * Still doesn't write the arraylist to memory for later viewing*/
-            safetyValue = m_readCurrent.get(0);
-            currentJump = m_readCurrent.get(m_readCurrent.size() - 1);
-            if(currentJump > safetyValue)
-            {
-                safe = false;   
-            }
-            m_readCurrent.clear();
-        }
+        SmartDashboard.putNumber("Climber Current", m_climber.getClimberCurrent());
+        //possible future code if amps exceed safe amount testing needed to find this value
+        //if(m_climber.getClimberCurrent() > someSafteyValue){ end(); }
     }
 
     @Override
     public boolean isFinished()
     {
-        counter++;
-        m_timeSinceRecording = timeSinceInitialized();
-        return !safe;
+        return false;
     }
 
     @Override

@@ -48,6 +48,11 @@ public class Intake extends SpartronicsSubsystem
 
     }
     
+    public double getIntakeCurrent()
+    {
+        return m_intakeMotor.getOutputCurrent();
+    }
+    
     public double getIntakeSpeed(State s)
     {
         switch(s)
