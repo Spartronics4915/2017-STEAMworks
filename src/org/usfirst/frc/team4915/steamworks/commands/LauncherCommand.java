@@ -4,6 +4,8 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
+import com.ctre.CANTalon.FeedbackDevice;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
@@ -34,8 +36,10 @@ public class LauncherCommand extends Command
     protected void initialize()
     {
         m_logger.debug("LauncherCommand Initialized to " + m_state);
-        m_launcher.setAgitatorTarget();
-        
+       // if(m_launcher.getAgitator().isSensorPresent(FeedbackDevice.CtreMagEncoder_Absolute)!=null) 
+      //  {
+          //  m_launcher.setAgitatorTarget();
+       // }
         m_launcher.setLauncher(m_state);
         
     }
