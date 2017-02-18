@@ -4,6 +4,8 @@ import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
+import com.ctre.CANTalon.FeedbackDevice;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
@@ -35,9 +37,7 @@ public class LauncherCommand extends Command
     {
         m_logger.debug("LauncherCommand Initialized to " + m_state);
         m_launcher.setAgitatorTarget();
-        
         m_launcher.setLauncher(m_state);
-        
     }
 
     // Called repeatedly when this Command is scheduled to run
