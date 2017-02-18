@@ -90,7 +90,11 @@ public class Drivetrain extends SpartronicsSubsystem
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    
+    //Reverse
+    private boolean m_reverseIsOn = false;
     private int m_replayLaunch = 0;
+
 
     public Drivetrain()
     {
@@ -475,6 +479,12 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = triggerAxis() + m_altDriveStick.getY();
                 double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                if(m_reverseIsOn)
+                {
+                    forward = -triggerAxis() - m_altDriveStick.getY();
+                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                    //m_logger.debug("Reverse Engaged");
+                }
                 
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
@@ -494,6 +504,17 @@ public class Drivetrain extends SpartronicsSubsystem
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
         }
+    }
+    
+    public void setReverse()
+    {
+        
+        m_reverseIsOn = true;        
+    }
+    
+    public void resetReverse()
+    {
+        m_reverseIsOn = false;
     }
     
     public double triggerAxis()
