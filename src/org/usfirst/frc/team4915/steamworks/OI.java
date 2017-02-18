@@ -14,11 +14,10 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commands.groups.DriveShootCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.groups.GenericCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
-import org.usfirst.frc.team4915.steamworks.commands.DriveDistancePIDCmd;
+import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
@@ -182,6 +181,8 @@ public class OI
                 35,90,124-(RobotMap.ROBOT_WIDTH/2),135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
         m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
                 35,135,24,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Drive, Shoot, and Cross Baseline Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
+                35,135,24,-90,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
@@ -249,10 +250,9 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
-        m_turnIMUStart.whenPressed(new DriveShootCommandGroup(m_robot.getDrivetrain(), WallPosition.THREE, 1));
         m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveDistancePIDCmd(m_robot.getDrivetrain(), 57.3));
+        m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
