@@ -20,7 +20,7 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
@@ -55,6 +55,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
+    
+    private static final int LIGHT_OUTPUT_PORT = 0;
+    private final DigitalOutput m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
+
 
 
     // Port motors
@@ -90,7 +94,11 @@ public class Drivetrain extends SpartronicsSubsystem
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    
+    //Reverse
+    private boolean m_reverseIsOn = false;
     private int m_replayLaunch = 0;
+
 
     public Drivetrain()
     {
@@ -465,6 +473,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    public void setLightOutput(Boolean lightsAreCool)
+    {
+        m_lightOutput.set(lightsAreCool);
+    }
+    
     // Uses arcade drive coupled with the drivestick
     public void driveArcade()
     {
@@ -475,6 +488,12 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = triggerAxis() + m_altDriveStick.getY();
                 double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                if(m_reverseIsOn)
+                {
+                    forward = -triggerAxis() - m_altDriveStick.getY();
+                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                    //m_logger.debug("Reverse Engaged");
+                }
                 
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
@@ -494,6 +513,17 @@ public class Drivetrain extends SpartronicsSubsystem
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
         }
+    }
+    
+    public void setReverse()
+    {
+        
+        m_reverseIsOn = true;        
+    }
+    
+    public void resetReverse()
+    {
+        m_reverseIsOn = false;
     }
     
     public double triggerAxis()
