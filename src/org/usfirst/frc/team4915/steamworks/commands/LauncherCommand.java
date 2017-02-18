@@ -36,12 +36,8 @@ public class LauncherCommand extends Command
     protected void initialize()
     {
         m_logger.debug("LauncherCommand Initialized to " + m_state);
-       // if(m_launcher.getAgitator().isSensorPresent(FeedbackDevice.CtreMagEncoder_Absolute)!=null) 
-      //  {
-          //  m_launcher.setAgitatorTarget();
-       // }
+        m_launcher.setAgitatorTarget();
         m_launcher.setLauncher(m_state);
-        
     }
 
     // Called repeatedly when this Command is scheduled to run

@@ -32,7 +32,8 @@ public class Launcher extends SpartronicsSubsystem
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
     private LauncherState m_state;
-    private int m_initialPos;
+    private double m_initialPos;
+    private int m_startupCount;
 
     public Launcher()
     {
@@ -41,6 +42,7 @@ public class Launcher extends SpartronicsSubsystem
         {
             
             m_state = LauncherState.OFF;
+            m_startupCount = 0;
             m_logger.info("Launcher initialized 1");
             m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
             int allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
@@ -61,17 +63,18 @@ public class Launcher extends SpartronicsSubsystem
             
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
             m_agitatorMotor.changeControlMode(TalonControlMode.PercentVbus);
+            m_agitatorMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
-            /*m_agitatorMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
             m_agitatorMotor.reverseSensor(false);
             
-            
-            m_agitatorMotor.setF(.0305);
+            /*
+            m_agitatorMotor.setF(.00061);
             m_agitatorMotor.setP(0.06);
             m_agitatorMotor.setI(0.0);
             m_agitatorMotor.setD(0.6);
             */
+            
 
 
             m_logger.info("Launcher initialized");
@@ -87,10 +90,13 @@ public class Launcher extends SpartronicsSubsystem
     //Sets Launcher and Agitator to set speeds regarding state given from buttons
     public void setLauncher(LauncherState state) 
     {
-        m_logger.debug("First test");
-        //if(initialized()) 
-        //{
-            m_logger.debug("Second Test");
+        if(initialized()) 
+        {
+            if(m_state != state && state == LauncherState.ON)
+            {
+                m_startupCount = 0;
+                m_logger.debug("startupCount = 0");
+            }
             m_state = state;
             double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
             double speedActual = m_launcherMotor.getSpeed();
@@ -99,7 +105,7 @@ public class Launcher extends SpartronicsSubsystem
             SmartDashboard.putString("Launcher_MSG", msg);
             m_launcherMotor.set(getLauncherSpeed(speedTarget));
             m_agitatorMotor.set(getAgitatorSpeed(DEFAULT_AGITATOR_SPEED));     
-        //}
+        }
     }
     
     public double getLauncherSpeed(double speedTarget)
@@ -132,7 +138,7 @@ public class Launcher extends SpartronicsSubsystem
                 } 
                 else 
                 {
-                    return speedTarget;
+                    return speedTarget-.12; //returns a value of .5 in percent vbus (given speed target is .62)
                 }
         }
         return 0;
@@ -145,6 +151,8 @@ public class Launcher extends SpartronicsSubsystem
         double speedActual = m_launcherMotor.getSpeed();
         if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
         {
+            m_startupCount++;
+            if(m_startupCount<15) return false;
             return true;
         }
         return false;
@@ -153,8 +161,8 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isSingleShotDone() 
     {
-        int CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        if(CurrentPosition >= (m_initialPos + 1024)) /// we think this should be 1024, not 256...
+        double CurrentPosition = m_agitatorMotor.get();
+        if(CurrentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
         {
             m_logger.debug("isSingleShotDone returning true: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
             return true;
@@ -165,11 +173,11 @@ public class Launcher extends SpartronicsSubsystem
     public void setAgitatorTarget()
     {
         if(m_state == LauncherState.SINGLE) {
-            m_initialPos = m_agitatorMotor.getPulseWidthPosition();
+            m_initialPos = m_agitatorMotor.get();
         }
     }
     
-    public int getInitialPos() 
+    public double getInitialPos() 
     {
         return m_initialPos;
     }
