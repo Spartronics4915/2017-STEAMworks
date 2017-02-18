@@ -177,11 +177,11 @@ public class OI
         m_autoPresetOptions.put("Place Gear Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
                 -(93.3-(RobotMap.ROBOT_LENGTH+1)),0,0,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         m_autoPresetOptions.put("Drive and Shoot Position 1", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                25,90,248-RobotMap.ROBOT_WIDTH,133.7,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
+                35,90,248-RobotMap.ROBOT_WIDTH,135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
         m_autoPresetOptions.put("Drive and Shoot Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                35,90,124-(RobotMap.ROBOT_WIDTH/2),133.7,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
+                35,90,124-(RobotMap.ROBOT_WIDTH/2),135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
         m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                25,133.7,23,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+                35,135,24,Double.NaN,Double.NaN)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
@@ -348,9 +348,9 @@ public class OI
         switch (DriverStation.getInstance().getAlliance())
         {
             case Blue:
-                return 1;
-            case Red:
                 return -1;
+            case Red:
+                return 1;
             default:
                 m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
                 return 1;

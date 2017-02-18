@@ -47,7 +47,6 @@ public class TurnDegreesIMU extends Command
     {
         if (m_drivetrain.isIMUTurnFinished())
         {
-            m_drivetrain.m_logger.debug(m_targetCounter+"");
             m_targetCounter++;
             if (m_targetCounter > 20) // Make sure that we're on target for a while
             {
@@ -70,7 +69,7 @@ public class TurnDegreesIMU extends Command
     protected void end()
     {
         m_drivetrain.endIMUTurn();
-        m_drivetrain.m_logger.debug("ended");
+        m_drivetrain.m_logger.debug("TurnDegreesIMU ended");
 
     }
 
@@ -78,6 +77,6 @@ public class TurnDegreesIMU extends Command
     protected void interrupted()
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
-        m_drivetrain.m_logger.debug("interrupted");
+        m_drivetrain.m_logger.debug("TurnDegreesIMU interrupted");
     }
 }
