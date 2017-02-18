@@ -22,6 +22,7 @@ import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
+import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
@@ -51,6 +52,8 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 4);
+    
+    public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
 
     //Aux Stick Buttons
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
@@ -257,6 +260,11 @@ public class OI
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
         m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
+        
+        m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain()));
+
+        
+
     }
 
     private void initIntakeOI()
