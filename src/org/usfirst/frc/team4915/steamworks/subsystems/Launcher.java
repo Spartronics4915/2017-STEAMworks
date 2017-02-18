@@ -99,12 +99,13 @@ public class Launcher extends SpartronicsSubsystem
             }
             m_state = state;
             double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
+            double agitatorSpeedTarget = SmartDashboard.getNumber("Agitator_TGT", Launcher.DEFAULT_AGITATOR_SPEED);
             double speedActual = m_launcherMotor.getSpeed();
             SmartDashboard.putNumber("Launcher_ACT", speedActual);
             String msg = String.format("%.0f / %.0f", speedActual, speedTarget );
             SmartDashboard.putString("Launcher_MSG", msg);
             m_launcherMotor.set(getLauncherSpeed(speedTarget));
-            m_agitatorMotor.set(getAgitatorSpeed(DEFAULT_AGITATOR_SPEED));     
+            m_agitatorMotor.set(getAgitatorSpeed(agitatorSpeedTarget));     
         }
     }
     
@@ -138,7 +139,7 @@ public class Launcher extends SpartronicsSubsystem
                 } 
                 else 
                 {
-                    return speedTarget-.12; //returns a value of .5 in percent vbus (given speed target is .62)
+                    return speedTarget-.1; //returns a value of speedTarget - 1/10th of the maximum voltage 
                 }
         }
         return 0;
