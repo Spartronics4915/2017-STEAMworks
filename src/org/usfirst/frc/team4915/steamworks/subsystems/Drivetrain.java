@@ -622,7 +622,8 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
     // getEncPosition is private since we really don't want clients to worry about ticks.
-    private int getEncPosition()
+    // XXX: Needs to be made private
+    public int getEncPosition()
     {
         // XXX: for now we only return one enc position... Should caller need access to
         //      a specific motor, we should add a parameter
