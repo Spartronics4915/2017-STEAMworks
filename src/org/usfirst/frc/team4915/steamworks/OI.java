@@ -57,8 +57,8 @@ public class OI
     
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
 
-    public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 12);
-    public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 13);
+    public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
+    public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
 
 
     //Aux Stick Buttons
