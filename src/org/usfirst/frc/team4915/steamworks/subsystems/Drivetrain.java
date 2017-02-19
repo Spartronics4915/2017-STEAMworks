@@ -297,7 +297,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (!imu.isSensorPresent())
         {
-            m_logger.error("can't get normalized IMU heading because the IMU is not present!");
+            m_logger.error("can't get normalized IMU heading because the IMU is not present (it's probably not plugged in)!");
         }
         else
         {

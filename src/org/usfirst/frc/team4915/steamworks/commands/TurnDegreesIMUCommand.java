@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class TurnDegreesIMU extends Command
+public class TurnDegreesIMUCommand extends Command
 {
 
     private final Drivetrain m_drivetrain;
     private double m_degrees;
     private int m_targetCounter;
 
-    public TurnDegreesIMU(Drivetrain drivetrain, double degrees)
+    public TurnDegreesIMUCommand(Drivetrain drivetrain, double degrees)
     {
         m_drivetrain = drivetrain;
         m_degrees = degrees;

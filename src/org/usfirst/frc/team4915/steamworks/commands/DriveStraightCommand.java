@@ -67,7 +67,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         if (m_pidController.onTarget())
         {
             m_drivetrain.m_logger.debug("DriveStraightCommand Actual ticks driven "+m_drivetrain.getEncPosition());
-            m_drivetrain.m_logger.info("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
+            m_drivetrain.m_logger.debug("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
         }
         return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
     }

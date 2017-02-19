@@ -15,7 +15,6 @@ import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.groups.DriveCommandGroup;
-import org.usfirst.frc.team4915.steamworks.commands.groups.GenericCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
@@ -55,12 +54,11 @@ public class OI
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
     public final JoystickButton m_intakeOff = new JoystickButton(m_driveStick, 2);
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 4);
-    
+
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
 
     public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
-
 
     //Aux Stick Buttons
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
@@ -182,23 +180,24 @@ public class OI
     private void initAutoOI()
     {
         // You can't put commas into the names of these because that's how they're deliniated
-        m_autoPresetOptions.put("Cross Baseline Positons 1+3", new GenericCommandGroup(m_robot.getDrivetrain(), this,
-                -95,0,0,0,0)); // This is the length from the diamond plate to the baseline
-        m_autoPresetOptions.put("Place Gear Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                -(93.3-(RobotMap.ROBOT_LENGTH+1)),0,0,0,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
-        m_autoPresetOptions.put("Drive and Shoot Position 1", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                35,90,248-RobotMap.ROBOT_WIDTH,135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
-        m_autoPresetOptions.put("Drive and Shoot Position 2", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                35,90,124-(RobotMap.ROBOT_WIDTH/2),135,17)); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
-        m_autoPresetOptions.put("Drive and Shoot Position 3", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                35,135,24,Double.NaN,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
-        m_autoPresetOptions.put("Five Feet", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                60,Double.NaN,0,Double.NaN,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
-        m_autoPresetOptions.put("Ten Feet", new GenericCommandGroup(m_robot.getDrivetrain(), this, 
-                120,Double.NaN,0,Double.NaN,0)); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Cross Baseline Positons 1+3", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "-95")); // This is the length from the diamond plate to the baseline
+        m_autoPresetOptions.put("Place Gear Position 2", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "" + (-(93.3 - (RobotMap.ROBOT_LENGTH + 1))))); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        //         ^ There are too many parenthesis here, but to make it clear why we are using these number, we break everything up like this
+        m_autoPresetOptions.put("Drive and Shoot Position 1", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "35", "Turn", "90", "Drive", "" + (248 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "17")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 2", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "35", "Turn", "90", "Drive", "" + (124 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "17")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
+        m_autoPresetOptions.put("Drive and Shoot Position 3", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "35", "Turn", "135", "Drive", "24")); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Five Feet", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "60")); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
+        m_autoPresetOptions.put("Ten Feet", new DriveCommandGroup(m_robot.getDrivetrain(), this,
+                "Drive", "120")); // This is the length from the diamond plate with the robot length and an inch (just to be safe) subtracted
         m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new DriveCommandGroup(m_robot.getDrivetrain(), this,
                 "Drive", "35", "Turn", "135", "Drive", "30", "Shoot", "10", "Drive", "-30", "Turn", "0", "Drive", "60"));
-        
+
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -272,7 +271,7 @@ public class OI
         m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
         m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
-        
+
         m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain(), m_robot.getCameras()));
     }
 
@@ -295,9 +294,9 @@ public class OI
 
     private void initLauncherOI()
     {
-    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON));
-    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
-    	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
+        m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON));
+        m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
+        m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
         // includes carousel
     }
 
