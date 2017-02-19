@@ -18,6 +18,21 @@ public class GenericCommandGroup extends CommandGroup
 
     public GenericCommandGroup(Drivetrain drivetrain, OI oi, double param1, double param2, double param3, double param4, double param5)
     {
+//        int i = 0;
+//        while (!drivetrain.isIMUInitalized() || i > 10)
+//        {
+//            i++;
+//            try
+//            {
+//                Thread.sleep(100);
+//            }
+//            catch (InterruptedException e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//            // We're just waiting here
+//        }
         // It's more elegant to use an array or list here, but arrays suck in Java and I don't have time to deal with a list
         addSequential(new DriveStraightCommand(drivetrain, param1));
         if (param2 != Double.NaN)

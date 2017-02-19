@@ -31,7 +31,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         m_pidController = new PIDController(k_P, k_D, k_I, k_F, this, this);
         m_pidController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
         m_pidController.setInputRange(-5 * Math.abs(m_revs), 5 * Math.abs(m_revs)); // We limit our input range to revolutions, either direction
-        m_pidController.setPercentTolerance(0.6); // This is the tolerance for error for reaching our target
+        m_pidController.setAbsoluteTolerance(0.053); // This is the tolerance for error for reaching our target, targeting one inch
 
         requires(m_drivetrain);
     }
@@ -66,8 +66,8 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         if (m_pidController.onTarget())
         {
-            m_drivetrain.m_logger.debug("DriveStraightCommand PID is on target at "+m_drivetrain.getEncPosition());
-            m_drivetrain.m_logger.info("DriveStraightCommand just driven " + m_revs*1000 + " ticks.");
+            m_drivetrain.m_logger.debug("DriveStraightCommand Actual ticks driven "+m_drivetrain.getEncPosition());
+            m_drivetrain.m_logger.info("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
         }
         return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
     }

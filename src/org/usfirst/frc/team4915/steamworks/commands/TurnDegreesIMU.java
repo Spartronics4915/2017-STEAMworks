@@ -32,7 +32,7 @@ public class TurnDegreesIMU extends Command
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees);
-        m_drivetrain.m_logger.info("TurnDegreesIMU I should turn "+m_degrees+" degrees.");
+        m_drivetrain.m_logger.info("TurnDegreesIMU I want to turn  "+m_degrees+" degrees.");
         m_drivetrain.m_logger.debug("TurnDegreesIMU initalized");
     }
 
