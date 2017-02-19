@@ -160,10 +160,11 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isSingleShotDone() 
     {
-        double CurrentPosition = m_agitatorMotor.get();
+        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
+        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
         if(CurrentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
         {
-            m_logger.debug("isSingleShotDone returning true: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
+            
             return true;
         }
         return false;
@@ -173,7 +174,8 @@ public class Launcher extends SpartronicsSubsystem
     {
         if(m_state == LauncherState.SINGLE)
         {
-            m_initialPos = m_agitatorMotor.get();
+            m_initialPos = m_agitatorMotor.getPulseWidthPosition();
+            m_logger.debug("setAgitatorTarget: Initial position is " + m_initialPos);
         }
     }
     
@@ -185,6 +187,17 @@ public class Launcher extends SpartronicsSubsystem
     public CANTalon getAgitator() 
     {
         return m_agitatorMotor;        
+    }
+    
+    public boolean isEmpty() 
+    {
+        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
+        if(CurrentPosition >= (m_initialPos + 4096*4)) 
+        {
+            return true;
+        }
+        return false;
+        
     }
     public void initDefaultCommand()
     {

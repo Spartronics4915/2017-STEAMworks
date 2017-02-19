@@ -15,8 +15,10 @@ public class LauncherCommand extends Command
     private final Launcher m_launcher;
     private Logger m_logger;
     private final Launcher.LauncherState m_state;
+    private boolean m_terminateWhenEmpty;
+    
 
-    public LauncherCommand(Launcher launcher, Launcher.LauncherState state)
+    public LauncherCommand(Launcher launcher, Launcher.LauncherState state, boolean terminateWhenEmpty)
     {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -24,6 +26,7 @@ public class LauncherCommand extends Command
         m_launcher = launcher;
         m_logger = new Logger("Launcher", Logger.Level.DEBUG);
         m_state = state;
+        m_terminateWhenEmpty = terminateWhenEmpty;
         requires(m_launcher);
     }
 
@@ -49,6 +52,10 @@ public class LauncherCommand extends Command
         switch (m_state)
         {
             case ON:
+                if(m_terminateWhenEmpty && m_launcher.isEmpty()) 
+                {
+                    return true;
+                }
                 return false;
             case OFF:
                 return true;
