@@ -34,7 +34,6 @@ public class ReverseArcadeDriveCommand extends Command
     
     protected void execute()
     {
-        m_drivetrain.setReverse(m_cameras);
         m_drivetrain.driveArcade();
     }
 
@@ -44,6 +43,8 @@ public class ReverseArcadeDriveCommand extends Command
         m_drivetrain.m_logger.info("ReverseArcadeDriveCommand initialize");;
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0, 
                                     0, 0, 0, 0 /* zero PIDF  */);
+        m_drivetrain.setReverse(m_cameras);
+
     }
 
     
