@@ -27,6 +27,8 @@ import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+import org.usfirst.frc.team4915.steamworks.commands.ChooseCameraCommand;
+import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -55,6 +57,10 @@ public class OI
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 4);
     
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
+
+    public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
+    public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
+
 
     //Aux Stick Buttons
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
@@ -104,6 +110,7 @@ public class OI
         initDrivetrainOI();
         initIntakeOI();
         initLauncherOI();
+        initChooseCameraOI();
         initClimberOI();
 
         // Init loggers last, as this uses special values generated when other loggers are created.
@@ -266,10 +273,7 @@ public class OI
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
         m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
         
-        m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain()));
-
-        
-
+        m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain(), m_robot.getCameras()));
     }
 
     private void initIntakeOI()
@@ -295,6 +299,12 @@ public class OI
     	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
     	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
         // includes carousel
+    }
+
+    private void initChooseCameraOI()
+    {
+        m_cameraFwd.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_FWD));
+        m_cameraRev.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_REV));
     }
 
     private void initLoggers()
