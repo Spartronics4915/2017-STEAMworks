@@ -268,7 +268,7 @@ public class OI
         m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
         m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
         
-        m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain()));
+        m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain(), m_robot.getCameras()));
     }
 
     private void initIntakeOI()
