@@ -40,7 +40,7 @@ public class Cameras extends SpartronicsSubsystem
     public static final int CAM_REV = 1;
     public static final int CAM_NONE = 2;
 
-    private static final int imageWidth = 320;
+    private static final int imageWidth = 416;
     private static final int imageHeight = 240;
     private static final int frameRate = 20;
 
