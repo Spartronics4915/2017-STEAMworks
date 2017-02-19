@@ -7,6 +7,32 @@ import edu.wpi.cscore.UsbCameraInfo;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.VideoMode;
 
+// Notes for USB camera setup
+/* Microsoft Lifecam HD-3000 resolutions (with MJPEG compression)
+ * (Collected via 'lsusb' command on Linux)
+ *   160x120    (4x3)
+ *   176x144    (11x9)
+ *   320x240    (4x3)
+ *   352x288    (11x9)
+ *   416x240    (16x9)
+ *   640x360    (16x9)
+ *   640x480    (4x3)
+ *   800x448    (16x9)
+ *   800x600    (4x3)
+ *   960x544    (16x9)
+ *   1280x720   (16x9)
+ */
+/* Genius 120-degree Ultra Wide Angle Full HD Conference Webcam
+ * (WideCam F100) https://www.amazon.com/gp/product/B0080CE5M4
+ * (Collected via 'lsusb' command on Linux)
+ *   320x240    (4x3)
+ *   352x288    (11x9)
+ *   640x360    (16x9)
+ *   800x448    (16x9)
+ *   960x544    (16x9)
+ *   1280x720   (16x9)
+ */
+
 public class Cameras extends SpartronicsSubsystem
 {
     // Values used by changeCamera() method
@@ -14,7 +40,7 @@ public class Cameras extends SpartronicsSubsystem
     public static final int CAM_REV = 1;
     public static final int CAM_NONE = 2;
 
-    private static final int imageWidth = 320;
+    private static final int imageWidth = 416;
     private static final int imageHeight = 240;
     private static final int frameRate = 20;
 
