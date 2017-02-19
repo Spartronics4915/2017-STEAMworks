@@ -16,26 +16,11 @@ public class TurnSequenceCommandGroup extends CommandGroup
 
     public TurnSequenceCommandGroup(Drivetrain drivetrain)
     {
-        // Add Commands here:
-        // e.g. addSequential(new Command1());
-        //      addSequential(new Command2());
-        // these will run in order.
         m_drivetrain = drivetrain;
-        // To run multiple commands at the same time,
-        // use addParallel()
-        // e.g. addParallel(new Command1());
-        //      addSequential(new Command2());
-        // Command1 and Command2 will run in parallel.
-
-        // A command group will require all of the subsystems that each member
-        // would require.
-        // e.g. if Command1 requires chassis, and Command2 requires arm,
-        // a CommandGroup containing them would require both the chassis and the
-        // arm.
-        addSequential(new TurnDegreesIMU(m_drivetrain, 45));
-        addSequential(new TurnDegreesIMU(m_drivetrain, -45));
-        addSequential(new DriveDistancePIDCmd(m_drivetrain, 57.3));
-        addSequential(new TurnDegreesIMU(m_drivetrain, 180));
-
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 25)); // Calculated by circumscribing a circle around the robot and getting it's radius and adding 4 for some leeway
+        addSequential(new TurnDegreesIMU(m_drivetrain, -90));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 103));
+        addSequential(new TurnDegreesIMU(m_drivetrain, -123));
+        addSequential(new DriveDistancePIDCmd(m_drivetrain, 3));
     }
 }
