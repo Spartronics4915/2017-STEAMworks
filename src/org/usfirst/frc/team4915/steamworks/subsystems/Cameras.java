@@ -105,8 +105,8 @@ public class Cameras extends SpartronicsSubsystem
         }
 
         // Now that all the cameras have been found, set their modes and
-        // start up the server
-        if (m_numCameras >= CAM_FWD)
+        // start up the server (if we have at least one camera...)
+        if ((m_numCameras >= 1) && (m_camera[CAM_FWD] != null))
         {
             // Create camera network server, and assign the first camera
             m_mjpegServer = new MjpegServer("USB Camera Server", serverPort);
@@ -123,6 +123,13 @@ public class Cameras extends SpartronicsSubsystem
 
     public boolean changeCamera(int camera) {
         boolean status = false;
+
+        // Bail out if we have no cameras configured
+        if (m_numCameras == 0)
+        {
+            return false;
+        }
+
         switch (camera)
         {
             case CAM_NONE:

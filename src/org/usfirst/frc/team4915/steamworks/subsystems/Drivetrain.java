@@ -20,6 +20,7 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -94,10 +95,11 @@ public class Drivetrain extends SpartronicsSubsystem
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    private int m_replayLaunchStart = 0;
+    private int m_replayLaunchStop = 0;
     
     //Reverse
     private boolean m_reverseIsOn = false;
-    private int m_replayLaunch = 0;
 
 
     public Drivetrain()
@@ -520,7 +522,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     forward = 0.0;
                     rotation = 0.0;
                 }
-                if (m_isRecording)
+                if (getRecordingEnabled() && m_isRecording)
                 {
                     m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
@@ -683,6 +685,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
     public void startRecording()
     {
+        if (!getRecordingEnabled())
+        {
+            return;
+        }
         m_startedRecordingAt = Instant.now();
         m_logger.notice("Started recording at " + m_startedRecordingAt);
 
@@ -733,15 +739,17 @@ public class Drivetrain extends SpartronicsSubsystem
                 String[] rotationFromFile = lines.get(1).split(",");
                 if (lines.size() > 2)
                 {
-                    m_replayLaunch = Integer.valueOf(lines.get(2));
-                    if (m_replayLaunch >= forwardFromFile.length || m_replayLaunch < 0)
+                    String[] launchFromFile = lines.get(2).split(",");
+                    m_replayLaunchStart = Integer.valueOf(launchFromFile[0]);
+                    m_replayLaunchStop = Integer.valueOf(launchFromFile[1]);
+                    if (m_replayLaunchStart >= forwardFromFile.length || m_replayLaunchStart < 0 || m_replayLaunchStop < m_replayLaunchStart)
                     {
-                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunch + "), max " + forwardFromFile.length);
-                        m_replayLaunch = 0;
+                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunchStart + "), max " + forwardFromFile.length);
+                        m_replayLaunchStart = 0;
                     }
                     else
                     {
-                        m_logger.debug("Will launch at step number " + m_replayLaunch);
+                        m_logger.debug("Will launch at step number " + m_replayLaunchStart);
                     }
                 }
                 else
@@ -816,6 +824,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    public boolean getRecordingEnabled()
+    {
+        return SmartDashboard.getBoolean("RecordingEnabled", false);
+    }
+
     public List<Double> getReplayForward()
     {
         return m_replayForward;
@@ -826,9 +839,14 @@ public class Drivetrain extends SpartronicsSubsystem
         return m_replayRotation;
     }
 
-    public int getReplayLaunch()
+    public int getReplayLaunchStart()
     {
-        return m_replayLaunch;
+        return m_replayLaunchStart;
+    }
+
+    public int getReplayLaunchStop()
+    {
+        return m_replayLaunchStop;
     }
 
 }
