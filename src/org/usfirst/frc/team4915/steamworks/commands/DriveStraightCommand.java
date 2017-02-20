@@ -17,7 +17,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private PIDController m_pidController;
 
     private double m_heading;
-    private static final double IMU_CORRECTION = .1875;
+    private static final double IMU_CORRECTION = 0;
     private static final double MAX_DEGREES_ERROR = .125;
 
     private static final double k_P = 1.43, k_D = 0, k_I = 0, k_F = 0; // P was 1.7
@@ -45,6 +45,8 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
+        m_heading = m_drivetrain.getIMUHeading();
+        m_drivetrain.m_logger.debug("DriveStraightCommand Initial heading: " + m_heading);
     }
 
     @Override
@@ -114,14 +116,6 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     @Override
     public void pidWrite(double output)
     {
-//        if (output > 0 && output < NOMINAL_OUTPUT) // Make sure we actually move
-//        {
-//            output = NOMINAL_OUTPUT;
-//        }
-//        else if (output < 0 && output > NOMINAL_OUTPUT) // To handle going backwards
-//        {
-//            output = -NOMINAL_OUTPUT;
-//        }
         m_drivetrain.driveArcadeDirect(output, getIMUCorrection());
     }
 
@@ -151,6 +145,8 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         {
             correction = Math.copySign(IMU_CORRECTION, error * m_revs); // Adjust for direction
         }
+        
+        m_drivetrain.m_logger.debug("DriveStraightCommand IMU Heading: " + currentHeading + " Correction: " + correction + " Error: " + error);
 
         return correction;
     }
