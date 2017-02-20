@@ -15,13 +15,24 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  * Example: DriveCommandGroup(drivetrain, oi, "Drive", "96", "Turn", "135",
  * "Shoot", "7")
  */
-public class DriveCommandGroup extends CommandGroup
+public class ParameterizedCommandGroup extends CommandGroup
 {
 
-    public DriveCommandGroup(Drivetrain drivetrain, OI oi, String... params)
+    public ParameterizedCommandGroup(Drivetrain drivetrain, OI oi, String... params)
     {
+        int safeMaxIndex = 0;
+        requires(drivetrain);
+        if (params.length%2 != 1) 
+        {
+            // We subtract 2 here because arrays start at 0 in Java, and we want one less then the greatest array index so we subtract one more
+            safeMaxIndex = params.length-2; // If we have an odd number of indices, then the safe length is one less so we don't get a null array value
+        }
+        else
+        {
+            safeMaxIndex = params.length-1;
+        }
 
-        for (int i = 0; i < params.length; i += 2)
+        for (int i = 0; i < safeMaxIndex; i += 2)
         {
             String command = params[i];
             double value = Double.parseDouble(params[i + 1]);
@@ -29,14 +40,19 @@ public class DriveCommandGroup extends CommandGroup
             {
                 case "Drive":
                     addSequential(new DriveStraightCommand(drivetrain, value));
+                    break;
                 case "Turn":
                     addSequential(new TurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
+                    break;
                 case "Shoot":
                     // TODO: Add a command here
+                    break;
                 case "Stop":
                     addSequential(new StopCommand(drivetrain));
+                    break;
                 default:
-                    addSequential(new StopCommand(drivetrain));
+                    drivetrain.m_logger.warning("ParameterizedCommandGroup Unrececognized parameter "+command);
+                    break;
             }
         }
         addSequential(new StopCommand(drivetrain)); // This is so we stop and don't get yelled at by motor saftey when we're done

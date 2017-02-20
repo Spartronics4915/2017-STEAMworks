@@ -51,7 +51,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
     private static final double WHEEL_DIAMETER = 6;
-    private static final double WHEEL_CIRCUMFERENCE = 20.06; //WHEEL_DIAMETER * Math.PI;
+    private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
@@ -583,7 +583,6 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            m_logger.info("Drivetrain stop method invoked.");
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
             // Is this the right thing to do?

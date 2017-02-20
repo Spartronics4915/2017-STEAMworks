@@ -32,8 +32,8 @@ public class TurnDegreesIMUCommand extends Command
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees);
-        m_drivetrain.m_logger.info("TurnDegreesIMU I want to turn  "+m_degrees+" degrees.");
-        m_drivetrain.m_logger.debug("TurnDegreesIMU initalized");
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand I want to turn  "+m_degrees+" degrees.");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand initalized");
     }
 
     @Override
@@ -69,7 +69,10 @@ public class TurnDegreesIMUCommand extends Command
     protected void end()
     {
         m_drivetrain.endIMUTurn();
-        m_drivetrain.m_logger.debug("TurnDegreesIMU ended");
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Actual degrees driven "+m_drivetrain.getIMUNormalizedHeading());
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Desired degrees driven " + m_degrees);
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Difference ticks " + ((m_degrees)-m_drivetrain.getIMUNormalizedHeading()) + " ticks.");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand ended");
 
     }
 
@@ -77,6 +80,6 @@ public class TurnDegreesIMUCommand extends Command
     protected void interrupted()
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
-        m_drivetrain.m_logger.debug("TurnDegreesIMU interrupted");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand interrupted");
     }
 }
