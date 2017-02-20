@@ -20,18 +20,18 @@ public class Launcher extends SpartronicsSubsystem
         OFF,
         ON,
         SINGLE,
+        UNJAM
     }
 
     //the "perfect" static speed that always makes goal
     public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
-    public static final double DEFAULT_AGITATOR_SPEED = .4; //40 rpm (CtreMagEncoder) 
+    public static final double DEFAULT_AGITATOR_SPEED = .4; //40 rpm (CtreMagEncoder)
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
     private LauncherState m_state;
     private double m_initialPos;
     private int m_startupCount;
-    private int m_jamCount;
     private int m_allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
 
     public Launcher()
@@ -41,8 +41,6 @@ public class Launcher extends SpartronicsSubsystem
         {
             m_state = LauncherState.OFF;
             m_startupCount = 0;
-            m_jamCount = 0;
-            m_logger.info("Launcher initialized 1");
             m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
             m_launcherMotor.setAllowableClosedLoopErr(m_allowableError); //4096 Native Units per rev * 5 revs per min
             m_launcherMotor.changeControlMode(TalonControlMode.Speed);
@@ -109,7 +107,6 @@ public class Launcher extends SpartronicsSubsystem
         }
     }
 
-    // Sets launcher speed based on current state
     public double getLauncherSpeed(double speedTarget)
     {
         switch (m_state)
@@ -120,10 +117,12 @@ public class Launcher extends SpartronicsSubsystem
                 return 0;
             case SINGLE:
                 return speedTarget;
+            case UNJAM:
+                return speedTarget;
         }
         return 0;
     }
-    // Sets agitator speed based on current state
+
     public double getAgitatorSpeed(double speedTarget)
     {
         switch (m_state)
@@ -131,30 +130,32 @@ public class Launcher extends SpartronicsSubsystem
             case ON:
                 if (isLauncherAtSpeed())
                 {
-                    if (isJammed()) 
-                    {
-                        return -speedTarget;
-                    }
                     return speedTarget;
                 }
                 else
                 {
-                    return 0; 
+                    return 0;
                 }
             case OFF:
                 return 0;
             case SINGLE:
-                if (isSingleShotDone())
+                if (isSingleShotDone() || !isLauncherAtSpeed())
                 {
                     return 0;
                 }
                 else
                 {
-                    if (isJammed() && !isUnjamDone())
-                    {
-                        return -0.9 * speedTarget;
-                    }
-                    return 0.9 * speedTarget; 
+                    return 0.9 * speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage
+                }
+            case UNJAM:
+                if (isUnjamDone())
+                {
+                    m_state = LauncherState.ON;
+                    return 0;
+                }
+                else
+                {
+                    return -speedTarget;
                 }
         }
         return 0;
@@ -168,8 +169,7 @@ public class Launcher extends SpartronicsSubsystem
         if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
         {
             m_startupCount++;
-            if (m_startupCount < 15) // Make sure launcher is at speed for 300ms (code runs once every 20ms)
-            
+            if (m_startupCount < 15)
             {
                 return false;
             }
@@ -189,27 +189,11 @@ public class Launcher extends SpartronicsSubsystem
         return false;
     }
 
-    public boolean isJammed() 
-    {
-        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in rpm, but unsure
-        if (isLauncherAtSpeed() && currentAgitatorSpeed < 40) // Assumed to be in rpm, also unsure
-        {
-            m_jamCount++;
-            if (m_jamCount < 15 || m_jamCount > 30)  // unsure of proper values
-            {
-                return false;
-            }
-            return true;
-        }
-        m_jamCount = 0;
-        return false;
-    }
-
     public boolean isUnjamDone()
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        m_logger.debug("isUnjamDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition <= (m_initialPos - 512)) // 512 native units, 1/8 rotation
+        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
+        if (CurrentPosition <= (m_initialPos - 1024)) /// 1024 native units, 1/4 rotation
         {
             return true;
         }

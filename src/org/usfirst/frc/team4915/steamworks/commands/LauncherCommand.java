@@ -58,7 +58,9 @@ public class LauncherCommand extends Command
             case SINGLE:
                 if (m_launcher.isSingleShotDone())
                     return true;
-                }
+                else
+                    return false;
+            case UNJAM:
                 return false;
         }
         return false;
@@ -68,7 +70,7 @@ public class LauncherCommand extends Command
     protected void end()
     {
         m_logger.notice("End (" + m_state + ")");
-        m_launcher.setLauncher(LauncherState.OFF);
+        execute();
     }
 
     // Called when another command which requires one or more of the same
