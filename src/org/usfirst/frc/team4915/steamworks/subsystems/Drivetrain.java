@@ -89,6 +89,12 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double turnKi = 0.01;
     private static final double turnKd = 0.145;
     private static final double turnKf = 0.001;
+    
+    // Was
+//    private static final double turnKp = 0.12;
+//    private static final double turnKi = 0.01;
+//    private static final double turnKd = 0.145;
+//    private static final double turnKf = 0.001;
 
     // Replay
     private boolean m_isRecording = false;
