@@ -1,12 +1,10 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
-import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
 import edu.wpi.first.wpilibj.IterativeRobot;

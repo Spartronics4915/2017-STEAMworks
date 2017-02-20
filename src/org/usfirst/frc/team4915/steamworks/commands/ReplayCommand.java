@@ -26,8 +26,8 @@ public class ReplayCommand extends Command
     {
         m_drivetrain = drivetrain;
         m_launcher = launcher;
-        m_launcherOn = new LauncherCommand(m_launcher, LauncherState.ON);
-        m_launcherOff = new LauncherCommand(m_launcher, LauncherState.OFF);
+        m_launcherOn = new LauncherCommand(m_launcher, LauncherState.ON,true);
+        m_launcherOff = new LauncherCommand(m_launcher, LauncherState.OFF,true);
         requires(m_drivetrain);
     }
 
