@@ -2,6 +2,7 @@ package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -14,7 +15,7 @@ public class LauncherCommand extends Command
 
     private final Launcher m_launcher;
     private Logger m_logger;
-    private final Launcher.LauncherState m_state;
+    private Launcher.LauncherState m_state;
     private boolean m_terminateWhenEmpty;
     
 
@@ -75,6 +76,8 @@ public class LauncherCommand extends Command
     protected void end()
     {
         m_logger.notice("LauncherCommand End");
+        m_state = LauncherState.OFF;
+        execute();
     }
 
     // Called when another command which requires one or more of the same
