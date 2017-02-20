@@ -2,14 +2,9 @@ package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
-import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
-import com.ctre.CANTalon.FeedbackDevice;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  *
@@ -20,8 +15,10 @@ public class LauncherCommand extends Command
     private final Launcher m_launcher;
     private Logger m_logger;
     private final Launcher.LauncherState m_state;
+    private boolean m_terminateWhenEmpty;
+    
 
-    public LauncherCommand(Launcher launcher, Launcher.LauncherState state)
+    public LauncherCommand(Launcher launcher, Launcher.LauncherState state, boolean terminateWhenEmpty)
     {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -29,6 +26,7 @@ public class LauncherCommand extends Command
         m_launcher = launcher;
         m_logger = new Logger("Launcher", Logger.Level.DEBUG);
         m_state = state;
+        m_terminateWhenEmpty = terminateWhenEmpty;
         requires(m_launcher);
     }
 
@@ -54,6 +52,10 @@ public class LauncherCommand extends Command
         switch (m_state)
         {
             case ON:
+                if(m_terminateWhenEmpty && m_launcher.isEmpty()) 
+                {
+                    return true;
+                }
                 return false;
             case OFF:
                 return true;
@@ -62,6 +64,8 @@ public class LauncherCommand extends Command
                 {
                     return true;
                 }
+                return false;
+            case UNJAM:
                 return false;
         }
         return false;
