@@ -48,7 +48,7 @@ public class ParameterizedCommandGroup extends CommandGroup
                     addSequential(new TurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
                     break;
                 case "Shoot":
-//                    addSequential(new LauncherCommand(launcher, LauncherState.ON, true));
+                    addSequential(new LauncherCommand(launcher, LauncherState.ON, true));
                     break;
                 case "Stop":
                     addSequential(new StopCommand(drivetrain)); // Takes no parameters
