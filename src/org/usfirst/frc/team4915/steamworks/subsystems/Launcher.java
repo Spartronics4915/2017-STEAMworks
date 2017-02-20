@@ -130,7 +130,14 @@ public class Launcher extends SpartronicsSubsystem
             case ON:
                 if (isLauncherAtSpeed())
                 {
-                    return speedTarget;
+                    if (isJammed())
+                    {
+                        return -speedTarget;
+                    }
+                    else
+                    {
+                        return speedTarget;
+                    }
                 }
                 else
                 {
@@ -145,13 +152,13 @@ public class Launcher extends SpartronicsSubsystem
                 }
                 else
                 {
-                    return 0.9 * speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage
+                    return speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage
                 }
             case UNJAM:
-                if (isUnjamDone())
+                if (!isJammed())
                 {
                     m_state = LauncherState.ON;
-                    return 0;
+                    return speedTarget;
                 }
                 else
                 {
@@ -216,18 +223,6 @@ public class Launcher extends SpartronicsSubsystem
     {
         double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in ticks/100ms
         return currentAgitatorSpeed * 600.0 / 4096.0;
-    }
-
-
-    public boolean isUnjamDone()
-    {
-        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition <= (m_initialPos - 1024)) /// 1024 native units, 1/4 rotation
-        {
-            return true;
-        }
-        return false;
     }
 
     public void setAgitatorTarget()
