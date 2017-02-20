@@ -22,7 +22,7 @@ public class ParameterizedCommandGroup extends CommandGroup
     {
         int safeMaxIndex = 0;
         requires(drivetrain);
-        if (params.length%2 != 1) 
+        if (params.length%2 != 0)
         {
             // We subtract 2 here because arrays start at 0 in Java, and we want one less then the greatest array index so we subtract one more
             safeMaxIndex = params.length-2; // If we have an odd number of indices, then the safe length is one less so we don't get a null array value
