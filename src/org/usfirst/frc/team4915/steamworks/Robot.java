@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot
     public void robotInit()
     {
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
+        m_drivetrain = new Drivetrain(); // We put drivetrain first so that our IMU is ready for everything else faster
         m_intake = new Intake();
-        m_drivetrain = new Drivetrain();
         m_climber = new Climber();
         m_cameras = new Cameras();
         m_launcher = new Launcher();
