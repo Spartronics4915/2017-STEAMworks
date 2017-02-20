@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class TurnDegreesIMU extends Command
+public class TurnDegreesIMUCommand extends Command
 {
 
     private final Drivetrain m_drivetrain;
     private double m_degrees;
     private int m_targetCounter;
 
-    public TurnDegreesIMU(Drivetrain drivetrain, double degrees)
+    public TurnDegreesIMUCommand(Drivetrain drivetrain, double degrees)
     {
         m_drivetrain = drivetrain;
         m_degrees = degrees;
@@ -29,11 +29,11 @@ public class TurnDegreesIMU extends Command
         m_targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0,
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees);
-        m_drivetrain.m_logger.info("TurnDegreesIMU I should turn "+m_degrees+" degrees.");
-        m_drivetrain.m_logger.debug("TurnDegreesIMU initalized");
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand I want to turn  "+m_degrees+" degrees.");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand initalized");
     }
 
     @Override
@@ -69,7 +69,10 @@ public class TurnDegreesIMU extends Command
     protected void end()
     {
         m_drivetrain.endIMUTurn();
-        m_drivetrain.m_logger.debug("TurnDegreesIMU ended");
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Actual degrees driven "+m_drivetrain.getIMUNormalizedHeading());
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Desired degrees driven " + m_degrees);
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Difference ticks " + ((m_degrees)-m_drivetrain.getIMUNormalizedHeading()) + " ticks.");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand ended");
 
     }
 
@@ -77,6 +80,6 @@ public class TurnDegreesIMU extends Command
     protected void interrupted()
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
-        m_drivetrain.m_logger.debug("TurnDegreesIMU interrupted");
+        m_drivetrain.m_logger.info("TurnDegreesIMUCommand interrupted");
     }
 }

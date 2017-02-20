@@ -1,9 +1,5 @@
 package org.usfirst.frc.team4915.steamworks.subsystems;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 
@@ -24,9 +20,6 @@ public class Climber extends SpartronicsSubsystem
         ON,
         SLOW
     }
-
-    //Shows climber speed 
-    private static final double CLIMBER_SPEED = 0.75;
     
     private CANTalon m_climberMotor;
 
@@ -76,13 +69,17 @@ public class Climber extends SpartronicsSubsystem
     }
     
     public double getClimberSpeed(State s) {
+        double speed = SmartDashboard.getNumber("Climber Speed", .75);
         switch(s)
         {
-            case ON: return CLIMBER_SPEED;
-            case SLOW: return CLIMBER_SPEED * .5;
-            case OFF: return 0;
+            case ON:
+                return speed;
+            case SLOW:
+                return speed / 2;
+            case OFF:
+            default:
+                return 0;
         }
-        return 0;
     }
 
     public void setClimber(State s) // NB: this is called during execute! (limit log / dashboard traffic)
