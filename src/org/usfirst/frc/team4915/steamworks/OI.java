@@ -31,6 +31,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ChooseCameraCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -215,13 +216,13 @@ public class OI
         }
         try
         {
-            String alliance = DriverStation.getInstance().getAlliance().toString();
+            Alliance alliance = DriverStation.getInstance().getAlliance();
             if (alliance == null)
             {
                 m_logger.error("We're not on an alliance?");
                 return;
             }
-            String other = alliance.equals("Blue") ? "Red" : "Blue";
+            String other = alliance.toString().equals("Blue") ? "Red" : "Blue";
             Files.list(root)
                     .filter(Files::isReadable)
                     .map(Path::getFileName)
