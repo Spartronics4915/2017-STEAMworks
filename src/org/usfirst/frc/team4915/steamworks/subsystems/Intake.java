@@ -18,7 +18,7 @@ public class Intake extends SpartronicsSubsystem
         REVERSE
     }
 
-    private static final double INTAKE_SPEED = 0.75;
+    private static final double INTAKE_SPEED = 0.90;
 
     private CANTalon m_intakeMotor;
 
