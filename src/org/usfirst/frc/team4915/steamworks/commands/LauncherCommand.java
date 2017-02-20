@@ -65,6 +65,8 @@ public class LauncherCommand extends Command
                     return true;
                 }
                 return false;
+            case UNJAM:
+                return false;
         }
         return false;
     }
