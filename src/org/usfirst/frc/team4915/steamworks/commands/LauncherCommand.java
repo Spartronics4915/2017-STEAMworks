@@ -66,8 +66,6 @@ public class LauncherCommand extends Command
                     return true;
                 }
                 return false;
-            case UNJAM:
-                return false;
         }
         return false;
     }
@@ -77,7 +75,6 @@ public class LauncherCommand extends Command
     {
         m_logger.notice("LauncherCommand End");
         m_state = LauncherState.OFF;
-        execute();
     }
 
     // Called when another command which requires one or more of the same
