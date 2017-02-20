@@ -25,6 +25,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 import org.usfirst.frc.team4915.steamworks.commands.ChooseCameraCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
@@ -69,6 +70,7 @@ public class OI
     public final JoystickButton m_launcherOn = new JoystickButton(m_auxStick, 3);
     public final JoystickButton m_launcherOff = new JoystickButton(m_auxStick, 2);
     public final JoystickButton m_launcherSingle = new JoystickButton(m_auxStick, 4);
+    public final JoystickButton m_launcherUnjam = new JoystickButton(m_auxStick, 5);
 
     public final JoystickButton m_auxIntakeOn = new JoystickButton(m_auxStick, 6);
     public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
@@ -295,10 +297,10 @@ public class OI
 
     private void initLauncherOI()
     {
-        m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON));
-        m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF));
-        m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE));
-        // includes carousel
+    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
+    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
+    	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
+    	m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
     }
 
     private void initChooseCameraOI()
