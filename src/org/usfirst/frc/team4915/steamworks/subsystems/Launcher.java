@@ -189,6 +189,36 @@ public class Launcher extends SpartronicsSubsystem
         return false;
     }
 
+    private boolean isJammed() 
+    {
+        if (this.getRpm() < 20) // Assumed to be in rpm, also unsure 
+        {
+            m_jamCount++;
+            if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
+            {
+                return false;
+            }
+            else if (m_jamCount > 30)
+            {
+                m_jamCount = 0;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        m_jamCount = 0;
+        return false;
+    }
+
+    private double getRpm()  
+    {
+        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in ticks/100ms
+        return currentAgitatorSpeed * 600.0 / 4096.0;
+    }
+
+
     public boolean isUnjamDone()
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
