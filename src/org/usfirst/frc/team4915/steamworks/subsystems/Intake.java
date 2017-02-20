@@ -18,7 +18,7 @@ public class Intake extends SpartronicsSubsystem
         REVERSE
     }
 
-    private static final double INTAKE_SPEED = 0.75;
+    private static final double INTAKE_SPEED = 0.90;
 
     private CANTalon m_intakeMotor;
 
@@ -55,17 +55,16 @@ public class Intake extends SpartronicsSubsystem
 
     public double getIntakeSpeed(State s)
     {
-        switch (s)
+        double result;
+        if(s == State.OFF)
+            result = 0;
+        else
         {
-            case ON:
-                return INTAKE_SPEED;
-            case REVERSE:
-                return -INTAKE_SPEED;
-            case OFF:
-                return 0;
-
+            result = SmartDashboard.getNumber("Intake TGT", INTAKE_SPEED);
+            if(s == State.REVERSE)
+                result = -result;
         }
-        return 0;
+        return result;
     }
 
     public String getStateString(State s)

@@ -41,7 +41,6 @@ public class Launcher extends SpartronicsSubsystem
         {
             m_state = LauncherState.OFF;
             m_startupCount = 0;
-            m_logger.info("Launcher initialized 1");
             m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
             m_launcherMotor.setAllowableClosedLoopErr(m_allowableError); //4096 Native Units per rev * 5 revs per min
             m_launcherMotor.changeControlMode(TalonControlMode.Speed);

@@ -23,7 +23,7 @@ public class LauncherCommand extends Command
         // eg. requires(chassis);
 
         m_launcher = launcher;
-        m_logger = new Logger("Launcher", Logger.Level.DEBUG);
+        m_logger = new Logger("LauncherCommand", Logger.Level.DEBUG);
         m_state = state;
         m_terminateWhenEmpty = terminateWhenEmpty;
         requires(m_launcher);
@@ -32,7 +32,7 @@ public class LauncherCommand extends Command
     // Called just before this Command runs the first time
     protected void initialize()
     {
-        m_logger.debug("LauncherCommand Initialized to " + m_state);
+        m_logger.debug("Initialized (" + m_state + ")");
         m_launcher.setAgitatorTarget();
         m_launcher.setLauncher(m_state);
     }
@@ -50,18 +50,16 @@ public class LauncherCommand extends Command
         {
             case ON:
                 if (m_terminateWhenEmpty && m_launcher.isEmpty())
-                {
                     return true;
-                }
-                return false;
+                else
+                    return false;
             case OFF:
                 return true;
             case SINGLE:
                 if (m_launcher.isSingleShotDone())
-                {
                     return true;
-                }
-                return false;
+                else
+                    return false;
             case UNJAM:
                 return false;
         }
@@ -71,8 +69,7 @@ public class LauncherCommand extends Command
     // Called once after isFinished returns true
     protected void end()
     {
-        m_logger.notice("LauncherCommand End");
-        m_state = LauncherState.OFF;
+        m_logger.notice("End (" + m_state + ")");
         execute();
     }
 
@@ -80,7 +77,7 @@ public class LauncherCommand extends Command
     // subsystems is scheduled to run
     protected void interrupted()
     {
-        m_logger.info("LauncherCommand.interrupted");
+        m_logger.info("Interrupted");
         end();
     }
 }

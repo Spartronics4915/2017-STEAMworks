@@ -54,8 +54,8 @@ public class IntakeSetCommand extends Command
     @Override
     public void end()
     {
-        m_intake.m_logger.notice("end InakeSetCommand " +
-                m_intake.getStateString(m_state));
+        m_intake.m_logger.notice("end IntakeSetCommand " + 
+                                m_intake.getStateString(m_state));
         m_intake.setIntake(Intake.State.OFF);
     }
 }
