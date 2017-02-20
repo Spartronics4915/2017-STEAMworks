@@ -18,7 +18,8 @@ public class Launcher extends SpartronicsSubsystem
     {
         OFF,
         ON,
-        SINGLE
+        SINGLE,
+        UNJAM
     }
 
     //the "perfect" static speed that always makes goal
@@ -113,6 +114,7 @@ public class Launcher extends SpartronicsSubsystem
             case ON: return speedTarget;
             case OFF: return 0;
             case SINGLE: return speedTarget;
+            case UNJAM: return speedTarget;
         }
         return 0;
     }
@@ -137,6 +139,14 @@ public class Launcher extends SpartronicsSubsystem
                 else 
                 {
                     return 0.9 * speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage 
+                }
+            case UNJAM: 
+                if(isUnjamDone()) {
+                    return 0;
+                }
+                else
+                {
+                    return -speedTarget;
                 }
         }
         return 0;
@@ -165,10 +175,22 @@ public class Launcher extends SpartronicsSubsystem
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
         m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
         if(CurrentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
-        {
-            
-            return true;
-        }
+            {
+                
+                return true;
+            }
+        return false;
+    }
+    
+    public boolean isUnjamDone() 
+    {
+        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
+        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
+        if(CurrentPosition <= (m_initialPos - 1024)) /// 1024 native units, 1/4 rotation
+            {
+                
+                return true;
+            }
         return false;
     }
 
