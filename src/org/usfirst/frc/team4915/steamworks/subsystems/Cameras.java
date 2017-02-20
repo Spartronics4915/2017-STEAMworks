@@ -40,7 +40,7 @@ public class Cameras extends SpartronicsSubsystem
     public static final int CAM_REV = 1;
     public static final int CAM_NONE = 2;
 
-    private static final int imageWidth = 416;
+    private static final int imageWidth = 320;
     private static final int imageHeight = 240;
     private static final int frameRate = 20;
 
@@ -49,7 +49,8 @@ public class Cameras extends SpartronicsSubsystem
     // Save space in an array for two USB cameras
     private UsbCamera m_camera[] = new UsbCamera[2];
 
-    private int m_numCameras;   // Track the number of cameras we have
+    private int m_numCameras;           // Track the number of cameras we have
+    private int m_currentCamera;        // Store the current camera ID
 
     private MjpegServer m_mjpegServer;  // The camera server object
 
@@ -104,12 +105,13 @@ public class Cameras extends SpartronicsSubsystem
         }
 
         // Now that all the cameras have been found, set their modes and
-        // start up the server
-        if (m_numCameras >= CAM_FWD)
+        // start up the server (if we have at least one camera...)
+        if ((m_numCameras >= 1) && (m_camera[CAM_FWD] != null))
         {
             // Create camera network server, and assign the first camera
             m_mjpegServer = new MjpegServer("USB Camera Server", serverPort);
             m_mjpegServer.setSource(m_camera[CAM_FWD]);
+            m_currentCamera = CAM_FWD;
         }
 
         m_logger.info("Constructor finished, " + m_numCameras + " found");
@@ -121,6 +123,13 @@ public class Cameras extends SpartronicsSubsystem
 
     public boolean changeCamera(int camera) {
         boolean status = false;
+
+        // Bail out if we have no cameras configured
+        if (m_numCameras == 0)
+        {
+            return false;
+        }
+
         switch (camera)
         {
             case CAM_NONE:
@@ -129,49 +138,60 @@ public class Cameras extends SpartronicsSubsystem
                 // assign it to the mjpegServer
                 // Idea: Make the source a static picture of a test pattern
                 m_logger.info("Selecting CAM_NONE");
+                m_currentCamera = CAM_NONE;
                 break;
 
             case CAM_FWD:
                 // First check to make sure we have this camera available
-                if (m_numCameras >= CAM_FWD)
+                if (m_currentCamera != CAM_FWD)
                 {
-                    if (m_camera[CAM_FWD].isValid())
+                    if (m_numCameras >= CAM_FWD)
                     {
-                        m_logger.info("Selecting CAM_FWD");
-                        // Assign the selected camera to the streaming server
-                        m_mjpegServer.setSource(m_camera[CAM_FWD]);
-                        status = true;      // We have been successful!
+                        if ((m_camera[CAM_FWD] != null) &&
+                                (m_camera[CAM_FWD].isValid()))
+                        {
+                            m_logger.info("Selecting CAM_FWD");
+                            // Assign the camera to the streaming server
+                            m_mjpegServer.setSource(m_camera[CAM_FWD]);
+                            m_currentCamera = CAM_FWD;
+                            status = true;      // We have been successful!
+                        }
+                        else
+                        {
+                            m_logger.info("CAM_FWD is invalid!");
+                        }
                     }
                     else
                     {
-                        m_logger.info("CAM_FWD is invalid!");
+                        m_logger.info("No CAM_FWD!");
                     }
-                }
-                else
-                {
-                    m_logger.info("No CAM_FWD!");
                 }
                 break;
 
             case CAM_REV:
                 // First check to make sure we have this camera available
-                if (m_numCameras >= CAM_REV)
+                if (m_currentCamera != CAM_REV)
                 {
-                    if (m_camera[CAM_REV].isValid())
+                    if (m_numCameras >= CAM_REV)
                     {
-                        m_logger.info("Selecting CAM_REV");
-                        // Assign the selected camera to the streaming server
-                        m_mjpegServer.setSource(m_camera[CAM_REV]);
-                        status = true;      // We have been successful!
+                        if ((m_camera[CAM_REV] != null) &&
+                                (m_camera[CAM_REV].isValid()))
+                        {
+                            m_logger.info("Selecting CAM_REV");
+                            // Assign the camera to the streaming server
+                            m_mjpegServer.setSource(m_camera[CAM_REV]);
+                            m_currentCamera = CAM_REV;
+                            status = true;      // We have been successful!
+                        }
+                        else
+                        {
+                            m_logger.info("CAM_REV is invalid!");
+                        }
                     }
                     else
                     {
-                        m_logger.info("CAM_REV is invalid!");
+                        m_logger.info("No CAM_REV!");
                     }
-                }
-                else
-                {
-                    m_logger.info("No CAM_REV!");
                 }
                 break;
 

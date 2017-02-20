@@ -20,6 +20,7 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -50,8 +51,8 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
-    private static final double WHEEL_DIAMETER = 6;
-    private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
+//    private static final double WHEEL_DIAMETER = 6; // Not needed right now
+    private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
@@ -86,18 +87,25 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private static final double turnKp = 0.12;
     private static final double turnKi = 0.01;
-    private static final double turnKd = 0.1;
+    private static final double turnKd = 0.145;
     private static final double turnKf = 0.001;
+    
+    // Was
+//    private static final double turnKp = 0.12;
+//    private static final double turnKi = 0.01;
+//    private static final double turnKd = 0.145;
+//    private static final double turnKf = 0.001;
 
     // Replay
     private boolean m_isRecording = false;
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    private int m_replayLaunchStart = 0;
+    private int m_replayLaunchStop = 0;
     
     //Reverse
     private boolean m_reverseIsOn = false;
-    private int m_replayLaunch = 0;
 
 
     public Drivetrain()
@@ -244,7 +252,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
         else
         {
-            m_logger.warning("can't start an IMU turn because the IMU isn't initalized");
+            printIMUErrorMessage(m_imu);
         }
     }
 
@@ -270,7 +278,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
         else
         {
-            m_logger.warning("can't get normalized IMU heading because the IMU isn't initalized");
+            printIMUErrorMessage(m_imu);
             return 0;
         }
     }
@@ -283,8 +291,25 @@ public class Drivetrain extends SpartronicsSubsystem
         }
         else
         {
-            m_logger.warning("can't get IMU heading because the IMU isn't initalized");
+            printIMUErrorMessage(m_imu);
             return 0;
+        }
+    }
+    
+    public boolean isIMUInitalized()
+    {
+        return m_imu.isInitialized();
+    }
+    
+    private void printIMUErrorMessage(BNO055 imu)
+    {
+        if (!imu.isSensorPresent())
+        {
+            m_logger.error("can't get normalized IMU heading because the IMU is not present (it's probably not plugged in)!");
+        }
+        else
+        {
+            m_logger.warning("can't get normalized IMU heading because the IMU isn't initalized");
         }
     }
     
@@ -505,8 +530,6 @@ public class Drivetrain extends SpartronicsSubsystem
                     forward = 0.0;
                     rotation = 0.0;
                 }
-                
-                if (m_isRecording)
                 {
                     m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
@@ -569,9 +592,9 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            m_logger.info("Drivetrain stop method invoked.");
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            m_robotDrive.arcadeDrive(0,0);
             // Is this the right thing to do?
             stopRecording();
 
@@ -634,7 +657,8 @@ public class Drivetrain extends SpartronicsSubsystem
     }
 
     // getEncPosition is private since we really don't want clients to worry about ticks.
-    private int getEncPosition()
+    // XXX: Needs to be made private
+    public int getEncPosition()
     {
         // XXX: for now we only return one enc position... Should caller need access to
         //      a specific motor, we should add a parameter
@@ -669,6 +693,10 @@ public class Drivetrain extends SpartronicsSubsystem
 
     public void startRecording()
     {
+        if (!getRecordingEnabled())
+        {
+            return;
+        }
         m_startedRecordingAt = Instant.now();
         m_logger.notice("Started recording at " + m_startedRecordingAt);
 
@@ -695,6 +723,8 @@ public class Drivetrain extends SpartronicsSubsystem
             }
         }
     }
+    
+    
 
     public void loadReplay()
     {
@@ -717,15 +747,17 @@ public class Drivetrain extends SpartronicsSubsystem
                 String[] rotationFromFile = lines.get(1).split(",");
                 if (lines.size() > 2)
                 {
-                    m_replayLaunch = Integer.valueOf(lines.get(2));
-                    if (m_replayLaunch >= forwardFromFile.length || m_replayLaunch < 0)
+                    String[] launchFromFile = lines.get(2).split(",");
+                    m_replayLaunchStart = Integer.valueOf(launchFromFile[0]);
+                    m_replayLaunchStop = Integer.valueOf(launchFromFile[1]);
+                    if (m_replayLaunchStart >= forwardFromFile.length || m_replayLaunchStart < 0 || m_replayLaunchStop < m_replayLaunchStart)
                     {
-                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunch + "), max " + forwardFromFile.length);
-                        m_replayLaunch = 0;
+                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunchStart + "), max " + forwardFromFile.length);
+                        m_replayLaunchStart = 0;
                     }
                     else
                     {
-                        m_logger.debug("Will launch at step number " + m_replayLaunch);
+                        m_logger.debug("Will launch at step number " + m_replayLaunchStart);
                     }
                 }
                 else
@@ -800,6 +832,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    public boolean getRecordingEnabled()
+    {
+        return SmartDashboard.getBoolean("RecordingEnabled", false);
+    }
+
     public List<Double> getReplayForward()
     {
         return m_replayForward;
@@ -810,9 +847,14 @@ public class Drivetrain extends SpartronicsSubsystem
         return m_replayRotation;
     }
 
-    public int getReplayLaunch()
+    public int getReplayLaunchStart()
     {
-        return m_replayLaunch;
+        return m_replayLaunchStart;
+    }
+
+    public int getReplayLaunchStop()
+    {
+        return m_replayLaunchStop;
     }
 
 }

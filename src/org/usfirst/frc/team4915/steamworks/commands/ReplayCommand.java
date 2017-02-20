@@ -13,16 +13,21 @@ public class ReplayCommand extends Command
 
     private final Drivetrain m_drivetrain;
     private final Launcher m_launcher;
+    private final Command m_launcherOn;
+    private final Command m_launcherOff;
     private List<Double> m_replayForward;
     private List<Double> m_replayRotation;
     private int m_currentStep;
-    private int m_launchAt = 0;
+    private int m_launchStart = 0;
+    private int m_launchStop = 0;
     private boolean m_finished = false;
 
     public ReplayCommand(Drivetrain drivetrain, Launcher launcher)
     {
         m_drivetrain = drivetrain;
         m_launcher = launcher;
+        m_launcherOn = new LauncherCommand(m_launcher, LauncherState.ON,true);
+        m_launcherOff = new LauncherCommand(m_launcher, LauncherState.OFF,true);
         requires(m_drivetrain);
     }
 
@@ -35,10 +40,19 @@ public class ReplayCommand extends Command
     @Override
     public void execute()
     {
-        if (m_launchAt != 0 && m_currentStep == m_launchAt)
+        if (m_launchStart != 0)
         {
-            m_drivetrain.m_logger.notice("Launching");
-            new LauncherCommand(m_launcher, LauncherState.ON).start();
+            if (m_currentStep == m_launchStart)
+            {
+                m_drivetrain.m_logger.notice("Launching in replay");
+                m_launcherOn.start();
+            }
+            else if (m_currentStep == m_launchStop)
+            {
+                m_drivetrain.m_logger.notice("Stopped launching in replay");
+                m_launcherOn.cancel();
+                m_launcherOff.start();
+            }
         }
         if (m_currentStep++ >= m_replayForward.size())
         {
@@ -65,7 +79,8 @@ public class ReplayCommand extends Command
         m_replayForward = m_drivetrain.getReplayForward();
         m_replayRotation = m_drivetrain.getReplayRotation();
         m_currentStep = 0;
-        m_launchAt = m_drivetrain.getReplayLaunch();
+        m_launchStart = m_drivetrain.getReplayLaunchStart();
+        m_launchStop = m_drivetrain.getReplayLaunchStop();
         m_finished = false;
     }
 
