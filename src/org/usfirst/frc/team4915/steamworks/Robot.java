@@ -1,12 +1,12 @@
 
 package org.usfirst.frc.team4915.steamworks;
 
-import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -32,8 +32,8 @@ public class Robot extends IterativeRobot
     public void robotInit()
     {
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
+        m_drivetrain = new Drivetrain(); // We put drivetrain first so that our IMU is ready for everything else faster
         m_intake = new Intake();
-        m_drivetrain = new Drivetrain();
         m_climber = new Climber();
         m_cameras = new Cameras();
         m_launcher = new Launcher();
@@ -108,7 +108,7 @@ public class Robot extends IterativeRobot
         {
             acmd.cancel();
         }
-        //new LauncherCommand(m_launcher, LauncherState.OFF).start();
+        new LauncherCommand(m_launcher, LauncherState.OFF, false).start();
     }
 
     @Override

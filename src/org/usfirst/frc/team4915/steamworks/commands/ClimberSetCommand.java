@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
-import java.util.List;
-
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber.State;
 
