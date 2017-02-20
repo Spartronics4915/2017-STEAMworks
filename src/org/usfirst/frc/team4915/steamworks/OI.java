@@ -198,7 +198,7 @@ public class OI
         m_autoPresetOptions.put("Ten Feet", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "120")); // This is also just for testing
         m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "53.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
 
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
