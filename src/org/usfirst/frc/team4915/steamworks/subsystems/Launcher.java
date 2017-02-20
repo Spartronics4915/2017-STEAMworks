@@ -196,11 +196,8 @@ public class Launcher extends SpartronicsSubsystem
 
     public void setAgitatorTarget()
     {
-        if(m_state == LauncherState.SINGLE)
-        {
-            m_initialPos = m_agitatorMotor.getPulseWidthPosition();
-            m_logger.debug("setAgitatorTarget: Initial position is " + m_initialPos);
-        }
+        m_initialPos = m_agitatorMotor.getPulseWidthPosition();
+        m_logger.debug("setAgitatorTarget: Initial position is " + m_initialPos);
     }
     
     public double getInitialPos() 
@@ -216,7 +213,7 @@ public class Launcher extends SpartronicsSubsystem
     public boolean isEmpty() 
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        if(CurrentPosition >= (m_initialPos + 4096*4)) 
+        if(CurrentPosition >= (m_initialPos + 4096*4))
         {
             return true;
         }
