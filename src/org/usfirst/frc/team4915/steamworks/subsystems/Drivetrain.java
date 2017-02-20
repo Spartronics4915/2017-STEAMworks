@@ -51,7 +51,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
-    private static final double WHEEL_DIAMETER = 6;
+//    private static final double WHEEL_DIAMETER = 6; // Not needed right now
     private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
@@ -87,8 +87,14 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private static final double turnKp = 0.12;
     private static final double turnKi = 0.01;
-    private static final double turnKd = 0.1;
+    private static final double turnKd = 0.145;
     private static final double turnKf = 0.001;
+    
+    // Was
+//    private static final double turnKp = 0.12;
+//    private static final double turnKi = 0.01;
+//    private static final double turnKd = 0.145;
+//    private static final double turnKf = 0.001;
 
     // Replay
     private boolean m_isRecording = false;
@@ -587,6 +593,7 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            m_robotDrive.arcadeDrive(0,0);
             // Is this the right thing to do?
             stopRecording();
 

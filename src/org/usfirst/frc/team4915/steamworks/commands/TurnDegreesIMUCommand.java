@@ -29,7 +29,7 @@ public class TurnDegreesIMUCommand extends Command
         m_targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0,
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees);
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand I want to turn  "+m_degrees+" degrees.");

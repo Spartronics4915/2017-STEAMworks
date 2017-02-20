@@ -203,10 +203,8 @@ public class Launcher extends SpartronicsSubsystem
 
     public void setAgitatorTarget()
     {
-
         m_initialPos = m_agitatorMotor.getPulseWidthPosition();
         m_logger.debug("setAgitatorTarget: Initial position is " + m_initialPos);
-
     }
 
     public double getInitialPos()

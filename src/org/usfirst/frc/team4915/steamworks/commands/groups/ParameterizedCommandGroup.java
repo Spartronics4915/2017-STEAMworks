@@ -2,9 +2,12 @@ package org.usfirst.frc.team4915.steamworks.commands.groups;
 
 import org.usfirst.frc.team4915.steamworks.OI;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
+import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMUCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -18,11 +21,11 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class ParameterizedCommandGroup extends CommandGroup
 {
 
-    public ParameterizedCommandGroup(Drivetrain drivetrain, OI oi, String... params)
+    public ParameterizedCommandGroup(Drivetrain drivetrain, Launcher launcher, OI oi, String... params)
     {
         int safeMaxIndex = 0;
         requires(drivetrain);
-        if (params.length%2 != 1) 
+        if (params.length%2 != 0)
         {
             // We subtract 2 here because arrays start at 0 in Java, and we want one less then the greatest array index so we subtract one more
             safeMaxIndex = params.length-2; // If we have an odd number of indices, then the safe length is one less so we don't get a null array value
@@ -45,10 +48,10 @@ public class ParameterizedCommandGroup extends CommandGroup
                     addSequential(new TurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
                     break;
                 case "Shoot":
-                    // TODO: Add a command here
+                    addSequential(new LauncherCommand(launcher, LauncherState.ON, true));
                     break;
                 case "Stop":
-                    addSequential(new StopCommand(drivetrain));
+                    addSequential(new StopCommand(drivetrain)); // Takes no parameters
                     break;
                 default:
                     drivetrain.m_logger.warning("ParameterizedCommandGroup Unrececognized parameter "+command);
