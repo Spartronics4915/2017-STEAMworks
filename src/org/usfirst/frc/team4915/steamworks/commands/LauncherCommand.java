@@ -68,7 +68,7 @@ public class LauncherCommand extends Command
     protected void end()
     {
         m_logger.notice("End (" + m_state + ")");
-        execute();
+        m_launcher.setLauncher(LauncherState.OFF);
     }
 
     // Called when another command which requires one or more of the same
