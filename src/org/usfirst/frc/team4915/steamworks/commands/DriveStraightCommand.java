@@ -136,7 +136,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         }
         else if (error < -180)
         {
-            error += 180;
+            error += 360;
         }
 
         double correction = 0.0;
