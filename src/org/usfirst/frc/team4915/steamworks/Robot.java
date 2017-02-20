@@ -108,7 +108,7 @@ public class Robot extends IterativeRobot
         {
             acmd.cancel();
         }
-        new LauncherCommand(m_launcher, LauncherState.OFF, false).start();
+        new LauncherCommand(m_launcher, LauncherState.OFF, false).start(); // make sure launcher is off when teleop starts.
     }
 
     @Override
