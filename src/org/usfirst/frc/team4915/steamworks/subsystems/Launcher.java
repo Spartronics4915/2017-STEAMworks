@@ -131,7 +131,7 @@ public class Launcher extends SpartronicsSubsystem
             case ON:
                 if (isLauncherAtSpeed())
                 {
-                    if (isJammed()) 
+                    if (isJammed() && !isUnjamDone()) 
                     {
                         return -speedTarget;
                     }
@@ -150,7 +150,7 @@ public class Launcher extends SpartronicsSubsystem
                 }
                 else
                 {
-                    if (isJammed())
+                    if (isJammed() && !isUnjamDone())
                     {
                         return -0.9 * speedTarget;
                     }
