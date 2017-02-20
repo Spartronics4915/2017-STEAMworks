@@ -38,7 +38,7 @@ public class ReplayCommand extends Command
         if (m_launchAt != 0 && m_currentStep == m_launchAt)
         {
             m_drivetrain.m_logger.notice("Launching");
-            new LauncherCommand(m_launcher, LauncherState.ON).start();
+            new LauncherCommand(m_launcher, LauncherState.ON, true).start();
         }
         if (m_currentStep++ >= m_replayForward.size())
         {
