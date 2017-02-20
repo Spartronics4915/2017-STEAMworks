@@ -59,7 +59,7 @@ public class OI
     public final JoystickButton m_intakeReverse = new JoystickButton(m_driveStick, 4);
 
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
-    
+
     public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
     public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
 
@@ -187,11 +187,11 @@ public class OI
         m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "93.3")); // This is the length from the diamond plate to the baseline
         m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH+2)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
-//        m_autoPresetOptions.put("Drive and Shoot Position 1", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-//                "Drive", "42", "Turn", "90", "Drive", "" + (248 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
-//        m_autoPresetOptions.put("Drive and Shoot Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-//                "Drive", "42", "Turn", "90", "Drive", "" + (124 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
+                "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH + 2)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
+        //        m_autoPresetOptions.put("Drive and Shoot Position 1", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+        //                "Drive", "42", "Turn", "90", "Drive", "" + (248 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
+        //        m_autoPresetOptions.put("Drive and Shoot Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+        //                "Drive", "42", "Turn", "90", "Drive", "" + (124 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
         // These are commented out because they're too much work to keep updating, and we probably won't use them; they're probably out of date
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
@@ -199,8 +199,9 @@ public class OI
                 "Drive", "60")); // This is just for testing
         m_autoPresetOptions.put("Ten Feet", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "120")); // This is also just for testing
-        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3",
+                new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+                        "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
 
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
@@ -298,10 +299,10 @@ public class OI
 
     private void initLauncherOI()
     {
-    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
-    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
-    	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
-    	m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
+        m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
+        m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
+        m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
+        m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
     }
 
     private void initChooseCameraOI()

@@ -2,7 +2,6 @@ package org.usfirst.frc.team4915.steamworks.commands;
 
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 
-
 import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -10,8 +9,6 @@ public class ArcadeDriveCommand extends Command
 {
 
     private final Drivetrain m_drivetrain;
-
-
 
     public ArcadeDriveCommand(Drivetrain drivetrain)
     {
@@ -23,9 +20,10 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void initialize()
     {
-        m_drivetrain.m_logger.info("ArcadeDriveCommand initialize");;
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0, 
-                                    0, 0, 0, 0 /* zero PIDF  */);
+        m_drivetrain.m_logger.info("ArcadeDriveCommand initialize");
+        ;
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0,
+                0, 0, 0, 0 /* zero PIDF */);
     }
 
     @Override
@@ -39,7 +37,7 @@ public class ArcadeDriveCommand extends Command
     {
         return false;
     }
-    
+
     @Override
     public void interrupted()
     {
@@ -50,7 +48,7 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void end()
     {
-        m_drivetrain.m_logger.info("ArcadeDriveCommand end");        
+        m_drivetrain.m_logger.info("ArcadeDriveCommand end");
     }
-    
+
 }

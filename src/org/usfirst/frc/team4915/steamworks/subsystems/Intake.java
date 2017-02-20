@@ -41,42 +41,48 @@ public class Intake extends SpartronicsSubsystem
             SmartDashboard.putString("Intake Status", "Error");
         }
     }
-    
+
     @Override
     protected void initDefaultCommand()
     {
 
     }
-    
+
     public double getIntakeCurrent()
     {
         return m_intakeMotor.getOutputCurrent();
     }
-    
+
     public double getIntakeSpeed(State s)
     {
-        switch(s)
+        switch (s)
         {
-            case ON:  return INTAKE_SPEED;
-            case REVERSE: return -INTAKE_SPEED;
-            case OFF: return 0;
-        
+            case ON:
+                return INTAKE_SPEED;
+            case REVERSE:
+                return -INTAKE_SPEED;
+            case OFF:
+                return 0;
+
         }
         return 0;
     }
 
     public String getStateString(State s)
     {
-        switch(s)
+        switch (s)
         {
-            case OFF: return "OFF";
-            case ON: return "ON";
-            case REVERSE: return "REVERSE";
+            case OFF:
+                return "OFF";
+            case ON:
+                return "ON";
+            case REVERSE:
+                return "REVERSE";
         }
         return null;
     }
 
-    public void setIntake(State state)  // this is called in execute, don't want to spew logs
+    public void setIntake(State state) // this is called in execute, don't want to spew logs
     {
         if (initialized())
         {

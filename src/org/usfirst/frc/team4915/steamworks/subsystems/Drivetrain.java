@@ -47,20 +47,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
-
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
-//    private static final double WHEEL_DIAMETER = 6; // Not needed right now
+    //    private static final double WHEEL_DIAMETER = 6; // Not needed right now
     private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
     private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
-    
+
     private static final int LIGHT_OUTPUT_PORT = 0;
     private DigitalOutput m_lightOutput;
-
-
 
     // Port motors
     private CANTalon m_portFollowerMotor;
@@ -89,12 +86,12 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double turnKi = 0.01;
     private static final double turnKd = 0.145;
     private static final double turnKf = 0.001;
-    
+
     // Was
-//    private static final double turnKp = 0.12;
-//    private static final double turnKi = 0.01;
-//    private static final double turnKd = 0.145;
-//    private static final double turnKf = 0.001;
+    //    private static final double turnKp = 0.12;
+    //    private static final double turnKi = 0.01;
+    //    private static final double turnKd = 0.145;
+    //    private static final double turnKf = 0.001;
 
     // Replay
     private boolean m_isRecording = false;
@@ -103,14 +100,13 @@ public class Drivetrain extends SpartronicsSubsystem
     private final List<Double> m_replayRotation = new ArrayList<>();
     private int m_replayLaunchStart = 0;
     private int m_replayLaunchStop = 0;
-    
+
     //Reverse
     private boolean m_reverseIsOn = false;
 
-
     public Drivetrain()
     {
-        
+
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // We'll get a value for this after OI is inited
         m_target = 0;
@@ -172,7 +168,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Get an instance of the BNO055 IMU
             m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
                     BNO055.vector_type_t.VECTOR_EULER);
-            
+
             // PID Turning with the IMUPIDSource and controller
             m_imuPIDSource = new IMUPIDSource(m_imu); // Make a new IMUPIDSource that we can use with a PIDController
             m_turningPIDController = new PIDController(turnKp, turnKi, turnKd, turnKf,
@@ -197,15 +193,13 @@ public class Drivetrain extends SpartronicsSubsystem
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
             loadReplay();
-            
+
             m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
             SmartDashboard.putString("ReverseEnabled", "Disabled");
 
-
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
-            
-            
+
         }
         catch (Exception e)
         {
@@ -295,12 +289,12 @@ public class Drivetrain extends SpartronicsSubsystem
             return 0;
         }
     }
-    
+
     public boolean isIMUInitalized()
     {
         return m_imu.isInitialized();
     }
-    
+
     private void printIMUErrorMessage(BNO055 imu)
     {
         if (!imu.isSensorPresent())
@@ -312,7 +306,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.warning("can't get normalized IMU heading because the IMU isn't initalized");
         }
     }
-    
+
     public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
@@ -326,7 +320,7 @@ public class Drivetrain extends SpartronicsSubsystem
 
     private double getTicksToRevolutions(int ticks)
     {
-        return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
+        return ticks / (double) QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
 
     // Not to be confused with CANTalon's setControlMode... The idea here is to
@@ -506,7 +500,6 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
-    
     // Uses arcade drive coupled with the drivestick
     public void driveArcade()
     {
@@ -517,13 +510,13 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 double forward = triggerAxis() + m_altDriveStick.getY();
                 double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
-                if(m_reverseIsOn)
+                if (m_reverseIsOn)
                 {
                     forward = -triggerAxis() - m_altDriveStick.getY();
                     rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
                     //m_logger.debug("Reverse Engaged");
                 }
-                
+
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
                     // To keep motor safety happy
@@ -531,7 +524,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     rotation = 0.0;
                 }
                 {
-                    m_replayForward.add(forward); 
+                    m_replayForward.add(forward);
                     m_replayRotation.add(rotation);
                 }
                 m_robotDrive.arcadeDrive(forward, rotation);
@@ -542,17 +535,17 @@ public class Drivetrain extends SpartronicsSubsystem
             }
         }
     }
-    
+
     public void setReverse(Cameras m_cameras)
     {
-        
+
         m_reverseIsOn = true;
         m_lightOutput.set(true);
         m_cameras.changeCamera(Cameras.CAM_REV);
         SmartDashboard.putString("ReverseEnabled", "Enabled");
 
     }
-    
+
     public void resetReverse(Cameras m_cameras)
     {
         m_reverseIsOn = false;
@@ -560,14 +553,14 @@ public class Drivetrain extends SpartronicsSubsystem
         m_cameras.changeCamera(Cameras.CAM_FWD);
         SmartDashboard.putString("ReverseEnabled", "Disabled");
     }
-    
+
     public double triggerAxis()
     {
-        if(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight) > 0)
+        if (m_driveStick.getTriggerAxis(GenericHID.Hand.kRight) > 0)
         {
             return -(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight));
         }
-        else if(m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft) > 0)
+        else if (m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft) > 0)
         {
             return (m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft));
         }
@@ -594,7 +587,7 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
-            m_robotDrive.arcadeDrive(0,0);
+            m_robotDrive.arcadeDrive(0, 0);
             // Is this the right thing to do?
             stopRecording();
 
@@ -723,8 +716,6 @@ public class Drivetrain extends SpartronicsSubsystem
             }
         }
     }
-    
-    
 
     public void loadReplay()
     {

@@ -27,11 +27,11 @@ public class ChooseCameraCommand extends Command
 
         // Log the selection for debugging?
         /*
-        if (m_camera == Cameras.CameraType.CAM_FWD) {
-        }
-        else if (m_camera == Cameras.CameraType.CAM_REV) {
-        }
-        */
+         * if (m_camera == Cameras.CameraType.CAM_FWD) {
+         * }
+         * else if (m_camera == Cameras.CameraType.CAM_REV) {
+         * }
+         */
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ChooseCameraCommand extends Command
     @Override
     public boolean isFinished()
     {
-        return true;    // Once we're done, we're done...
+        return true; // Once we're done, we're done...
     }
 
     @Override

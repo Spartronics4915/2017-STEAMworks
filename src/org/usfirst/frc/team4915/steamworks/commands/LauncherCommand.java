@@ -6,7 +6,6 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-
 /**
  *
  */
@@ -17,7 +16,6 @@ public class LauncherCommand extends Command
     private Logger m_logger;
     private Launcher.LauncherState m_state;
     private boolean m_terminateWhenEmpty;
-    
 
     public LauncherCommand(Launcher launcher, Launcher.LauncherState state, boolean terminateWhenEmpty)
     {
@@ -44,8 +42,6 @@ public class LauncherCommand extends Command
     {
         m_launcher.setLauncher(m_state);
     }
-    
-    
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished()
@@ -53,7 +49,7 @@ public class LauncherCommand extends Command
         switch (m_state)
         {
             case ON:
-                if(m_terminateWhenEmpty && m_launcher.isEmpty()) 
+                if (m_terminateWhenEmpty && m_launcher.isEmpty())
                 {
                     return true;
                 }
@@ -61,7 +57,7 @@ public class LauncherCommand extends Command
             case OFF:
                 return true;
             case SINGLE:
-                if(m_launcher.isSingleShotDone()) 
+                if (m_launcher.isSingleShotDone())
                 {
                     return true;
                 }

@@ -20,7 +20,7 @@ public class Climber extends SpartronicsSubsystem
         ON,
         SLOW
     }
-    
+
     private CANTalon m_climberMotor;
 
     public Logger m_logger;
@@ -48,15 +48,15 @@ public class Climber extends SpartronicsSubsystem
     {
 
     }
-    
+
     public double getClimberCurrent()
     {
         return m_climberMotor.getOutputCurrent();
     }
-    
+
     public String getStateString(State s)
     {
-        switch(s)
+        switch (s)
         {
             case OFF:
                 return "OFF";
@@ -67,10 +67,11 @@ public class Climber extends SpartronicsSubsystem
         }
         return null;
     }
-    
-    public double getClimberSpeed(State s) {
+
+    public double getClimberSpeed(State s)
+    {
         double speed = SmartDashboard.getNumber("Climber Speed", .75);
-        switch(s)
+        switch (s)
         {
             case ON:
                 return speed;
