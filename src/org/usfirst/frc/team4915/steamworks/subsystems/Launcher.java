@@ -109,6 +109,7 @@ public class Launcher extends SpartronicsSubsystem
         }
     }
 
+    // Sets launcher speed based on current state
     public double getLauncherSpeed(double speedTarget)
     {
         switch (m_state)
@@ -122,7 +123,7 @@ public class Launcher extends SpartronicsSubsystem
         }
         return 0;
     }
-
+    // Sets agitator speed based on current state
     public double getAgitatorSpeed(double speedTarget)
     {
         switch (m_state)
@@ -138,7 +139,7 @@ public class Launcher extends SpartronicsSubsystem
                 }
                 else
                 {
-                    return 0;
+                    return 0; 
                 }
             case OFF:
                 return 0;
@@ -153,7 +154,7 @@ public class Launcher extends SpartronicsSubsystem
                     {
                         return -0.9 * speedTarget;
                     }
-                    return 0.9 * speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage 
+                    return 0.9 * speedTarget; 
                 }
         }
         return 0;
@@ -167,7 +168,7 @@ public class Launcher extends SpartronicsSubsystem
         if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
         {
             m_startupCount++;
-            if (m_startupCount < 15)
+            if (m_startupCount < 15) // Make sure launcher is at speed for 300ms (code runs once every 20ms)
             
             {
                 return false;
@@ -190,11 +191,11 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isJammed() 
     {
-        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity();
-        if (isLauncherAtSpeed() && currentAgitatorSpeed < 40) //Assumed to be in rpm, but unsure
+        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in rpm, but unsure
+        if (isLauncherAtSpeed() && currentAgitatorSpeed < 40) // Assumed to be in rpm, also unsure
         {
             m_jamCount++;
-            if (m_jamCount < 15 || m_jamCount > 30)  //unsure of proper values
+            if (m_jamCount < 15 || m_jamCount > 30)  // unsure of proper values
             {
                 return false;
             }
@@ -207,8 +208,8 @@ public class Launcher extends SpartronicsSubsystem
     public boolean isUnjamDone()
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition <= (m_initialPos - 512)) /// 512 native units, 1/8 rotation
+        m_logger.debug("isUnjamDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
+        if (CurrentPosition <= (m_initialPos - 512)) // 512 native units, 1/8 rotation
         {
             return true;
         }

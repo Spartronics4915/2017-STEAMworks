@@ -45,8 +45,6 @@ public class LauncherCommand extends Command
         m_launcher.setLauncher(m_state);
     }
     
-    
-
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished()
     {
