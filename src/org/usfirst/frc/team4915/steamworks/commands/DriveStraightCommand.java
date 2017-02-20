@@ -17,7 +17,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private PIDController m_pidController;
 
     private double m_heading;
-    private static final double IMU_CORRECTION = 0; // .1875
+    private static final double IMU_CORRECTION = 0.1875;
     private static final double MAX_DEGREES_ERROR = .125;
 
     private static final double k_P = 1.43, k_D = 0, k_I = 0, k_F = 0; // Working P 1.43
