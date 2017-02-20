@@ -193,7 +193,7 @@ public class Launcher extends SpartronicsSubsystem
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
         m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition <= (m_initialPos - 1024)) /// 1024 native units, 1/4 rotation
+        if (CurrentPosition <= (m_initialPos - 512)) /// 512 native units, 1/4 rotation
         {
             return true;
         }
