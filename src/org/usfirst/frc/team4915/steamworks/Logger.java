@@ -122,7 +122,7 @@ public class Logger
     {
         Date now = new Date();
         String nowstr = s_dateFormat.format(now);
-        System.out.println(nowstr + " " + lvl + " " + m_namespace + ": " + msg);
+        System.out.println(nowstr + " " + lvl + " " + m_namespace + ": " + msg + "\r"); // We need \r because National Instruments likes to compress frequent messages without the carriage return
         // NB: changing the date-format may negatively impact downstream/display
         //     code that may depend upon this format.
     }
