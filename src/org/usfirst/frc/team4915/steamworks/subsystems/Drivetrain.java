@@ -20,11 +20,13 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
@@ -44,13 +46,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drivetrain extends SpartronicsSubsystem
 {
 
+
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
     private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3;
     private static final double WHEEL_DIAMETER = 6;
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
-    private Joystick m_driveStick; // Joystick for ArcadeDrive
+    private XboxController m_driveStick;// Joystick for ArcadeDrive
+    private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
+    
+    private static final int LIGHT_OUTPUT_PORT = 0;
+    private DigitalOutput m_lightOutput;
+
+
 
     // Port motors
     private CANTalon m_portFollowerMotor;
@@ -85,9 +94,15 @@ public class Drivetrain extends SpartronicsSubsystem
     private Instant m_startedRecordingAt;
     private final List<Double> m_replayForward = new ArrayList<>();
     private final List<Double> m_replayRotation = new ArrayList<>();
+    
+    //Reverse
+    private boolean m_reverseIsOn = false;
+    private int m_replayLaunch = 0;
+
 
     public Drivetrain()
     {
+        
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
         m_driveStick = null; // We'll get a value for this after OI is inited
         m_target = 0;
@@ -149,7 +164,7 @@ public class Drivetrain extends SpartronicsSubsystem
             // Get an instance of the BNO055 IMU
             m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
                     BNO055.vector_type_t.VECTOR_EULER);
-
+            
             // PID Turning with the IMUPIDSource and controller
             m_imuPIDSource = new IMUPIDSource(m_imu); // Make a new IMUPIDSource that we can use with a PIDController
             m_turningPIDController = new PIDController(turnKp, turnKi, turnKd, turnKf,
@@ -173,53 +188,16 @@ public class Drivetrain extends SpartronicsSubsystem
             // Set a max output in volts for RobotDrive
             m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
 
-            try
-            {
-                String[] forwardFromFile = new String(
-                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward")))
-                                .split(",");
-                String[] rotationFromFile = new String(
-                        Files.readAllBytes(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation")))
-                                .split(",");
-                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
-                {
-                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
-                            .map(Double::parseDouble)
-                            .collect(Collectors.toList());
-                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
-                            .map(Double::parseDouble)
-                            .collect(Collectors.toList());
+            loadReplay();
+            
+            m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
+            SmartDashboard.putString("ReverseEnabled", "Disabled");
 
-                    if (forwardProgram.size() == rotationProgram.size())
-                    {
-                        m_replayForward.clear();
-                        m_replayRotation.clear();
-
-                        // Copying the contents of the temporary lists into the cleared m_
-                        // lists because if we simply m_replayForward = forwardProgram it
-                        // throws errors about assigning to final variables.
-                        m_replayForward.addAll(forwardProgram);
-                        m_replayRotation.addAll(rotationProgram);
-                    }
-                    else
-                    {
-                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
-                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
-                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
-                    }
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                m_logger.error("Badly formatted number in replay string");
-            }
-            catch (IOException e)
-            {
-                m_logger.exception(e, false);
-            }
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
+            
+            
         }
         catch (Exception e)
         {
@@ -296,7 +274,7 @@ public class Drivetrain extends SpartronicsSubsystem
             return 0;
         }
     }
-    
+
     public double getIMUHeading()
     {
         if (m_imu.isInitialized())
@@ -309,11 +287,11 @@ public class Drivetrain extends SpartronicsSubsystem
             return 0;
         }
     }
-
-    // setDriveStick is presumably called once from OI after joystick initialization
-    public void setDriveStick(Joystick s)
+    
+    public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
+        m_altDriveStick = j;
     }
 
     public double getInchesToRevolutions(double inches)
@@ -503,6 +481,7 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
 
+    
     // Uses arcade drive coupled with the drivestick
     public void driveArcade()
     {
@@ -511,8 +490,15 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = m_driveStick.getY();
-                double rotation = m_driveStick.getX();
+                double forward = triggerAxis() + m_altDriveStick.getY();
+                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                if(m_reverseIsOn)
+                {
+                    forward = -triggerAxis() - m_altDriveStick.getY();
+                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                    //m_logger.debug("Reverse Engaged");
+                }
+                
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
                     // To keep motor safety happy
@@ -522,7 +508,7 @@ public class Drivetrain extends SpartronicsSubsystem
                 
                 if (m_isRecording)
                 {
-                    m_replayForward.add(forward);
+                    m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
                 }
                 m_robotDrive.arcadeDrive(forward, rotation);
@@ -531,6 +517,40 @@ public class Drivetrain extends SpartronicsSubsystem
             {
                 m_logger.warning("drive arcade attempt with wrong motor control mode (should be PercentVbus)");
             }
+        }
+    }
+    
+    public void setReverse(Cameras m_cameras)
+    {
+        
+        m_reverseIsOn = true;
+        m_lightOutput.set(true);
+        m_cameras.changeCamera(Cameras.CAM_REV);
+        SmartDashboard.putString("ReverseEnabled", "Enabled");
+
+    }
+    
+    public void resetReverse(Cameras m_cameras)
+    {
+        m_reverseIsOn = false;
+        m_lightOutput.set(false);
+        m_cameras.changeCamera(Cameras.CAM_FWD);
+        SmartDashboard.putString("ReverseEnabled", "Disabled");
+    }
+    
+    public double triggerAxis()
+    {
+        if(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight) > 0)
+        {
+            return -(m_driveStick.getTriggerAxis(GenericHID.Hand.kRight));
+        }
+        else if(m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft) > 0)
+        {
+            return (m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft));
+        }
+        else
+        {
+            return 0;
         }
     }
 
@@ -663,18 +683,98 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (m_isRecording)
         {
-            m_logger.notice("Stopped recording at " + Instant.now());
-            long delta = m_startedRecordingAt.until(Instant.now(), ChronoUnit.SECONDS);
+            Instant now = Instant.now();
+            m_logger.notice("Stopped recording at " + now);
+            long delta = m_startedRecordingAt.until(now, ChronoUnit.SECONDS);
             m_logger.notice("(After " + delta + " seconds, " + m_replayForward.size() + " entries)");
 
             m_isRecording = false;
-            saveRecording();
+            if (saveRecording(now.toString()))
+            {
+                SmartDashboard.putString("AutoStrategyOptions", SmartDashboard.getString("AutoStrategyOptions", "") + ",Replay: " + now.toString());
+            }
         }
     }
 
-    private void saveRecording()
+    public void loadReplay()
     {
-        m_logger.notice("Saved the recording");
+        String strategy = SmartDashboard.getString("AutoStrategy", "");
+        if (strategy.equals("") || strategy.equals("None"))
+        {
+            m_logger.notice("No strategy selected, not loading a replay.");
+            m_replayForward.clear();
+            m_replayRotation.clear();
+            return;
+        }
+        if (strategy.startsWith("Replay: "))
+        {
+            try
+            {
+                strategy = strategy.replaceFirst("Replay: ", "");
+                m_logger.notice("Loading " + strategy + " from disk...");
+                List<String> lines = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Recordings", strategy));
+                String[] forwardFromFile = lines.get(0).split(",");
+                String[] rotationFromFile = lines.get(1).split(",");
+                if (lines.size() > 2)
+                {
+                    m_replayLaunch = Integer.valueOf(lines.get(2));
+                    if (m_replayLaunch >= forwardFromFile.length || m_replayLaunch < 0)
+                    {
+                        m_logger.debug("Supposed to launch at an invalid step (" + m_replayLaunch + "), max " + forwardFromFile.length);
+                        m_replayLaunch = 0;
+                    }
+                    else
+                    {
+                        m_logger.debug("Will launch at step number " + m_replayLaunch);
+                    }
+                }
+                else
+                {
+                    m_logger.debug("Won't try to launch.");
+                }
+
+                if (forwardFromFile.length != 0 && rotationFromFile.length != 0)
+                {
+                    List<Double> forwardProgram = Arrays.asList(forwardFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                    List<Double> rotationProgram = Arrays.asList(rotationFromFile).stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+
+                    if (forwardProgram.size() == rotationProgram.size())
+                    {
+                        m_replayForward.clear();
+                        m_replayRotation.clear();
+
+                        // Copying the contents of the temporary lists into the cleared m_
+                        // lists because if we simply m_replayForward = forwardProgram it
+                        // throws errors about assigning to final variables.
+                        m_replayForward.addAll(forwardProgram);
+                        m_replayRotation.addAll(rotationProgram);
+                    }
+                    else
+                    {
+                        m_logger.error("Autonomous program's forward and rotation arrays are different sizes!");
+                        m_logger.debug("Forward array: " + Arrays.toString(forwardFromFile));
+                        m_logger.debug("Rotation array: " + Arrays.toString(rotationFromFile));
+                    }
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                m_logger.error("Badly formatted number in replay string");
+            }
+            catch (IOException e)
+            {
+                m_logger.exception(e, false);
+            }
+        }
+    }
+
+    private boolean saveRecording(String name)
+    {
+        m_logger.notice("Saving the recording...");
         // This takes all the Doubles in m_replayForward, converts them to a list of Strings,
         // then collects them back into one string by "joining" them together with commas.
         String forward = m_replayForward.stream()
@@ -683,18 +783,20 @@ public class Drivetrain extends SpartronicsSubsystem
         String rotation = m_replayRotation.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
+        List<String> both = Arrays.asList(new String[] {forward, rotation});
         try
         {
-            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayForward"), forward.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            Files.write(Paths.get(SmartDashboard.getString("Drivetrain_Replay_Folder", "/home/lvuser"), "ReplayRotation"), rotation.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            Files.createDirectories(Paths.get(System.getProperty("user.home"), "Recordings"));
+            Files.write(Paths.get(System.getProperty("user.home"), "Recordings", name), both, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            return true;
         }
         catch (IOException e)
         {
+            m_logger.error("Couldn't save!");
             m_logger.warning("Old Forward:  " + forward);
             m_logger.warning("Old Rotation: " + rotation);
             m_logger.exception(e, false);
+            return false;
         }
     }
 
@@ -706,6 +808,11 @@ public class Drivetrain extends SpartronicsSubsystem
     public List<Double> getReplayRotation()
     {
         return m_replayRotation;
+    }
+
+    public int getReplayLaunch()
+    {
+        return m_replayLaunch;
     }
 
 }

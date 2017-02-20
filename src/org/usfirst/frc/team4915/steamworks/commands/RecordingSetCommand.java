@@ -20,6 +20,7 @@ public class RecordingSetCommand extends Command
     @Override
     public void end()
     {
+        m_drivetrain.m_logger.debug("RecordingSetCommand end");
     }
 
     @Override
@@ -38,16 +39,19 @@ public class RecordingSetCommand extends Command
     @Override
     public void initialize()
     {
+        m_drivetrain.m_logger.debug("RecordingSetCommand initialize");
     }
 
     @Override
     public void interrupted()
     {
+        m_drivetrain.m_logger.debug("RecordingSetCommand interrupted");
     }
 
     @Override
     public boolean isFinished()
     {
+        m_drivetrain.m_logger.debug("RecordingSetCommand finished");
         return true;
     }
 }
