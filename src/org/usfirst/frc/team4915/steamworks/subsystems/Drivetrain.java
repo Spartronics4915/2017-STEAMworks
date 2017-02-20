@@ -587,6 +587,7 @@ public class Drivetrain extends SpartronicsSubsystem
         {
             m_portMasterMotor.set(0);
             m_starboardMasterMotor.set(0);
+            m_robotDrive.arcadeDrive(0,0);
             // Is this the right thing to do?
             stopRecording();
 
