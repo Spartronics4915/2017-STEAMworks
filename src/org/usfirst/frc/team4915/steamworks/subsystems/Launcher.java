@@ -32,6 +32,7 @@ public class Launcher extends SpartronicsSubsystem
     private LauncherState m_state;
     private double m_initialPos;
     private int m_startupCount;
+    private int m_jamCount;
     private int m_allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
 
     public Launcher()
@@ -198,7 +199,7 @@ public class Launcher extends SpartronicsSubsystem
 
     private boolean isJammed() 
     {
-        if (this.getRpm() < 20) // Assumed to be in rpm, also unsure 
+        if (this.getRpm() < 10) // Assumed to be in rpm, also unsure 
         {
             m_jamCount++;
             if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
