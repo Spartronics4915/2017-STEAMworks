@@ -23,9 +23,10 @@ public class DriveDistanceCmd extends Command
     @Override
     public void initialize()
     {
-        m_drivetrain.m_logger.info("DriveDistanceCmd initialize");;
-        m_drivetrain.setControlMode(TalonControlMode.Position, 4.0, -4.0, 
-                                    0.56, 0, 0, 0 /* zero IDF  */);
+        m_drivetrain.m_logger.info("DriveDistanceCmd initialize");
+        ;
+        m_drivetrain.setControlMode(TalonControlMode.Position, 4.0, -4.0,
+                0.56, 0, 0, 0 /* zero IDF */);
         m_drivetrain.resetPosition();
     }
 
@@ -40,7 +41,7 @@ public class DriveDistanceCmd extends Command
     {
         return m_drivetrain.closedLoopTargetIsReached(.1);
     }
-    
+
     @Override
     public void interrupted()
     {
@@ -51,8 +52,8 @@ public class DriveDistanceCmd extends Command
     @Override
     public void end()
     {
-        m_drivetrain.m_logger.info("DriveDistanceCmd end"); 
+        m_drivetrain.m_logger.info("DriveDistanceCmd end");
         m_drivetrain.stop();
     }
-    
+
 }

@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
-
 public class Robot extends IterativeRobot
 {
 
@@ -61,11 +60,13 @@ public class Robot extends IterativeRobot
         return m_drivetrain;
     }
 
-    public Cameras getCameras() {
+    public Cameras getCameras()
+    {
         return m_cameras;
     }
 
-    public Launcher getLauncher() {
+    public Launcher getLauncher()
+    {
         return m_launcher;
     }
 

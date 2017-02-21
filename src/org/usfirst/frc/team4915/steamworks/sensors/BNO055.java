@@ -608,10 +608,10 @@ public class BNO055
     //  the sign of the result equals the sign of the dividend
     //  -13 % 360 == 347
     //  -377 % 360 == 347
-    public int getNormalizedHeading()
+    public double getNormalizedHeading()
     {
         // int h = (int) Math.round((m_heading[0]-m_initialHeading[0]) % 360);
-        int h = (int) Math.round(m_heading[0] % 360);
+        double h = m_heading[0] % 360;
         if (h > 180)
             h = -(360 - h);
         return h;

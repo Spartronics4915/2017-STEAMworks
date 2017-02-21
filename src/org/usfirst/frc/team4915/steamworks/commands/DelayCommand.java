@@ -5,20 +5,21 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DelayCommand extends Command
 {
+
     private Timer m_timer;
     private double m_duration;
 
     public DelayCommand(double duration)
     {
-        m_duration = duration;          // Save the duration of the delay
-        m_timer = new Timer();          // Create the timer
+        m_duration = duration; // Save the duration of the delay
+        m_timer = new Timer(); // Create the timer
     }
 
     @Override
     public void initialize()
     {
-        m_timer.reset();                // Reset the timer
-        m_timer.start();                // Make sure it is started
+        m_timer.reset(); // Reset the timer
+        m_timer.start(); // Make sure it is started
     }
 
     @Override
@@ -43,7 +44,7 @@ public class DelayCommand extends Command
     @Override
     public void end()
     {
-        m_timer.stop();                 // Stop the timer
+        m_timer.stop(); // Stop the timer
     }
 
 }

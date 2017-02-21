@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
+import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.command.Command;
@@ -15,6 +16,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private double m_inches;
     private double m_revs;
     private PIDController m_pidController;
+    private Logger m_logger;
 
     private double m_heading;
     private static final double IMU_CORRECTION = 0.25;
@@ -25,21 +27,23 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     public DriveStraightCommand(Drivetrain drivetrain, double inches)
     {
         m_drivetrain = drivetrain;
+        m_logger = new Logger("DriveStraightCommand", Logger.Level.DEBUG);
         // Adjust for negative direction logic of ArcadeDrive
         m_inches = -inches;
         m_revs = m_drivetrain.getInchesToRevolutions(m_inches);
         m_pidController = new PIDController(k_P, k_D, k_I, k_F, this, this);
         m_pidController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
         m_pidController.setInputRange(-5 * Math.abs(m_revs), 5 * Math.abs(m_revs)); // We limit our input range to revolutions, either direction
-        m_pidController.setAbsoluteTolerance(2*(1 / (3 * (2 * Math.PI)))); // This is the tolerance for error for reaching our target, targeting one inch
-        
+        m_pidController.setAbsoluteTolerance(2 * (1 / (3 * (2 * Math.PI)))); // This is the tolerance for error for reaching our target, targeting one inch
+
         requires(m_drivetrain);
+        m_logger.info("constructed");
     }
 
     @Override
     public void initialize()
     {
-        m_drivetrain.m_logger.info("DriveStraightCommand initialize");
+       m_logger.info("initialize");
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0, // This was 3 and -3
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
@@ -64,9 +68,9 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         if (m_pidController.onTarget())
         {
-            m_drivetrain.m_logger.debug("DriveStraightCommand Actual ticks driven "+m_drivetrain.getEncPosition());
-            m_drivetrain.m_logger.debug("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
-            m_drivetrain.m_logger.debug("DriveStraightCommand Difference ticks " + ((m_revs*1000)-m_drivetrain.getEncPosition()) + " ticks.");
+           m_logger.debug("Actual ticks driven " + m_drivetrain.getEncPosition());
+           m_logger.debug("Desired ticks " + m_revs * 1000 + " ticks.");
+           m_logger.debug("Difference ticks " + ((m_revs * 1000) - m_drivetrain.getEncPosition()) + " ticks.");
         }
         return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
     }
@@ -74,7 +78,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     @Override
     public void interrupted()
     {
-        m_drivetrain.m_logger.info("DriveStraightCommand interrupted");
+       m_logger.info("interrupted");
         end();
     }
 
@@ -86,7 +90,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
             m_pidController.reset();
             assert (!m_pidController.isEnabled()); // docs say we're disabled now
         }
-        m_drivetrain.m_logger.info("DriveStraightCommand end");
+       m_logger.info("end");
         m_drivetrain.stop();
     }
 
@@ -96,7 +100,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         if (pidSource != PIDSourceType.kDisplacement)
         {
-            m_drivetrain.m_logger.error("DriveStraightCommand only supports kDisplacement");
+           m_logger.error("only supports kDisplacement");
         }
     }
 
