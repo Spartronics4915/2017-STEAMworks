@@ -27,7 +27,6 @@ public class ClimberSetCommand extends Command
         String nm = m_climber.getStateString(m_state);
         m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
         SmartDashboard.putString("Climber State", nm);
-        SmartDashboard.putNumber("Climber Speed",  m_climber.getClimberSpeed(m_state));
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ClimberSetCommand extends Command
     @Override
     public boolean isFinished()
     {
-        return false;
+        return true;
     }
 
     @Override
@@ -56,7 +55,6 @@ public class ClimberSetCommand extends Command
     public void end()
     {
         m_climber.m_logger.notice("end ClimberSetCommand " + m_climber.getStateString(m_state));
-        m_climber.setClimber(Climber.State.OFF);
     }
 
 }
