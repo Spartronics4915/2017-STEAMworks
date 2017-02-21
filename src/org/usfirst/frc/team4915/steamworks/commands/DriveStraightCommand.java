@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands;
 
+import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.command.Command;
@@ -21,9 +22,13 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private static final double MAX_DEGREES_ERROR = .125;
 
     private static final double k_P = 1.43, k_D = 0, k_I = 0, k_F = 0; // Working P 1.43
+    
+    private Logger m_logger;
 
     public DriveStraightCommand(Drivetrain drivetrain, double inches)
     {
+    	m_logger = new Logger("DriveStraightCommand", Logger.Level.DEBUG);
+    	
         m_drivetrain = drivetrain;
         // Adjust for negative direction logic of ArcadeDrive
         m_inches = -inches;
@@ -39,14 +44,14 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     @Override
     public void initialize()
     {
-        m_drivetrain.m_logger.info("DriveStraightCommand initialize");
+        m_logger.info("initialize");
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0, // This was 3 and -3
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
         m_heading = m_drivetrain.getIMUHeading();
-        m_drivetrain.m_logger.debug("DriveStraightCommand Initial heading: " + m_heading);
+        m_logger.debug("Initial heading: " + m_heading);
     }
 
     @Override
@@ -64,9 +69,9 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         if (m_pidController.onTarget())
         {
-            m_drivetrain.m_logger.debug("DriveStraightCommand Actual ticks driven "+m_drivetrain.getEncPosition());
-            m_drivetrain.m_logger.debug("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
-            m_drivetrain.m_logger.debug("DriveStraightCommand Difference ticks " + ((m_revs*1000)-m_drivetrain.getEncPosition()) + " ticks.");
+            m_logger.debug("Actual ticks driven "+m_drivetrain.getEncPosition());
+            m_logger.debug("Desired ticks " + m_revs*1000 + " ticks.");
+            m_logger.debug("Difference ticks " + ((m_revs*1000)-m_drivetrain.getEncPosition()) + " ticks.");
         }
         return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
     }
@@ -74,7 +79,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     @Override
     public void interrupted()
     {
-        m_drivetrain.m_logger.info("DriveStraightCommand interrupted");
+        m_logger.info("interrupted");
         end();
     }
 
@@ -86,7 +91,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
             m_pidController.reset();
             assert (!m_pidController.isEnabled()); // docs say we're disabled now
         }
-        m_drivetrain.m_logger.info("DriveStraightCommand end");
+        m_logger.info("end");
         m_drivetrain.stop();
     }
 
@@ -96,7 +101,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         if (pidSource != PIDSourceType.kDisplacement)
         {
-            m_drivetrain.m_logger.error("DriveStraightCommand only supports kDisplacement");
+            m_logger.error("only supports kDisplacement");
         }
     }
 
@@ -146,7 +151,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
             correction = Math.copySign(IMU_CORRECTION, error * m_revs); // Adjust for direction
         }
         
-        m_drivetrain.m_logger.debug("DriveStraightCommand IMU Heading: " + currentHeading + " Correction: " + correction + " Error: " + error);
+        m_logger.debug("IMU Heading: " + currentHeading + " Correction: " + correction + " Error: " + error);
 
         return correction;
     }
