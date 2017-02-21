@@ -2,7 +2,9 @@ package org.usfirst.frc.team4915.steamworks.commands.groups;
 
 import org.usfirst.frc.team4915.steamworks.OI;
 import org.usfirst.frc.team4915.steamworks.commands.DriveCurveCommand;
+import org.usfirst.frc.team4915.steamworks.commands.DelayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
+import org.usfirst.frc.team4915.steamworks.commands.FastTurnDegreesIMUCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMUCommand;
@@ -47,11 +49,19 @@ public class ParameterizedCommandGroup extends CommandGroup
                 	double angle = Double.parseDouble(params[i++]);
                     addSequential(new TurnDegreesIMUCommand(drivetrain, angle * oi.getSideMultiplier()));
                     break;
+                case "Turn Fast":
+                    double value = Double.parseDouble(params[i++]);
+                    addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
+                    break;
                 case "Shoot":
                     addSequential(new LauncherCommand(launcher, LauncherState.ON, true)); // Takes no parameters
                     break;
                 case "Stop":
                     addSequential(new StopCommand(drivetrain)); // Takes no parameters
+                    break;
+                case "Delay":
+                    double delay = Double.parseDouble(params[i++]);
+                    addSequential(new DelayCommand(delay));
                     break;
                 default:
                     drivetrain.m_logger.warning("ParameterizedCommandGroup Unrececognized parameter "+command);

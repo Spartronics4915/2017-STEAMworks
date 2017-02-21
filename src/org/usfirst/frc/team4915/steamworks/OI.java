@@ -15,7 +15,6 @@ import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
@@ -179,16 +178,11 @@ public class OI
 
     private void initAutoOI()
     {
-        // You can't put commas into the names of these because that's how they're deliniated
+        // You can't put commas into the names of these because that's how they're deliniated, all of them are backwards to keep the drivers not confused
         m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "93.3")); // This is the length from the diamond plate to the baseline
+                "Drive", "-93.3")); // This is the length from the diamond plate to the baseline
         m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH+2)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
-//        m_autoPresetOptions.put("Drive and Shoot Position 1", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-//                "Drive", "42", "Turn", "90", "Drive", "" + (248 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
-//        m_autoPresetOptions.put("Drive and Shoot Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-//                "Drive", "42", "Turn", "90", "Drive", "" + (124 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
-        // These are commented out because they're too much work to keep updating, and we probably won't use them; they're probably out of date
+                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH-3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "42", "Turn", "135", "Drive", "41", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
         m_autoPresetOptions.put("Five Feet", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
@@ -266,7 +260,6 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
-        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
         m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!

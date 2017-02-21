@@ -29,7 +29,8 @@ public class TurnDegreesIMUCommand extends Command
         m_targetCounter = 0;
         // Will the IMU be initialized by the time we get here?
         m_drivetrain.endIMUTurn();
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0, // This is the same as DriveStraight because it is probably overriden if a command is run before it
+        m_drivetrain.setIMUPIDAbsoluteTolerance(3); // We set this to make sure that we don't get the value from FastTurnDegreesIMUCommand
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0, // This is the same as DriveStraight because it is probably overriden if a command is run before it
                 0, 0, 0, 0 /* zeros since we're not in closed-loop */);
         m_drivetrain.startIMUTurnAbsolute(m_degrees);
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand I want to turn  "+m_degrees+" degrees.");
@@ -83,3 +84,4 @@ public class TurnDegreesIMUCommand extends Command
         m_drivetrain.m_logger.info("TurnDegreesIMUCommand interrupted");
     }
 }
+
