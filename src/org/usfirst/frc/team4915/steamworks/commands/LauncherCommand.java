@@ -25,7 +25,7 @@ public class LauncherCommand extends Command
         m_launcher = launcher;
         m_logger = new Logger("LauncherCommand", Logger.Level.DEBUG);
         m_state = state;
-        m_terminateWhenEmpty = terminateWhenEmpty;
+        m_terminateWhenEmpty = terminateWhenEmpty; // true if and only if in autonomous
         requires(m_launcher);
     }
 
@@ -49,7 +49,7 @@ public class LauncherCommand extends Command
         switch (m_state)
         {
             case ON:
-                if (m_terminateWhenEmpty && m_launcher.isEmpty())
+                if (m_terminateWhenEmpty && m_launcher.isEmpty()) 
                     return true;
                 else
                     return false;
@@ -67,6 +67,7 @@ public class LauncherCommand extends Command
     }
 
     // Called once after isFinished returns true
+    // Allows autonomous to end without interfering with teleop
     protected void end()
     {
         m_logger.notice("End (" + m_state + ")");

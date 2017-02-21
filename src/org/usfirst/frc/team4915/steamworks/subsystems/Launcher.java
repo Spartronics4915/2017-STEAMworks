@@ -91,7 +91,7 @@ public class Launcher extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            if (m_state != state && state == LauncherState.ON)
+            if (m_state != state && state == LauncherState.ON) // Occurs when state switches to on from any other state
             {
                 m_startupCount = 0;
                 m_logger.debug("startupCount = 0");
@@ -153,7 +153,7 @@ public class Launcher extends SpartronicsSubsystem
                 }
                 else
                 {
-                    return speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage
+                    return speedTarget; 
                 }
             case UNJAM:
                 if (!isJammed())
@@ -171,13 +171,13 @@ public class Launcher extends SpartronicsSubsystem
 
     private boolean isLauncherAtSpeed()
     {
-        final double epsilon = 100; // allow 400 RPM of slop.
+        final double epsilon = 100; // allow 100 RPM of error.
         double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         double speedActual = m_launcherMotor.getSpeed();
         if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
         {
             m_startupCount++;
-            if (m_startupCount < 15)
+            if (m_startupCount < 15) // if launcher at speed for less than 300ms (code runs once every 20ms)
             {
                 return false;
             }
@@ -188,9 +188,9 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isSingleShotDone()
     {
-        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
+        double currentPosition = m_agitatorMotor.getPulseWidthPosition();
+        m_logger.debug("isSingleShotDone: Current Position: " + currentPosition + " Initial Position: " + m_initialPos);
+        if (currentPosition >= (m_initialPos + 1024)) /// 1024 native units, 1/4 rotation
         {
             return true;
         }
@@ -201,7 +201,7 @@ public class Launcher extends SpartronicsSubsystem
     {
         if (this.getRpm() < 10)
         {
-            m_jamCount++;
+            m_jamCount++; // times in a row that the agitator hasn't moved
             if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
             {
                 return false;
@@ -222,7 +222,7 @@ public class Launcher extends SpartronicsSubsystem
 
     private double getRpm()  
     {
-        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in ticks/100ms
+        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); 
         return currentAgitatorSpeed * 600.0 / 4096.0;
     }
 
@@ -244,8 +244,8 @@ public class Launcher extends SpartronicsSubsystem
 
     public boolean isEmpty()
     {
-        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        if (CurrentPosition >= (m_initialPos + 4096 * 4))
+        double currentPosition = m_agitatorMotor.getPulseWidthPosition();
+        if (currentPosition >= (m_initialPos + 4096 * 3))  // 3 full rotations
         {
             return true;
         }
