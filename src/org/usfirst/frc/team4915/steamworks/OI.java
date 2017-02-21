@@ -296,6 +296,7 @@ public class OI
     	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
     	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
     	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
+    	m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
     }
 
     private void initChooseCameraOI()
