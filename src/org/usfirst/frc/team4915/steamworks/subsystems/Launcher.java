@@ -91,8 +91,8 @@ public class Launcher extends SpartronicsSubsystem
             SmartDashboard.putNumber("Launcher_ACT", speedActual);
             String msg = String.format("%.0f / %.0f", speedActual, speedTarget);
             SmartDashboard.putString("Launcher_MSG", msg);
-            m_launcherMotor.set(getLauncherSpeed(speedTarget));
-            m_agitatorMotor.set(getAgitatorSpeed(agitatorSpeedTarget));
+            m_launcherMotor.set(getLauncherSpeed(speedTarget)); // speedTarget is set in getLauncherSpeed based on state
+            m_agitatorMotor.set(getAgitatorSpeed(agitatorSpeedTarget)); // agitatorSpeedTarget is set in getAgitatorSpeed based on the state
         }
     }
 
@@ -162,7 +162,7 @@ public class Launcher extends SpartronicsSubsystem
         final double epsilon = 100; // allow 100 RPM of error.
         double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         double speedActual = m_launcherMotor.getSpeed();
-        if (speedActual >= speedTarget - epsilon && speedActual <= speedTarget + epsilon)
+        if ((speedActual >= (speedTarget - epsilon)) && (speedActual <= (speedTarget + epsilon)))
         {
             m_startupCount++;
             if (m_startupCount < 15) // if launcher at speed for less than 300ms (code runs once every 20ms)
@@ -211,7 +211,7 @@ public class Launcher extends SpartronicsSubsystem
     private double getRpm()  
     {
         double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); 
-        return currentAgitatorSpeed * 600.0 / 4096.0;
+        return currentAgitatorSpeed * 600.0 / 4096.0; //conversion from native units / 100ms to rpm
     }
 
     public void setAgitatorTarget()
