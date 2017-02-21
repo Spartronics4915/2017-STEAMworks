@@ -190,14 +190,16 @@ public class OI
 //                "Drive", "42", "Turn", "90", "Drive", "" + (124 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus half of the robot's width (we're centered on the baseline) and then turn so we're parallel with the boiler and drive into the boiler
         // These are commented out because they're too much work to keep updating, and we probably won't use them; they're probably out of date
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
+                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
         m_autoPresetOptions.put("Five Feet", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "60")); // This is just for testing
         m_autoPresetOptions.put("Ten Feet", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "120")); // This is also just for testing
         m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-
+                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+        m_autoPresetOptions.put("Cross baseline from boiler", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+                "Curve", "-48", "0.5")); // This is also just for testing
+        
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
