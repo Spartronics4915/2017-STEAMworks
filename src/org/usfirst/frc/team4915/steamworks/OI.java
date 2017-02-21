@@ -26,9 +26,6 @@ import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
-import org.usfirst.frc.team4915.steamworks.commands.ChooseCameraCommand;
-import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
@@ -58,8 +55,8 @@ public class OI
 
     public final JoystickButton m_reverseDrive = new JoystickButton(m_driveStick, 3);
 
-    public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
-    public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
+    //public final JoystickButton m_cameraFwd = new JoystickButton(m_driveStick, 7);
+    //public final JoystickButton m_cameraRev = new JoystickButton(m_driveStick, 8);
 
     //Aux Stick Buttons
     public final JoystickButton m_climberOn = new JoystickButton(m_auxStick, 11);
@@ -304,8 +301,8 @@ public class OI
 
     private void initChooseCameraOI()
     {
-        m_cameraFwd.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_FWD));
-        m_cameraRev.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_REV));
+        //m_cameraFwd.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_FWD));
+        //m_cameraRev.whenPressed(new ChooseCameraCommand(m_robot.getCameras(), Cameras.CAM_REV));
     }
 
     private void initLoggers()
