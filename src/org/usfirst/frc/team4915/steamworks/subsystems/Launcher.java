@@ -174,7 +174,7 @@ public class Launcher extends SpartronicsSubsystem
         final double epsilon = 100; // allow 100 RPM of error.
         double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         double speedActual = m_launcherMotor.getSpeed();
-        if (speedActual >= speedTarget - epsilon || speedActual <= speedTarget + epsilon)
+        if (speedActual >= speedTarget - epsilon && speedActual <= speedTarget + epsilon)
         {
             m_startupCount++;
             if (m_startupCount < 15) // if launcher at speed for less than 300ms (code runs once every 20ms)
