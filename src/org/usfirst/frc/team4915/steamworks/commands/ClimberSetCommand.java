@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class ClimberSetCommand extends Command
 {
+
     private final Climber m_climber;
     private final Climber.State m_state;
 
@@ -27,6 +28,10 @@ public class ClimberSetCommand extends Command
         String nm = m_climber.getStateString(m_state);
         m_climber.m_logger.notice("initialize ClimberSetCommand " + nm);
         SmartDashboard.putString("Climber State", nm);
+<<<<<<< HEAD
+        SmartDashboard.putNumber("Climber Speed", m_climber.getClimberSpeed(m_state));
+=======
+>>>>>>> 09b79b73dc33cfb12a677f6dc6121b417410b369
     }
 
     @Override

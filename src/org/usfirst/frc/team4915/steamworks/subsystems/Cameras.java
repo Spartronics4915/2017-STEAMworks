@@ -35,6 +35,7 @@ import edu.wpi.cscore.VideoMode;
 
 public class Cameras extends SpartronicsSubsystem
 {
+
     // Values used by changeCamera() method
     public static final int CAM_FWD = 0;
     public static final int CAM_REV = 1;
@@ -49,25 +50,26 @@ public class Cameras extends SpartronicsSubsystem
     // Save space in an array for two USB cameras
     private UsbCamera m_camera[] = new UsbCamera[2];
 
-    private int m_numCameras;           // Track the number of cameras we have
-    private int m_currentCamera;        // Store the current camera ID
+    private int m_numCameras; // Track the number of cameras we have
+    private int m_currentCamera; // Store the current camera ID
 
-    private MjpegServer m_mjpegServer;  // The camera server object
+    private MjpegServer m_mjpegServer; // The camera server object
 
     private Logger m_logger;
 
-    public Cameras() {
+    public Cameras()
+    {
         m_logger = new Logger("Cameras", Logger.Level.DEBUG);
 
         m_logger.info("Constructor called");
 
-        m_numCameras=0;         // Initialize the camera counter
+        m_numCameras = 0; // Initialize the camera counter
 
         // Get a list of attached USB cameras
         UsbCameraInfo camInfo[] = UsbCamera.enumerateUsbCameras();
 
         // Go through the list of camera info and set up the cameras
-        for (int i=0 ; i<camInfo.length ; i++)
+        for (int i = 0; i < camInfo.length; i++)
         {
             // Only assign CAM_FWD and CAM_REV (and assume that the first
             // camera in the list is CAM_FWD -- is this a good assumption?)
@@ -75,7 +77,7 @@ public class Cameras extends SpartronicsSubsystem
             {
                 // Create a new camera instance
                 m_camera[m_numCameras] =
-                    new UsbCamera(camInfo[i].name, camInfo[i].dev);
+                        new UsbCamera(camInfo[i].name, camInfo[i].dev);
 
                 // Configure camera settings
                 m_camera[m_numCameras].setVideoMode(
@@ -121,7 +123,8 @@ public class Cameras extends SpartronicsSubsystem
         //      " found");
     }
 
-    public boolean changeCamera(int camera) {
+    public boolean changeCamera(int camera)
+    {
         boolean status = false;
 
         // Bail out if we have no cameras configured
@@ -154,7 +157,7 @@ public class Cameras extends SpartronicsSubsystem
                             // Assign the camera to the streaming server
                             m_mjpegServer.setSource(m_camera[CAM_FWD]);
                             m_currentCamera = CAM_FWD;
-                            status = true;      // We have been successful!
+                            status = true; // We have been successful!
                         }
                         else
                         {
@@ -181,7 +184,7 @@ public class Cameras extends SpartronicsSubsystem
                             // Assign the camera to the streaming server
                             m_mjpegServer.setSource(m_camera[CAM_REV]);
                             m_currentCamera = CAM_REV;
-                            status = true;      // We have been successful!
+                            status = true; // We have been successful!
                         }
                         else
                         {
@@ -203,7 +206,8 @@ public class Cameras extends SpartronicsSubsystem
     }
 
     @Override
-    protected void initDefaultCommand() {
+    protected void initDefaultCommand()
+    {
         // No default command
     }
 }
