@@ -199,14 +199,14 @@ public class Launcher extends SpartronicsSubsystem
 
     private boolean isJammed() 
     {
-        if (this.getRpm() < 10) // Assumed to be in rpm, also unsure 
+        if (this.getRpm() < 10)
         {
             m_jamCount++;
             if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
             {
                 return false;
             }
-            else if (m_jamCount > 30)
+            else if (m_jamCount > 30) // If it doesn't work at this time, set speed to normal direction
             {
                 m_jamCount = 0;
                 return false;
