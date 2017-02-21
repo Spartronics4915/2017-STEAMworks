@@ -25,13 +25,14 @@ public class Launcher extends SpartronicsSubsystem
 
     //the "perfect" static speed that always makes goal
     public static final double DEFAULT_LAUNCHER_SPEED = 3000; //3000 rpm (CtreMagEncoder) Since it is CTRE, it is able to program its RPM itself
-    public static final double DEFAULT_AGITATOR_SPEED = .4; //40 rpm (CtreMagEncoder) 
+    public static final double DEFAULT_AGITATOR_SPEED = .4; //40 rpm (CtreMagEncoder)
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
     private LauncherState m_state;
     private double m_initialPos;
     private int m_startupCount;
+    private int m_jamCount;
     private int m_allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
 
     public Launcher()
@@ -130,7 +131,14 @@ public class Launcher extends SpartronicsSubsystem
             case ON:
                 if (isLauncherAtSpeed())
                 {
-                    return speedTarget;
+                    if (isJammed())
+                    {
+                        return -speedTarget;
+                    }
+                    else
+                    {
+                        return speedTarget;
+                    }
                 }
                 else
                 {
@@ -145,13 +153,13 @@ public class Launcher extends SpartronicsSubsystem
                 }
                 else
                 {
-                    return 0.9 * speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage 
+                    return speedTarget; //returns a value of speedTarget - 1/10th of the maximum voltage
                 }
             case UNJAM:
-                if (isUnjamDone())
+                if (!isJammed())
                 {
                     m_state = LauncherState.ON;
-                    return 0;
+                    return speedTarget;
                 }
                 else
                 {
@@ -189,15 +197,33 @@ public class Launcher extends SpartronicsSubsystem
         return false;
     }
 
-    public boolean isUnjamDone()
+    private boolean isJammed() 
     {
-        double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        m_logger.debug("isSingleShotDone: Current Position: " + CurrentPosition + " Initial Position: " + m_initialPos);
-        if (CurrentPosition <= (m_initialPos - 512)) /// 512 native units, 1/4 rotation
+        if (this.getRpm() < 10)
         {
-            return true;
+            m_jamCount++;
+            if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
+            {
+                return false;
+            }
+            else if (m_jamCount > 30) // If it doesn't work at this time, set speed to normal direction
+            {
+                m_jamCount = 0;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
+        m_jamCount = 0;
         return false;
+    }
+
+    private double getRpm()  
+    {
+        double currentAgitatorSpeed = m_agitatorMotor.getEncVelocity(); // Assumed to be in ticks/100ms
+        return currentAgitatorSpeed * 600.0 / 4096.0;
     }
 
     public void setAgitatorTarget()
