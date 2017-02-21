@@ -542,12 +542,11 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void setReverse(Cameras m_cameras)
+    public void setReverse()
     {
         
         m_reverseIsOn = true;
         m_lightOutput.set(true);
-        m_cameras.changeCamera(Cameras.CAM_REV);
         SmartDashboard.putString("ReverseEnabled", "Enabled");
 
     }
