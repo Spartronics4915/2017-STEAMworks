@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
@@ -161,6 +160,12 @@ public class Drivetrain extends SpartronicsSubsystem
             // Reset the encoder position
             m_portMasterMotor.setEncPosition(0);
             m_starboardMasterMotor.setEncPosition(0);
+            
+            /*
+             * If you're looking at this code from a future year for an example,  DON'T DO IT LIKE THIS!
+             * There's a much better example that is compartmentalized in a command that you can see in 
+             * DriveStraightCommand.
+             */
 
             // Get an instance of the BNO055 IMU
             m_imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
@@ -178,10 +183,10 @@ public class Drivetrain extends SpartronicsSubsystem
                             turn(output); // Turn with the output we get
                         }
                     }); // A PID Controller which has an inline method for PID output
-            // Should the numbers below be replace with constants?
             m_turningPIDController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
             m_turningPIDController.setInputRange(-180, 180); // We do this so that the PIDController takes inputs consistent with our IMU's outputs
-            m_turningPIDController.setAbsoluteTolerance(3); // This is the tolerance for error for reaching our target
+            m_turningPIDController.setAbsoluteTolerance(3); // This is the tolerance for error for reaching our target in degrees
+            // ^ This will be set elsewhere and probably overridden
 
             // Make a new RobotDrive so we can use built in WPILib functions like ArcadeDrive
             m_robotDrive = new RobotDrive(m_portMasterMotor, m_starboardMasterMotor);
@@ -286,6 +291,12 @@ public class Drivetrain extends SpartronicsSubsystem
             printIMUErrorMessage(m_imu);
             return 0;
         }
+    }
+    
+    public void setIMUPIDAbsoluteTolerance(double tolerance)
+    {
+        m_logger.debug("IMUPID Absolute Tolerence set to "+tolerance);
+        m_turningPIDController.setAbsoluteTolerance(tolerance);
     }
     
     public boolean isIMUInitalized()
