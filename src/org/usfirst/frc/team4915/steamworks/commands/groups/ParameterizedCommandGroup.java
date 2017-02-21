@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks.commands.groups;
 
+import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.OI;
 import org.usfirst.frc.team4915.steamworks.commands.DriveCurveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DelayCommand;
@@ -24,12 +25,14 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class ParameterizedCommandGroup extends CommandGroup
 {
 
+    private final Logger m_logger;
+    
     public ParameterizedCommandGroup(Drivetrain drivetrain, Launcher launcher, OI oi, String... params)
     {
-        requires(drivetrain);
+        m_logger = new Logger("ParameterizedCommandGroup", Logger.Level.DEBUG);
         
-        drivetrain.m_logger.debug("ParamterizedCommandGroup: " + String.join(",", params));
-
+        m_logger.debug(String.join(",", params));
+        
         for (int i = 0; i < params.length; )
         {
             String command = params[i++];
@@ -37,20 +40,20 @@ public class ParameterizedCommandGroup extends CommandGroup
             switch (command)
             {
                 case "Drive":
-                	double distance = Double.parseDouble(params[i++]);
+                	double distance = safeParseDouble(params[i++]);
                     addSequential(new DriveStraightCommand(drivetrain, distance));
                     break;
                 case "Curve":
-                	distance = Double.parseDouble(params[i++]);
-                	double curve = Double.parseDouble(params[i++]);
+                	distance = safeParseDouble(params[i++]);
+                	double curve = safeParseDouble(params[i++]);
                     addSequential(new DriveCurveCommand(drivetrain, distance, curve * oi.getSideMultiplier()));
                     break;
                 case "Turn":
-                	double angle = Double.parseDouble(params[i++]);
+                	double angle = safeParseDouble(params[i++]);
                     addSequential(new TurnDegreesIMUCommand(drivetrain, angle * oi.getSideMultiplier()));
                     break;
                 case "Turn Fast":
-                    double value = Double.parseDouble(params[i++]);
+                    double value = safeParseDouble(params[i++]);
                     addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
                     break;
                 case "Shoot":
@@ -60,7 +63,7 @@ public class ParameterizedCommandGroup extends CommandGroup
                     addSequential(new StopCommand(drivetrain)); // Takes no parameters
                     break;
                 case "Delay":
-                    double delay = Double.parseDouble(params[i++]);
+                    double delay = safeParseDouble(params[i++]);
                     addSequential(new DelayCommand(delay));
                     break;
                 default:
@@ -69,5 +72,18 @@ public class ParameterizedCommandGroup extends CommandGroup
             }
         }
         addSequential(new StopCommand(drivetrain)); // This is so we stop and don't get yelled at by motor saftey when we're done
+    }
+    
+    private double safeParseDouble(String doubleString) 
+    {
+        try
+        {
+            return Double.parseDouble(doubleString);
+        }
+        catch(Exception e)
+        {
+            m_logger.exception(e, false);
+            return 0.0;
+        }
     }
 }
