@@ -69,7 +69,7 @@ public class Climber extends SpartronicsSubsystem
     }
     
     public double getClimberSpeed(State s) {
-        double speed = SmartDashboard.getNumber("Climber Speed", .75);
+        double speed = SmartDashboard.getNumber("Climber Speed", .90);
         switch(s)
         {
             case ON:
