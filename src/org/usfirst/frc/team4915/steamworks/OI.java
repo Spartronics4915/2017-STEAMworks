@@ -185,8 +185,10 @@ public class OI
                 "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH-3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "-42", "Turn", "-45", "Drive", "41", "Shoot", "0")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3 (Optimized)", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "-42", "Turn", "-45", "Drive", "41", "Shoot", "0", "Drive", "-25", "Turn Fast", "-25", "Drive", "-50")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+//        m_autoPresetOptions.put("Testing", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+//                "Drive", "-25", "Turn Fast", "-25", "Drive", "-50")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
 
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
