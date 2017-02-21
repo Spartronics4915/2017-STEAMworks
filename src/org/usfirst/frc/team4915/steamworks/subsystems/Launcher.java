@@ -33,7 +33,7 @@ public class Launcher extends SpartronicsSubsystem
     private double m_initialPos;
     private int m_startupCount;
     private int m_jamCount;
-    private int m_allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
+    //private int m_allowableError = 4096 * 2 / (60 * 10); // 4096 nu/rev * 5 rpm and then convert to NU/100ms
 
     public Launcher()
     {
@@ -43,25 +43,20 @@ public class Launcher extends SpartronicsSubsystem
             m_state = LauncherState.OFF;
             m_startupCount = 0;
             m_launcherMotor = new CANTalon(RobotMap.LAUNCHER_MOTOR);
-            m_launcherMotor.setAllowableClosedLoopErr(m_allowableError); //4096 Native Units per rev * 5 revs per min
+            m_launcherMotor.setAllowableClosedLoopErr(0); //4096 Native Units per rev * 5 revs per min
             m_launcherMotor.changeControlMode(TalonControlMode.Speed);
             m_launcherMotor.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
             m_launcherMotor.reverseSensor(false);
             m_launcherMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_launcherMotor.configPeakOutputVoltage(12.0f, -12.0f);
-            //m_launcherMotor.setVoltageRampRate(48); // 120
-            //m_launcherMotor.setCloseLoopRampRate(48); // 120
-
-            // changeable fpid values in smartdashboard
-            /*
-             * m_launcherMotor.setF(.0305); // (1023)/Native Units Per 100ms.
-             * See Talon Reference Manual pg 77
-             * m_launcherMotor.setP(0); //(.09 currently) (Proportion off target
-             * speed * 1023) / Worst Error //.03188 BASE
-             * m_launcherMotor.setI(0); // (.0009 currently) start at 1 / 100th
-             * of P gain
-             * m_launcherMotor.setD(0);
-             */
+            m_launcherMotor.setVoltageRampRate(0.0); 
+            m_launcherMotor.setCloseLoopRampRate(0.0); 
+            m_launcherMotor.enableBrakeMode(false);
+            
+            m_launcherMotor.setF(0.0315);
+            m_launcherMotor.setP(0.0475);
+            m_launcherMotor.setI(0.000001); 
+            m_launcherMotor.setD(0.65);
 
             m_agitatorMotor = new CANTalon(RobotMap.AGITATOR_MOTOR);
             m_agitatorMotor.changeControlMode(TalonControlMode.PercentVbus);
@@ -69,13 +64,6 @@ public class Launcher extends SpartronicsSubsystem
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
             m_agitatorMotor.reverseSensor(false);
-
-            /*
-             * m_agitatorMotor.setF(.00061);
-             * m_agitatorMotor.setP(0.06);
-             * m_agitatorMotor.setI(0.0);
-             * m_agitatorMotor.setD(0.6);
-             */
 
             m_logger.info("Launcher initialized");
         }
