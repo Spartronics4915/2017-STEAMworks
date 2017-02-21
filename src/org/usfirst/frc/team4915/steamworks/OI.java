@@ -182,14 +182,12 @@ public class OI
         m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "-93.3")); // This is the length from the diamond plate to the baseline
         m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH-3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
+                "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-        m_autoPresetOptions.put("Cross baseline from boiler", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Curve", "-48", "0.5")); // This is also just for testing
-        
+                "Drive", ""+(-42+returnForSide(0,10)), "Turn", "-45", "Drive", "37", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3 with Curve", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+                "Drive", ""+(-42+returnForSide(0,10)), "Turn", "-45", "Drive", "37", "Shoot", "Curve", "-85", "0.5")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -282,13 +280,27 @@ public class OI
         m_auxIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_auxIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
     }
+    
+    private double returnForSide(double blue, double red)
+    {
+        switch (DriverStation.getInstance().getAlliance())
+        {
+            case Blue:
+                return blue;
+            case Red:
+                return red;
+            default:
+                m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
+                return 0;
+        }
+    }
 
     private void initLauncherOI()
     {
-    	m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
-    	m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
-    	m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
-    	m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
+        m_launcherOn.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.ON, false));
+        m_launcherOff.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.OFF, false));
+        m_launcherSingle.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.SINGLE, false));
+        m_launcherUnjam.whenPressed(new LauncherCommand(m_robot.getLauncher(), LauncherState.UNJAM, false));
     }
 
     private void initChooseCameraOI()

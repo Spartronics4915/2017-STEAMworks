@@ -609,9 +609,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            m_portMasterMotor.set(0);
-            m_starboardMasterMotor.set(0);
-            m_robotDrive.arcadeDrive(0,0);
+            m_robotDrive.stopMotor();
             // Is this the right thing to do?
             stopRecording();
 
