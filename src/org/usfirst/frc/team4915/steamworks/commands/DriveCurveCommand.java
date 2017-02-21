@@ -40,8 +40,7 @@ public class DriveCurveCommand extends Command implements PIDSource, PIDOutput
     {
         m_drivetrain.m_logger.info("driveCurveCommand initialize\r\n");
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0, // This was 3 and -3 //is this even doing anything?
-                0.0, 0, 0, 0 /* zero PIDF */);
-                //TODO: discuss if scaling factor in drivetrain should be set higher(the setmaxoutput)
+                0.0, 0, 0, 0 /* zero PIDF */, 0.4 /* also set max output */);
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns

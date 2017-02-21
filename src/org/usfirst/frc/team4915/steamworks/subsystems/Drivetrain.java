@@ -59,8 +59,6 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final int LIGHT_OUTPUT_PORT = 0;
     private DigitalOutput m_lightOutput;
 
-
-
     // Port motors
     private CANTalon m_portFollowerMotor;
     private CANTalon m_portMasterMotor;
@@ -84,6 +82,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
 
+    // PID Values for IMU turning
     private static final double turnKp = 0.11;
     private static final double turnKi = 0.01;
     private static final double turnKd = 0.3;
@@ -331,7 +330,21 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
-
+    
+    // Not to be confused with CANTalon's setControlMode... The idea here is to
+    // make sure that we keep all the control-mode-specific settings under close
+    // management.
+    // This method has an extra parameter to set WPILib RobotDrive max output
+    public void setControlMode(TalonControlMode m,
+            double fwdPeakV, double revPeakV,
+            double P, double I, double D, double F, double maxOutput)
+    {
+        if (initialized())
+        {
+            setControlMode(m, fwdPeakV, revPeakV, P, I, D, F);
+            m_robotDrive.setMaxOutput(maxOutput); // Set max output with the user provided value
+        }
+    }
     // Not to be confused with CANTalon's setControlMode... The idea here is to
     // make sure that we keep all the control-mode-specific settings under close
     // management.
@@ -377,9 +390,12 @@ public class Drivetrain extends SpartronicsSubsystem
             m_portMasterMotor.setProfile(0); // defensive programming
             m_starboardMasterMotor.setProfile(0);
 
-            // Explicitly set maximum output
+            // Explicitly set maximum output on the Talons
             m_portMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
             m_starboardMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
+            
+            // Explicitly set maximum output on WPILib RobotDrive so we don't get the value from the other setControlMode mehtod
+            m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
         }
     }
 
