@@ -14,18 +14,18 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
-import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.DriveDistanceCmd;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
+import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
@@ -254,7 +254,6 @@ public class OI
     private void initDrivetrainOI()
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
-        m_driveDistance.whenPressed(new DriveDistanceCmd(m_robot.getDrivetrain(), 36));
         ; // needs tweaking!
         m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
@@ -337,22 +336,11 @@ public class OI
 
     private String allianceToString(AllianceStationID a) // This is used with a network table value
     {
-        switch (a)
+        if (a == null)
         {
-            case Blue1:
-                return "Blue1";
-            case Blue2:
-                return "Blue2";
-            case Blue3:
-                return "Blue3";
-            case Red1:
-                return "Red1";
-            case Red2:
-                return "Red2";
-            case Red3:
-                return "Red3";
+            return "unknown";
         }
-        return "unknown";
+        return a.name();
     }
 
     public int getSideMultiplier()
