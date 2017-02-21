@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* on Declan's choice for motor names: http://oceanservice.noaa.gov/facts/port-starboard.html
@@ -82,9 +83,9 @@ public class Drivetrain extends SpartronicsSubsystem
     private PIDController m_turningPIDController;
     private IMUPIDSource m_imuPIDSource;
 
-    private static final double turnKp = 0.12;
+    private static final double turnKp = 0.11;
     private static final double turnKi = 0.01;
-    private static final double turnKd = 0.145;
+    private static final double turnKd = 0.3;
     private static final double turnKf = 0.001;
 
     // Was
@@ -134,7 +135,7 @@ public class Drivetrain extends SpartronicsSubsystem
                                                         // in open-loop mode (PercentVbus) we must apply the output inversion explicitly.
                                                         // or we can invoke m_robotDrive.setLeftRightMotorOutputs(leftOutput, rightOutput).
 
-            // Setup the motor so it has an encoder
+            // Setup the motors so it has an encoder
             m_portMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
             m_starboardMasterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 
@@ -541,7 +542,6 @@ public class Drivetrain extends SpartronicsSubsystem
 
         m_reverseIsOn = true;
         m_lightOutput.set(true);
-        m_cameras.changeCamera(Cameras.CAM_REV);
         SmartDashboard.putString("ReverseEnabled", "Enabled");
 
     }
