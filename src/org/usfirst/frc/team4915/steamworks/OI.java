@@ -182,7 +182,7 @@ public class OI
         m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "93.3")); // This is the length from the diamond plate to the baseline
         m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH+2)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
+                "Drive", ""+(-114.3+(RobotMap.ROBOT_LENGTH-3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
 //        m_autoPresetOptions.put("Drive and Shoot Position 1", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
 //                "Drive", "42", "Turn", "90", "Drive", "" + (248 - (RobotMap.ROBOT_WIDTH / 2)), "Turn", "135", "Drive", "44")); // Drive out for the turning radius + 10 inches to be aligned with the middle of the boiler, drive the distance from the baseline minus the robot's width and then turn to be parallel with the boiler, and then drive into the boiler
 //        m_autoPresetOptions.put("Drive and Shoot Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
@@ -196,6 +196,8 @@ public class OI
                 "Drive", "120")); // This is also just for testing
         m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "42", "Turn", "135", "Drive", "41", "Shoot", "0", "Drive", "-41", "Turn", "0", "Drive", "47.3")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+        m_autoPresetOptions.put("Optimized Drive Shoot and Cross Baseline Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+                "Drive", "-42", "Turn", "-45", "Drive", "41", "Shoot", "0", "Drive", "-25", "Turn", "-25", "Drive", "50")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
 
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
