@@ -17,7 +17,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private PIDController m_pidController;
 
     private double m_heading;
-    private static final double IMU_CORRECTION = 0.1875;
+    private static final double IMU_CORRECTION = 0.25;
     private static final double MAX_DEGREES_ERROR = .125;
 
     private static final double k_P = 1.43, k_D = 0, k_I = 0, k_F = 0; // Working P 1.43
@@ -46,7 +46,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
         m_heading = m_drivetrain.getIMUHeading();
-        m_drivetrain.m_logger.debug("DriveStraightCommand Initial heading: " + m_heading);
+        m_drivetrain.m_logger.debug("DriveStraightCommand Initial heading: " + m_heading + " m_revs: " + m_revs);
     }
 
     @Override
@@ -143,10 +143,10 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
 
         if (error >= MAX_DEGREES_ERROR || error <= -MAX_DEGREES_ERROR)
         {
-            correction = Math.copySign(IMU_CORRECTION, error * m_revs); // Adjust for direction
+            correction = Math.copySign(IMU_CORRECTION, -error); // Adjust for direction
         }
         
-        m_drivetrain.m_logger.debug("DriveStraightCommand IMU Heading: " + currentHeading + " Correction: " + correction + " Error: " + error);
+        m_drivetrain.m_logger.debug("DriveStraightCommand initial heading: " + m_heading + " current Heading: " + currentHeading  + " Error: " + error + " Correction: " + correction);
 
         return correction;
     }
