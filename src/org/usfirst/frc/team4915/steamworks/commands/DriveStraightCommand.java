@@ -40,7 +40,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     public void initialize()
     {
         m_drivetrain.m_logger.info("DriveStraightCommand initialize");
-        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 3.0, -3.0, // This was 3 and -3
+        m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0, // This was 3 and -3
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns

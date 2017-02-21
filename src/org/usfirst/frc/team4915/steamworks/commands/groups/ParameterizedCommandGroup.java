@@ -2,6 +2,7 @@ package org.usfirst.frc.team4915.steamworks.commands.groups;
 
 import org.usfirst.frc.team4915.steamworks.OI;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
+import org.usfirst.frc.team4915.steamworks.commands.FastTurnDegreesIMUCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMUCommand;
@@ -47,6 +48,8 @@ public class ParameterizedCommandGroup extends CommandGroup
                 case "Turn":
                     addSequential(new TurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
                     break;
+                case "Turn Fast":
+                    addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
                 case "Shoot":
                     addSequential(new LauncherCommand(launcher, LauncherState.ON, true));
                     break;

@@ -219,7 +219,7 @@ public class Launcher extends SpartronicsSubsystem
     public boolean isEmpty()
     {
         double CurrentPosition = m_agitatorMotor.getPulseWidthPosition();
-        if (CurrentPosition >= (m_initialPos + 4096 * 4))
+        if (CurrentPosition >= (m_initialPos + 4096 * 3))
         {
             return true;
         }
