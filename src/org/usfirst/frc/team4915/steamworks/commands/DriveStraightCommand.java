@@ -88,8 +88,8 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
             m_pidController.reset();
             assert (!m_pidController.isEnabled()); // docs say we're disabled now
         }
-        m_drivetrain.m_logger.info("DriveStraightCommand end");
         m_drivetrain.stop();
+        m_drivetrain.m_logger.info("DriveStraightCommand end");
     }
 
     // PIDSource -----------------------------------------------------------------------
