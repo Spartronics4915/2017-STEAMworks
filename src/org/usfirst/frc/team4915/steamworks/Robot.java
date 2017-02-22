@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
-
 public class Robot extends IterativeRobot
 {
 
@@ -61,22 +60,34 @@ public class Robot extends IterativeRobot
         return m_drivetrain;
     }
 
-    public Cameras getCameras() {
+    public Cameras getCameras()
+    {
         return m_cameras;
     }
 
-    public Launcher getLauncher() {
+    public Launcher getLauncher()
+    {
         return m_launcher;
+    }
+
+    public Climber getClimber()
+    {
+        return m_climber;
     }
 
     @Override
     public void autonomousInit()
     {
+        m_oi.initAlliance();
         Command acmd = m_oi.getAutoCommand();
         m_logger.notice("autonomous initalized.");
         if (acmd != null)
         {
             acmd.start();
+        }
+        else
+        {
+            m_logger.error("can't start autonomous command because it is null.");
         }
     }
 
@@ -108,6 +119,10 @@ public class Robot extends IterativeRobot
         {
             acmd.cancel();
         }
+        else
+        {
+            m_logger.error("can't cancel a null autonomous command.");
+        }
         new LauncherCommand(m_launcher, LauncherState.OFF, false).start(); // make sure launcher is off when teleop starts.
     }
 
@@ -121,11 +136,6 @@ public class Robot extends IterativeRobot
     public void testPeriodic()
     {
         LiveWindow.run();
-    }
-
-    public Climber getClimber()
-    {
-        return m_climber;
     }
 
 }

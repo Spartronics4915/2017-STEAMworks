@@ -26,14 +26,10 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.hal.AllianceStationID;
-import edu.wpi.first.wpilibj.hal.HAL;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class OI
@@ -86,6 +82,8 @@ public class OI
     public final JoystickButton m_driveDistance = new JoystickButton(m_altDriveStick, 11);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_altDriveStick, 12);
 
+    private String m_alliance = "Blue";
+    
     private Logger m_logger;
     private Robot m_robot;
 
@@ -103,7 +101,12 @@ public class OI
     {
         m_robot = robot;
         m_logger = new Logger("OI", Logger.Level.DEBUG);
-        initAutoOI();
+        initAutoOI(); // This is called twice, THIS IS INTENTIONAL. It is to resolve a timing issue, so we rebuild the list.
+        /*
+         * The first time we run this we build the list so it can be selected, and we don't get a NullPointer because we set
+         * m_alliance to blue as a dummy value. To actually get what the driver selected we run it again, after getting
+         * our actualy m_alliance from the SmartDashboard in initAlliance().
+         */
         initDrivetrainOI();
         initIntakeOI();
         initLauncherOI();
@@ -124,8 +127,7 @@ public class OI
             SmartDashboard.putString("Build", buildStr);
 
             m_logger.notice("=================================================");
-            m_logger.notice("Initialized in station " + HAL.getAllianceStation());
-            SmartDashboard.putString("AllianceStation", allianceToString(HAL.getAllianceStation()));
+            m_logger.notice("Initialized in station " + SmartDashboard.getString("AllianceStation", "Blue"));
             m_logger.notice(Instant.now().toString());
             m_logger.notice("Built " + buildStr);
             m_logger.notice("=================================================");
@@ -172,22 +174,28 @@ public class OI
                 return new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher());
             }
             m_logger.error("Didn't find " + replay);
+            return null;
         }
+
+        m_logger.error("Nothing matches " + strategy);
         return null;
     }
 
     private void initAutoOI()
     {
+        m_autoPresetOptions.clear();
         // You can't put commas into the names of these because that's how they're deliniated, all of them are backwards to keep the drivers not confused
         m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "-93.3")); // This is the length from the diamond plate to the baseline
         m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
                 "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
         m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-42+returnForSide(0,10)), "Turn", "-45", "Drive Timeout", ""+(37+returnForSide(0,-3)), "2.5", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3 with Curve", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", ""+(-42+returnForSide(0,10)), "Turn", "-45", "Drive Timeout", ""+(37+returnForSide(0,-3)), "2.5", "Shoot", "Curve", "-97", "0.5")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-
+                "Drive", "" + (-42 + returnForSide(0, 10)), "Turn", "-45", "Drive Timeout", "" + (37 + returnForSide(0, -3)), "2.5", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
+        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3 with Curve",
+                new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
+                        "Drive", "" + (-42 + returnForSide(0, 10)), "Turn", "-45", "Drive Timeout", "" + (37 + returnForSide(0, -3)), "2.5", "Shoot",
+                        "Curve", "-97", "0.5")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+        
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -207,13 +215,8 @@ public class OI
         }
         try
         {
-            Alliance alliance = DriverStation.getInstance().getAlliance();
-            if (alliance == null)
-            {
-                m_logger.error("We're not on an alliance?");
-                return;
-            }
-            String other = alliance.toString().equals("Blue") ? "Red" : "Blue";
+            String alliance = getAlliance();
+            String other = alliance.equals("Blue") ? "Red" : "Blue";
             Files.list(root)
                     .filter(Files::isReadable)
                     .map(Path::getFileName)
@@ -280,14 +283,14 @@ public class OI
         m_auxIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
         m_auxIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
     }
-    
+
     private double returnForSide(double blue, double red)
     {
-        switch (DriverStation.getInstance().getAlliance())
+        switch (SmartDashboard.getString("AllianceStation", "Blue"))
         {
-            case Blue:
+            case "Blue":
                 return blue;
-            case Red:
+            case "Red":
                 return red;
             default:
                 m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
@@ -347,26 +350,28 @@ public class OI
             logger.setLogLevel(desired);
         }
     }
-
-    private String allianceToString(AllianceStationID a) // This is used with a network table value
+    
+    private String getAlliance()
     {
-        if (a == null)
-        {
-            return "unknown";
-        }
-        return a.name();
+        return m_alliance;
     }
-
+    
+    public void initAlliance()
+    {
+        m_alliance = SmartDashboard.getString("AllianceStation", "Blue");
+        initAutoOI();
+    }
+    
     public int getSideMultiplier()
     {
-        switch (DriverStation.getInstance().getAlliance())
+        switch (getAlliance())
         {
-            case Blue:
+            case "Blue":
                 return -1;
-            case Red:
+            case "Red":
                 return 1;
             default:
-                m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
+                m_logger.error("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
                 return 1;
         }
     }
