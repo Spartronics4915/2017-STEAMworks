@@ -12,11 +12,12 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
 {
 
     private final Drivetrain m_drivetrain;
+    private PIDController m_pidController;
+    
     private double m_inches;
     private double m_revs;
-    private PIDController m_pidController;
-
     private double m_heading;
+    
     private static final double IMU_CORRECTION = 0.25;
     private static final double MAX_DEGREES_ERROR = .125;
 
@@ -43,7 +44,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0, // This was 3 and -3
                 0.0, 0, 0, 0 /* zero PIDF */);
         m_drivetrain.resetPosition();
-        m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
+        m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous usages
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to
         m_heading = m_drivetrain.getIMUHeading();
         m_drivetrain.m_logger.debug("DriveStraightCommand Initial heading: " + m_heading + " m_revs: " + m_revs);
@@ -62,13 +63,14 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     @Override
     public boolean isFinished()
     {
-        if (m_pidController.onTarget())
+        if (m_pidController.onTarget() && m_pidController.isEnabled())
         {
             m_drivetrain.m_logger.debug("DriveStraightCommand Actual ticks driven "+m_drivetrain.getEncPosition());
             m_drivetrain.m_logger.debug("DriveStraightCommand Desired ticks " + m_revs*1000 + " ticks.");
             m_drivetrain.m_logger.debug("DriveStraightCommand Difference ticks " + ((m_revs*1000)-m_drivetrain.getEncPosition()) + " ticks.");
+            return true;
         }
-        return m_pidController.isEnabled() ? m_pidController.onTarget() : true;
+        return false;
     }
 
     @Override
@@ -86,8 +88,8 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
             m_pidController.reset();
             assert (!m_pidController.isEnabled()); // docs say we're disabled now
         }
-        m_drivetrain.m_logger.info("DriveStraightCommand end");
         m_drivetrain.stop();
+        m_drivetrain.m_logger.info("DriveStraightCommand end");
     }
 
     // PIDSource -----------------------------------------------------------------------
@@ -145,8 +147,6 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         {
             correction = Math.copySign(IMU_CORRECTION, -error); // Adjust for direction
         }
-        
-        m_drivetrain.m_logger.debug("DriveStraightCommand initial heading: " + m_heading + " current Heading: " + currentHeading  + " Error: " + error + " Correction: " + correction);
 
         return correction;
     }

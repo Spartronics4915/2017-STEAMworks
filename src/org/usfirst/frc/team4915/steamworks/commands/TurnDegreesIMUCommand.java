@@ -70,6 +70,7 @@ public class TurnDegreesIMUCommand extends Command
     protected void end()
     {
         m_drivetrain.endIMUTurn();
+        m_drivetrain.stop();
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Actual degrees driven "+m_drivetrain.getIMUNormalizedHeading());
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Desired degrees driven " + m_degrees);
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Difference ticks " + ((m_degrees)-m_drivetrain.getIMUNormalizedHeading()) + " ticks.");
