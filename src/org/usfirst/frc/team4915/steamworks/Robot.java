@@ -78,7 +78,6 @@ public class Robot extends IterativeRobot
     @Override
     public void autonomousInit()
     {
-        m_oi.initAlliance();
         Command acmd = m_oi.getAutoCommand();
         m_logger.notice("autonomous initalized.");
         if (acmd != null)
