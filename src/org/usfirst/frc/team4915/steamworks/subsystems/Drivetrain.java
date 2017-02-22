@@ -22,7 +22,6 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -54,7 +53,7 @@ public class Drivetrain extends SpartronicsSubsystem
     private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
     private XboxController m_driveStick;// Joystick for ArcadeDrive
-    private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
+    //private Joystick m_altDriveStick; //Alternate Joystick for ArcadeDrive
     
     private static final int LIGHT_OUTPUT_PORT = 0;
     private DigitalOutput m_lightOutput;
@@ -315,10 +314,10 @@ public class Drivetrain extends SpartronicsSubsystem
         }
     }
     
-    public void setDriveStick(XboxController s, Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
+    public void setDriveStick(XboxController s)// Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
-        m_altDriveStick = j;
+        //m_altDriveStick = j;
     }
 
     public double getInchesToRevolutions(double inches)
@@ -531,12 +530,12 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = triggerAxis() + m_altDriveStick.getY();
-                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                double forward = triggerAxis(); // + m_altDriveStick.getY();
+                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft); // + m_altDriveStick.getX();
                 if(m_reverseIsOn)
                 {
-                    forward = -triggerAxis() - m_altDriveStick.getY();
-                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) + m_altDriveStick.getX();
+                    forward = -triggerAxis(); // - m_altDriveStick.getY();
+                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft); // + m_altDriveStick.getX();
                     //m_logger.debug("Reverse Engaged");
                 }
                 

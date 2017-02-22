@@ -15,10 +15,8 @@ import java.util.jar.Manifest;
 
 import org.usfirst.frc.team4915.steamworks.Logger.Level;
 import org.usfirst.frc.team4915.steamworks.commands.ClimberSetCommand;
-import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
-import org.usfirst.frc.team4915.steamworks.commands.RecordingSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
@@ -38,11 +36,11 @@ public class OI
     // Ports for joysticks
     public static final int DRIVE_CONTROLLER_PORT = 0;
     public static final int AUX_STICK_PORT = 1;
-    public static final int ALT_DRIVE_STICK_PORT = 2;
+    //public static final int ALT_DRIVE_STICK_PORT = 2;
 
     public final XboxController m_driveStick = new XboxController(DRIVE_CONTROLLER_PORT);
     public final Joystick m_auxStick = new Joystick(AUX_STICK_PORT);
-    public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
+    //public final Joystick m_altDriveStick = new Joystick(ALT_DRIVE_STICK_PORT);
 
     //Drive Controller buttons
     public final JoystickButton m_intakeOn = new JoystickButton(m_driveStick, 1);
@@ -68,7 +66,7 @@ public class OI
     public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_auxIntakeReverse = new JoystickButton(m_auxStick, 8);
 
-    //Alt Drive Stick Buttons
+    /*//Alt Drive Stick Buttons
     public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 3);
     public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 4);
     public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 6);
@@ -81,6 +79,7 @@ public class OI
     public final JoystickButton m_turnIMUStart = new JoystickButton(m_altDriveStick, 9);
     public final JoystickButton m_driveDistance = new JoystickButton(m_altDriveStick, 11);
     public final JoystickButton m_driveDistancePID = new JoystickButton(m_altDriveStick, 12);
+    */
 
     private String m_alliance = "Blue";
     
@@ -256,13 +255,13 @@ public class OI
 
     private void initDrivetrainOI()
     {
-        m_robot.getDrivetrain().setDriveStick(m_driveStick, m_altDriveStick);
+        m_robot.getDrivetrain().setDriveStick(m_driveStick);
         ; // needs tweaking!
-        m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
+        //m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
-        m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
-        m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
-        m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
+        //m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
+        //m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
+        //m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
 
         m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain(), m_robot.getCameras()));
     }
@@ -274,9 +273,9 @@ public class OI
         m_intakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
 
         //Alternate drivestick buttons
-        m_altIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
-        m_altIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
-        m_altIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
+        //m_altIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
+        //m_altIntakeOff.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.OFF));
+        //m_altIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
 
         //Aux Stick Buttons
         m_auxIntakeOn.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.ON));
