@@ -7,7 +7,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Turns a certain number of absolute degrees
  */
 public class TurnDegreesIMUCommand extends Command
 {
@@ -71,7 +71,7 @@ public class TurnDegreesIMUCommand extends Command
     {
         m_drivetrain.endIMUTurn();
         m_drivetrain.stop();
-        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Actual degrees driven "+m_drivetrain.getIMUNormalizedHeading());
+        m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Actual degrees driven "+m_drivetrain.getIMUNormalizedHeading()+"; Actual non-normalized degrees driven "+m_drivetrain.getIMUHeading());
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Desired degrees driven " + m_degrees);
         m_drivetrain.m_logger.debug("TurnDegreesIMUCommand Difference ticks " + ((m_degrees)-m_drivetrain.getIMUNormalizedHeading()) + " ticks.");
         m_drivetrain.m_logger.info("TurnDegreesIMUCommand ended");

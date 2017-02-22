@@ -175,7 +175,6 @@ public class Drivetrain extends SpartronicsSubsystem
                     m_imuPIDSource,
                     new PIDOutput()
                     {
-
                         public void pidWrite(double output)
                         {
                             turn(output); // Turn with the output we get
@@ -241,6 +240,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (m_imu.isInitialized())
         {
+            m_logger.debug("Robot Drive Description: "+m_robotDrive.getDescription());
             m_turningPIDController.reset(); // Reset all of the things that have been passed to the IMU in any previous turns
             m_turningPIDController.setSetpoint(degrees); // Set the point we want to turn to
             m_turningPIDController.enable(); // Enable the PIDController (we should start turning)

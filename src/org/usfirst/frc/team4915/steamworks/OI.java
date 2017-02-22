@@ -195,6 +195,8 @@ public class OI
                         "Drive", "" + (-42 + returnForSide(0, 10)), "Turn", "-45", "Drive Timeout", "" + (37 + returnForSide(0, -3)), "2.5", "Shoot",
                         "Curve", "-97", "0.5")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
         
+        m_logger.debug("Side Multiplier: "+getSideMultiplier());
+        
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
