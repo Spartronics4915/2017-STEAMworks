@@ -337,12 +337,11 @@ public class Drivetrain extends SpartronicsSubsystem
     // This method has an extra parameter to set WPILib RobotDrive max output
     public void setControlMode(TalonControlMode m,
             double fwdPeakV, double revPeakV,
-            double P, double I, double D, double F, double maxOutput)
+            double P, double I, double D, double F)
     {
         if (initialized())
         {
-            setControlMode(m, fwdPeakV, revPeakV, P, I, D, F);
-            m_robotDrive.setMaxOutput(maxOutput); // Set max output with the user provided value
+            setControlMode(m, fwdPeakV, revPeakV, P, I, D, F, MAX_OUTPUT_ROBOT_DRIVE);
         }
     }
     // Not to be confused with CANTalon's setControlMode... The idea here is to
@@ -350,7 +349,7 @@ public class Drivetrain extends SpartronicsSubsystem
     // management.
     public void setControlMode(TalonControlMode m,
             double fwdPeakV, double revPeakV,
-            double P, double I, double D, double F)
+            double P, double I, double D, double F, double maxOutput)
     {
         if (initialized())
         {
@@ -395,7 +394,7 @@ public class Drivetrain extends SpartronicsSubsystem
             m_starboardMasterMotor.configPeakOutputVoltage(fwdPeakV, revPeakV);
             
             // Explicitly set maximum output on WPILib RobotDrive so we don't get the value from the other setControlMode mehtod
-            m_robotDrive.setMaxOutput(MAX_OUTPUT_ROBOT_DRIVE);
+            m_robotDrive.setMaxOutput(maxOutput);
         }
     }
 
