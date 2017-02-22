@@ -26,7 +26,10 @@ public class ParameterizedCommandGroup extends CommandGroup
 {
 
     private final Logger m_logger;
-    
+    /*
+     * Please don't do it this way next year. 
+     * See Jack's suggestion: https://github.com/Spartronics4915/2017-STEAMworks/pull/59#pullrequestreview-22671451
+     */
     public ParameterizedCommandGroup(Drivetrain drivetrain, Launcher launcher, OI oi, String... params)
     {
         m_logger = new Logger("ParameterizedCommandGroup", Logger.Level.DEBUG);
@@ -42,6 +45,11 @@ public class ParameterizedCommandGroup extends CommandGroup
                 case "Drive":
                 	double distance = safeParseDouble(params[i++]);
                     addSequential(new DriveStraightCommand(drivetrain, distance));
+                    break;
+                case "Drive Timeout":
+                    distance = safeParseDouble(params[i++]);
+                    double timeout = safeParseDouble(params[i++]);
+                    addSequential(new DriveStraightCommand(drivetrain, distance), timeout);
                     break;
                 case "Curve":
                 	distance = safeParseDouble(params[i++]);
