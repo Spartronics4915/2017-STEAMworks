@@ -50,7 +50,8 @@ public class ArcadeDriveCommand extends Command
     @Override
     public void end()
     {
-        m_drivetrain.m_logger.info("ArcadeDriveCommand end");        
+        m_drivetrain.m_logger.info("ArcadeDriveCommand end");
+        m_drivetrain.stop();
     }
     
 }

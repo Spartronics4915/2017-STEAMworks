@@ -30,6 +30,7 @@ public class ReplayCommand extends Command
     public void end()
     {
         m_drivetrain.m_logger.debug("ReplayCommand end");
+        m_drivetrain.stop();
     }
 
     @Override
@@ -87,6 +88,7 @@ public class ReplayCommand extends Command
     public void interrupted()
     {
         m_drivetrain.m_logger.debug("ReplayCommand interrupted");
+        end();
     }
 
     @Override
