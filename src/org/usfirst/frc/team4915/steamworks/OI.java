@@ -224,7 +224,7 @@ public class OI
             return result;
         }
         m_alliance = SmartDashboard.getString("AllianceStation", "Blue");
-        if(m_alliance != "Blue" && m_alliance != "Red")
+        if(!m_alliance.equals("Blue") && !m_alliance.equals("Red"))
         {
             m_logger.error("Unknown alliance station, switching to baseline strategy");
             strategy = "Preset: Cross Baseline Positons 1+3";

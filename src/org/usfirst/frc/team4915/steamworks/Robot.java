@@ -6,6 +6,7 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
@@ -80,8 +81,9 @@ public class Robot extends IterativeRobot
     @Override
     public void autonomousInit()
     {
-        m_autoCmd = m_oi.getAutoCommand();
         m_logger.notice("autonomous initalized.");
+        m_drivetrain.initAutonomous();
+        m_autoCmd = m_oi.getAutoCommand();
         if (m_autoCmd != null)
         {
             m_autoCmd.start();
@@ -101,6 +103,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
+        m_logger.notice("autonomous initalized.");
     }
 
     @Override
@@ -125,6 +128,8 @@ public class Robot extends IterativeRobot
             m_logger.error("can't cancel a null autonomous command.");
         }
         new LauncherCommand(m_launcher, LauncherState.OFF, false).start(); // make sure launcher is off when teleop starts.
+        new ArcadeDriveCommand(m_drivetrain).start(); // make sure launcher is off when teleop starts.
+        m_drivetrain.initTeleop();
     }
 
     @Override
