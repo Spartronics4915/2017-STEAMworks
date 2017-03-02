@@ -128,7 +128,6 @@ public class Robot extends IterativeRobot
             m_logger.error("can't cancel a null autonomous command.");
         }
         new LauncherCommand(m_launcher, LauncherState.OFF, false).start(); // make sure launcher is off when teleop starts.
-        new ArcadeDriveCommand(m_drivetrain).start(); // make sure launcher is off when teleop starts.
         m_drivetrain.initTeleop();
     }
 
