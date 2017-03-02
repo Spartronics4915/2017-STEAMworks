@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
+import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.sensors.BNO055;
 import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 
@@ -700,8 +701,19 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         if (initialized())
         {
-            setDefaultCommand(new ArcadeDriveCommand(this));
+            setDefaultCommand(new StopCommand(this));
         }
+    }
+    
+    public void initAutonomous()
+    {
+        setDefaultCommand(new StopCommand(this));
+    }
+    
+    public void initTeleop()
+    {
+        new ArcadeDriveCommand(this).start(); // make sure launcher is off when teleop starts.
+        setDefaultCommand(new ArcadeDriveCommand(this));
     }
 
     public void startRecording()

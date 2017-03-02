@@ -29,6 +29,7 @@ public class ReverseArcadeDriveCommand extends Command
     {
         m_drivetrain.m_logger.info("ReverseArcadeDriveCommand end");
         m_drivetrain.resetReverse(m_cameras);
+        m_drivetrain.stop();
     }
 
     

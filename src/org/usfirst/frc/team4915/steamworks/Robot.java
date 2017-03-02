@@ -6,6 +6,7 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
 
@@ -24,6 +25,7 @@ public class Robot extends IterativeRobot
     private OI m_oi;
     private Climber m_climber;
     private Cameras m_cameras;
+    private Command m_autoCmd;
 
     private Launcher m_launcher;
 
@@ -37,6 +39,7 @@ public class Robot extends IterativeRobot
         m_cameras = new Cameras();
         m_launcher = new Launcher();
         m_oi = new OI(this); // make sure OI is last
+        m_autoCmd = null;
     }
 
     @Override
@@ -78,12 +81,12 @@ public class Robot extends IterativeRobot
     @Override
     public void autonomousInit()
     {
-        m_oi.initAlliance();
-        Command acmd = m_oi.getAutoCommand();
         m_logger.notice("autonomous initalized.");
-        if (acmd != null)
+        m_drivetrain.initAutonomous();
+        m_autoCmd = m_oi.getAutoCommand();
+        if (m_autoCmd != null)
         {
-            acmd.start();
+            m_autoCmd.start();
         }
         else
         {
@@ -100,30 +103,32 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
-
+        m_logger.notice("autonomous initalized.");
     }
 
     @Override
     public void disabledPeriodic()
     {
-        // we don't want to run the scheduler in disabled mode!
-        // Scheduler.getInstance().run();
+        // running the scheduler during disabled mode has the effect of canceling
+        // *most* active tasks, and so it is okay.
+        Scheduler.getInstance().run();
     }
 
     @Override
     public void teleopInit()
     {
-        Command acmd = m_oi.getAutoCommand();
         m_logger.notice("teleop initalized.");
-        if (acmd != null)
+        if (m_autoCmd != null)
         {
-            acmd.cancel();
+            m_autoCmd.cancel();
+            m_autoCmd = null;
         }
         else
         {
             m_logger.error("can't cancel a null autonomous command.");
         }
         new LauncherCommand(m_launcher, LauncherState.OFF, false).start(); // make sure launcher is off when teleop starts.
+        m_drivetrain.initTeleop();
     }
 
     @Override

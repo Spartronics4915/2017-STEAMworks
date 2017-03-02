@@ -83,6 +83,7 @@ public class TurnDegreesIMUCommand extends Command
     {
         m_drivetrain.endIMUTurn(); // Make sure that we stop turning
         m_drivetrain.m_logger.info("TurnDegreesIMUCommand interrupted");
+        end();
     }
 }
 

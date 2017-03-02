@@ -21,6 +21,8 @@ import org.usfirst.frc.team4915.steamworks.commands.ReplayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
+import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
@@ -66,26 +68,33 @@ public class OI
     public final JoystickButton m_auxIntakeOff = new JoystickButton(m_auxStick, 7);
     public final JoystickButton m_auxIntakeReverse = new JoystickButton(m_auxStick, 8);
 
-    /*//Alt Drive Stick Buttons
-    public final JoystickButton m_altIntakeOn = new JoystickButton(m_altDriveStick, 3);
-    public final JoystickButton m_altIntakeOff = new JoystickButton(m_altDriveStick, 4);
-    public final JoystickButton m_altIntakeReverse = new JoystickButton(m_altDriveStick, 6);
+    /*
+     * //Alt Drive Stick Buttons
+     * public final JoystickButton m_altIntakeOn = new
+     * JoystickButton(m_altDriveStick, 3);
+     * public final JoystickButton m_altIntakeOff = new
+     * JoystickButton(m_altDriveStick, 4);
+     * public final JoystickButton m_altIntakeReverse = new
+     * JoystickButton(m_altDriveStick, 6);
+     * public final JoystickButton m_replayRecord = new
+     * JoystickButton(m_altDriveStick, 7);
+     * public final JoystickButton m_replayStop = new
+     * JoystickButton(m_altDriveStick, 8);
+     * public final JoystickButton m_replayReplay = new
+     * JoystickButton(m_altDriveStick, 10);
+     * //Auto test button
+     * public final JoystickButton m_turnIMUStart = new
+     * JoystickButton(m_altDriveStick, 9);
+     * public final JoystickButton m_driveDistance = new
+     * JoystickButton(m_altDriveStick, 11);
+     * public final JoystickButton m_driveDistancePID = new
+     * JoystickButton(m_altDriveStick, 12);
+     */
 
-    public final JoystickButton m_replayRecord = new JoystickButton(m_altDriveStick, 7);
-    public final JoystickButton m_replayStop = new JoystickButton(m_altDriveStick, 8);
-    public final JoystickButton m_replayReplay = new JoystickButton(m_altDriveStick, 10);
-
-    //Auto test button
-    public final JoystickButton m_turnIMUStart = new JoystickButton(m_altDriveStick, 9);
-    public final JoystickButton m_driveDistance = new JoystickButton(m_altDriveStick, 11);
-    public final JoystickButton m_driveDistancePID = new JoystickButton(m_altDriveStick, 12);
-    */
-
-    private String m_alliance = "Blue";
-    
     private Logger m_logger;
     private Robot m_robot;
-
+    private String m_alliance;  // this isn't known accurately until autonomousInit
+    
     public enum WallPosition // For command groups
     {
         ONE,
@@ -93,7 +102,6 @@ public class OI
         THREE
     }
 
-    private Map<String, Command> m_autoPresetOptions = new HashMap<>();
     private Set<String> m_autoReplayOptions = new HashSet<>();
 
     public OI(Robot robot)
@@ -102,8 +110,10 @@ public class OI
         m_logger = new Logger("OI", Logger.Level.DEBUG);
         initAutoOI(); // This is called twice, THIS IS INTENTIONAL. It is to resolve a timing issue, so we rebuild the list.
         /*
-         * The first time we run this we build the list so it can be selected, and we don't get a NullPointer because we set
-         * m_alliance to blue as a dummy value. To actually get what the driver selected we run it again, after getting
+         * The first time we run this we build the list so it can be selected,
+         * and we don't get a NullPointer because we set
+         * m_alliance to blue as a dummy value. To actually get what the driver
+         * selected we run it again, after getting
          * our actualy m_alliance from the SmartDashboard in initAlliance().
          */
         initDrivetrainOI();
@@ -140,63 +150,14 @@ public class OI
         }
     }
 
-    public Command getAutoCommand()
-    {
-        m_logger.info("Finding an autonomous command...");
-        String strategy = SmartDashboard.getString("AutoStrategy", "");
-        if (strategy.equals("None") || strategy.equals(""))
-        {
-            m_logger.warning("No autonomous strategy selected.");
-            return null;
-        }
-
-        if (strategy.startsWith("Preset: "))
-        {
-            String name = strategy.replaceFirst("Preset: ", "");
-            Command command = m_autoPresetOptions.get(name);
-            if (command == null)
-            {
-                m_logger.error("No autonomous preset matches " + name);
-                return null;
-            }
-            m_logger.info("Found " + name);
-            return command;
-        }
-
-        if (strategy.startsWith("Replay: "))
-        {
-            String replay = strategy.replaceFirst("Replay: ", "");
-            m_logger.debug("Searching for " + replay);
-            if (m_autoReplayOptions.contains(strategy))
-            {
-                m_logger.notice("Found a replay named " + replay);
-                return new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher());
-            }
-            m_logger.error("Didn't find " + replay);
-            return null;
-        }
-
-        m_logger.error("Nothing matches " + strategy);
-        return null;
-    }
-
+    // The job of initAutoOI is to populate user interface elements for the driver
+    // station.   Since this is called via robotInit it is *too early* to know accurately
+    // which alliance position and driver station we occupy.  This is known only at the
+    // moment of Robot.autonomousInit()/getAutoCommand, so we must defer station-specific parameters
+    // until that point.
     private void initAutoOI()
     {
-        m_autoPresetOptions.clear();
-        // You can't put commas into the names of these because that's how they're deliniated, all of them are backwards to keep the drivers not confused
-        m_autoPresetOptions.put("Cross Baseline Positons 1+3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "-93.3")); // This is the length from the diamond plate to the baseline
-        m_autoPresetOptions.put("Place Gear Position 2", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)))); // This is the length from the diamond plate with the robot length subtracted and the 8 subtracted to account for the spring and the inset of the gear on the robot
-        m_autoPresetOptions.put("Drive and Shoot Position 3", new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                "Drive", "" + (-42 + returnForSide(0, 10)), "Turn", "-45", "Drive Timeout", "" + (37 + returnForSide(0, -3)), "2.5", "Shoot")); // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-        m_autoPresetOptions.put("Drive Shoot and Cross Baseline Position 3 with Curve",
-                new ParameterizedCommandGroup(m_robot.getDrivetrain(), m_robot.getLauncher(), this,
-                        "Drive", "" + (-42 + returnForSide(0, 10)), "Turn", "-45", "Drive Timeout", "" + (37 + returnForSide(0, -3)), "2.5", "Shoot",
-                        "Curve", "-97", "0.5")); // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-        
-        m_logger.debug("Side Multiplier: "+getSideMultiplier());
-        
+        // here we enumerate all recordings
         Path root = Paths.get(System.getProperty("user.home"), "Recordings");
         if (!Files.isDirectory(root))
         {
@@ -216,14 +177,16 @@ public class OI
         }
         try
         {
-            String alliance = getAlliance();
-            String other = alliance.equals("Blue") ? "Red" : "Blue";
+            // since we don't know the alliance here, we have a problem.
+            // for now, the workaround is to populate all presets.
+            // String alliance = getAlliance();
+            // String other = alliance.equals("Blue") ? "Red" : "Blue";
             Files.list(root)
                     .filter(Files::isReadable)
                     .map(Path::getFileName)
                     .map(Path::toString)
                     // Hide replays meant for the other alliance
-                    .filter(filename -> !filename.contains(other))
+                    // .filter(filename -> !filename.contains(other))
                     .forEach(file ->
                     {
                         m_autoReplayOptions.add("Replay: " + file);
@@ -236,16 +199,97 @@ public class OI
         }
 
         Set<String> display = new HashSet<>();
-        // Special value.
+        // You can't put commas into the names of these because that's how they're delineated, 
+        // all of them are backwards to keep the drivers not confused
         display.add("None");
+        display.add("Preset: Cross Baseline Positons 1+3");
+        display.add("Preset: Place Gear Position 2");
+        display.add("Preset: Drive and Shoot Position 3");
+        display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
 
         display.addAll(m_autoReplayOptions);
-        m_autoPresetOptions.keySet()
-                .stream()
-                .map(name -> "Preset: " + name)
-                .forEach(display::add);
 
         SmartDashboard.putString("AutoStrategyOptions", String.join(",", display));
+    }
+
+    // getAutoCommand is presumed to occur during autonomousInit (ie: long after robotInit)
+    public Command getAutoCommand()
+    {
+        m_logger.info("Finding an autonomous command...");
+        Command result = null;
+        String strategy = SmartDashboard.getString("AutoStrategy", "");
+        if (strategy.equals("None") || strategy.equals(""))
+        {
+            m_logger.warning("No autonomous strategy selected.");
+            return result;
+        }
+        m_alliance = SmartDashboard.getString("AllianceStation", "Blue");
+        if(!m_alliance.equals("Blue") && !m_alliance.equals("Red"))
+        {
+            m_logger.error("Unknown alliance station, switching to baseline strategy");
+            strategy = "Preset: Cross Baseline Positons 1+3";
+        }
+
+        if (strategy.startsWith("Preset: "))
+        {
+            Drivetrain drivetrain = m_robot.getDrivetrain();
+            Launcher launcher = m_robot.getLauncher();
+            String name = strategy.replaceFirst("Preset: ", "");
+            switch (name)
+            {
+                case "Cross Baseline Positons 1+3":
+                    // This is the length from the diamond plate to the baseline
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                            "Drive", "-93.3");
+                    break;
+                case "Place Gear Position 2":
+                    // This is the length from the diamond plate with the robot length subtracted and the 8 
+                    //  subtracted to account for the spring and the inset of the gear on the robot
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                            "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)));
+                    break;
+                case "Drive and Shoot Position 3":
+                    // We drive forward, turn to be parallel with the boiler, and drive into the boiler
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                            "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
+                            "Turn", "-45",
+                            "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
+                            "Shoot");
+                    break;
+                case "Drive Shoot and Cross Baseline Position 3 with Curve":
+                    // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                            "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
+                            "Turn", "-45",
+                            "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
+                            "Shoot",
+                            "Curve", "-97", "0.5");
+                    break;
+                default:
+                    break;
+            }
+            if (result == null)
+                m_logger.error("No autonomous preset matches " + name);
+            else
+
+                m_logger.info("Found " + name);
+            return result;
+        }
+        else if (strategy.startsWith("Replay: "))
+        {
+            String replay = strategy.replaceFirst("Replay: ", "");
+            m_logger.debug("Searching for " + replay);
+            if (m_autoReplayOptions.contains(strategy))
+            {
+                m_logger.notice("Found a replay named " + replay);
+                return new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher());
+            }
+            m_logger.error("Didn't find " + replay);
+            return null;
+        }
+
+        m_logger.error("Nothing matches " + strategy);
+        return null;
     }
 
     private void initClimberOI()
@@ -259,11 +303,11 @@ public class OI
     {
         m_robot.getDrivetrain().setDriveStick(m_driveStick);
         ; // needs tweaking!
-        //m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
+          //m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
-        //m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
-        //m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
-        //m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
+          //m_replayRecord.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), true));
+          //m_replayStop.whenPressed(new RecordingSetCommand(m_robot.getDrivetrain(), false));
+          //m_replayReplay.whenPressed(new ReplayCommand(m_robot.getDrivetrain(), m_robot.getLauncher()));
 
         m_reverseDrive.toggleWhenPressed(new ReverseArcadeDriveCommand(m_robot.getDrivetrain(), m_robot.getCameras()));
     }
@@ -285,17 +329,33 @@ public class OI
         m_auxIntakeReverse.whenPressed(new IntakeSetCommand(m_robot.getIntake(), State.REVERSE));
     }
 
-    private double returnForSide(double blue, double red)
+    private double returnForSide(String alliance, double blue, double red)
     {
-        switch (SmartDashboard.getString("AllianceStation", "Blue"))
+        switch (alliance)
         {
             case "Blue":
                 return blue;
             case "Red":
                 return red;
             default:
-                m_logger.warning("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
+                m_logger.warning("returnForSide did't receive Red or Blue from WPILib DriverStation."); 
+                // This shouldn't ever happen, but we're going to be defensive about it
                 return 0;
+        }
+    }
+
+    public int getAllianceScale() // called from ParameterizedCommandGroup
+    {
+        switch (m_alliance)
+        {
+            case "Blue":
+                return -1;
+            case "Red":
+                return 1;
+            default:
+                m_logger.error("getAllianceScale called in invalid state."); 
+                // This shouldn't ever happen, but we're going to be defensive about it
+                return 1;
         }
     }
 
@@ -351,30 +411,6 @@ public class OI
             logger.setLogLevel(desired);
         }
     }
-    
-    private String getAlliance()
-    {
-        return m_alliance;
-    }
-    
-    public void initAlliance()
-    {
-        m_alliance = SmartDashboard.getString("AllianceStation", "Blue");
-        initAutoOI();
-    }
-    
-    public int getSideMultiplier()
-    {
-        switch (getAlliance())
-        {
-            case "Blue":
-                return -1;
-            case "Red":
-                return 1;
-            default:
-                m_logger.error("getSideMultiplier did't recive Red or Blue from WPILib DriverStation."); // This shouldn't ever happen, but we're going to be defensive about it
-                return 1;
-        }
-    }
+
 
 }

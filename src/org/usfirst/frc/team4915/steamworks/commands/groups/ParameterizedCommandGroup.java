@@ -54,15 +54,15 @@ public class ParameterizedCommandGroup extends CommandGroup
                 case "Curve":
                 	distance = safeParseDouble(params[i++]);
                 	double curve = safeParseDouble(params[i++]);
-                    addSequential(new DriveCurveCommand(drivetrain, distance, curve * oi.getSideMultiplier()));
+                    addSequential(new DriveCurveCommand(drivetrain, distance, curve * oi.getAllianceScale()));
                     break;
                 case "Turn":
                 	double angle = safeParseDouble(params[i++]);
-                    addSequential(new TurnDegreesIMUCommand(drivetrain, angle * oi.getSideMultiplier()));
+                    addSequential(new TurnDegreesIMUCommand(drivetrain, angle * oi.getAllianceScale()));
                     break;
                 case "Turn Fast":
                     double value = safeParseDouble(params[i++]);
-                    addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getSideMultiplier()));
+                    addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getAllianceScale()));
                     break;
                 case "Shoot":
                     addSequential(new LauncherCommand(launcher, LauncherState.ON, true)); // Takes no parameters
