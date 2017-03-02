@@ -33,6 +33,7 @@ public class Intake extends SpartronicsSubsystem
             m_intakeMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Intake initialized");
             SmartDashboard.putString("Intake Status", "Initialized");
+            SmartDashboard.putNumber("Intake TGT", INTAKE_SPEED);
         }
         catch (Exception e)
         {

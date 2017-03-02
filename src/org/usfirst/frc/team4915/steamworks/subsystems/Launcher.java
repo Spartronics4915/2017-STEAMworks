@@ -63,6 +63,10 @@ public class Launcher extends SpartronicsSubsystem
             m_agitatorMotor.configNominalOutputVoltage(0.0f, -0.0f);
             m_agitatorMotor.configPeakOutputVoltage(12.0f, -12.0f);
             m_agitatorMotor.reverseSensor(false);
+            
+            SmartDashboard.putNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
+            SmartDashboard.putNumber("Agitator_TGT", Launcher.DEFAULT_AGITATOR_SPEED);
+            
 
             m_logger.info("Launcher initialized");
         }
