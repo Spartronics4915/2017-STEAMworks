@@ -35,6 +35,7 @@ public class Climber extends SpartronicsSubsystem
             m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
             m_logger.info("Climber initialized");
             SmartDashboard.putString("Climber Status", "Initialized");
+            SmartDashboard.putNumber("Climber Speed", .90);
         }
         catch (Exception e)
         {
