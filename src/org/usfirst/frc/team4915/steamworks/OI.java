@@ -263,7 +263,7 @@ public class OI
                             "Turn", "-45",
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
-                            "Curve", "-97", "0.5");
+                            "Curve", "-125", "0.5");
                     break;
                 default:
                     break;

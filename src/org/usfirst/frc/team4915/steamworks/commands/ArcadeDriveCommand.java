@@ -25,7 +25,7 @@ public class ArcadeDriveCommand extends Command
     {
         m_drivetrain.m_logger.info("ArcadeDriveCommand initialize");;
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 12.0, -12.0, 
-                                    0, 0, 0, 0 /* zero PIDF  */);
+                                    0, 0, 0, 0 /* zero PIDF  */, 5.0);
     }
 
     @Override
