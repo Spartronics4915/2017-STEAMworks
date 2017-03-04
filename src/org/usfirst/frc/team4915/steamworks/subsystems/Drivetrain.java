@@ -45,7 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
-
+    private static final double TURN_MULTIPLIER = .4;
 
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
@@ -532,11 +532,11 @@ public class Drivetrain extends SpartronicsSubsystem
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
                 double forward = triggerAxis(); // + m_altDriveStick.getY();
-                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft); // + m_altDriveStick.getX();
+                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER; // + m_altDriveStick.getX();
                 if(m_reverseIsOn)
                 {
                     forward = -triggerAxis(); // - m_altDriveStick.getY();
-                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft); // + m_altDriveStick.getX();
+                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER; // + m_altDriveStick.getX();
                     //m_logger.debug("Reverse Engaged");
                 }
                 
