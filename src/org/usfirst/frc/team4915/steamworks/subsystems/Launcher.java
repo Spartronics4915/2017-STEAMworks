@@ -168,7 +168,7 @@ public class Launcher extends SpartronicsSubsystem
         if ((speedActual >= (speedTarget - epsilon)) && (speedActual <= (speedTarget + epsilon)))
         {
             m_startupCount++;
-            if (m_startupCount < 15) // if launcher at speed for less than 300ms (code runs once every 20ms)
+            if (m_startupCount < 10) // if launcher at speed for less than 200ms (code runs once every 20ms) THIS IS A TEST
             {
                 return false;
             }
@@ -190,7 +190,7 @@ public class Launcher extends SpartronicsSubsystem
 
     private boolean isJammed() 
     {
-        if (this.getRpm() < 10)
+        if (this.getRpm() < 10) // target is 80
         {
             m_jamCount++; // times in a row that the agitator hasn't moved
             if (m_jamCount < 15)  // We are waiting for the reversed velocity to have an effect
