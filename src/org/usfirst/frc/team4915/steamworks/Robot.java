@@ -6,6 +6,9 @@ import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
+
+import java.util.ArrayList;
+
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Cameras;
@@ -14,6 +17,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot
 {
@@ -33,6 +37,11 @@ public class Robot extends IterativeRobot
     public void robotInit()
     {
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
+        CANProbe cp = new CANProbe();
+        ArrayList<String> canDevices = cp.Find();
+        m_logger.notice("robotInit CAN devices found:\n" + canDevices);
+        SmartDashboard.putNumber("CANDevicesExpected", RobotMap.NUM_CAN_DEVICES);
+        SmartDashboard.putNumber("CANDevicesFound", canDevices.size());
         m_drivetrain = new Drivetrain(); // We put drivetrain first so that our IMU is ready for everything else faster
         m_intake = new Intake();
         m_climber = new Climber();
