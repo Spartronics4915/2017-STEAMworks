@@ -39,9 +39,9 @@ public class Robot extends IterativeRobot
         m_logger = new Logger("Robot", Logger.Level.DEBUG);
         CANProbe cp = new CANProbe();
         ArrayList<String> canDevices = cp.Find();
-        m_logger.notice("robotInit CAN devices found:\n" + canDevices);
-        SmartDashboard.putNumber("CANDevicesExpected", RobotMap.NUM_CAN_DEVICES);
-        SmartDashboard.putNumber("CANDevicesFound", canDevices.size());
+        m_logger.notice("robotInit CANDevicesFound:\n" + canDevices);
+        SmartDashboard.putNumber("NumCANDevicesExpected", RobotMap.NUM_CAN_DEVICES);
+        SmartDashboard.putNumber("NumCANDevicesFound", canDevices.size());
         m_drivetrain = new Drivetrain(); // We put drivetrain first so that our IMU is ready for everything else faster
         m_intake = new Intake();
         m_climber = new Climber();
