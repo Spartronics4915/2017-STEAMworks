@@ -25,7 +25,7 @@ public class Launcher extends SpartronicsSubsystem
 
     //the "perfect" static speed that always makes goal
     public static final double DEFAULT_LAUNCHER_SPEED = 2940;
-    public static final double DEFAULT_AGITATOR_SPEED = .8;
+    public static final double DEFAULT_AGITATOR_SPEED = .7;
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
@@ -162,13 +162,13 @@ public class Launcher extends SpartronicsSubsystem
 
     private boolean isLauncherAtSpeed()
     {
-        final double epsilon = 100; // allow 100 RPM of error.
+        final double epsilon = 500; // allow 500 RPM of error.
         double speedTarget = SmartDashboard.getNumber("Launcher_TGT", Launcher.DEFAULT_LAUNCHER_SPEED);
         double speedActual = m_launcherMotor.getSpeed();
         if ((speedActual >= (speedTarget - epsilon)) && (speedActual <= (speedTarget + epsilon)))
         {
             m_startupCount++;
-            if (m_startupCount < 10) // if launcher at speed for less than 200ms (code runs once every 20ms) THIS IS A TEST
+            if (m_startupCount < 10) // if launcher at speed for less than 200ms (code runs once every 20ms) Only tested on first run through
             {
                 return false;
             }
