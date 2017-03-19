@@ -26,11 +26,6 @@ public class RecordingSetCommand extends Command
     @Override
     public void execute()
     {
-        if (!m_drivetrain.getRecordingEnabled())
-        {
-            return;
-        }
-
         if (m_state)
         {
             m_drivetrain.startRecording();
