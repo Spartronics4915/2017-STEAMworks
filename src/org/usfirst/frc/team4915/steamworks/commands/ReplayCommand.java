@@ -39,7 +39,7 @@ public class ReplayCommand extends Command
         if (m_launchAt != 0 && m_currentStep == m_launchAt)
         {
             m_drivetrain.m_logger.notice("Launching");
-            LauncherCommand launch = new LauncherCommand(m_launcher, LauncherState.ON, false);
+            LauncherCommand launch = new LauncherCommand(m_launcher, LauncherState.ON, true);
             launch.initialize();
             m_drivetrain.m_logger.debug("Started the command...");
             while (!launch.isFinished())

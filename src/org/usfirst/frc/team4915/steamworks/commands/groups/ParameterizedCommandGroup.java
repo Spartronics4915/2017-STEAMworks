@@ -65,7 +65,7 @@ public class ParameterizedCommandGroup extends CommandGroup
                     addSequential(new FastTurnDegreesIMUCommand(drivetrain, value * oi.getAllianceScale()));
                     break;
                 case "Shoot":
-                    addSequential(new LauncherCommand(launcher, LauncherState.ON, false)); // Takes no parameters
+                    addSequential(new LauncherCommand(launcher, LauncherState.ON, true)); // Takes no parameters
                     break;
                 case "Stop":
                     addSequential(new StopCommand(drivetrain)); // Takes no parameters
