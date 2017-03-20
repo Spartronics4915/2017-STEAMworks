@@ -5,11 +5,14 @@ import org.usfirst.frc.team4915.steamworks.OI;
 import org.usfirst.frc.team4915.steamworks.commands.DriveCurveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DelayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
+import org.usfirst.frc.team4915.steamworks.commands.DriveTimedCurveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.FastTurnDegreesIMUCommand;
+import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMUCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
@@ -30,7 +33,7 @@ public class ParameterizedCommandGroup extends CommandGroup
      * Please don't do it this way next year. 
      * See Jack's suggestion: https://github.com/Spartronics4915/2017-STEAMworks/pull/59#pullrequestreview-22671451
      */
-    public ParameterizedCommandGroup(Drivetrain drivetrain, Launcher launcher, OI oi, String... params)
+    public ParameterizedCommandGroup(Drivetrain drivetrain, Launcher launcher, Intake intake, OI oi, String... params)
     {
         m_logger = new Logger("ParameterizedCommandGroup", Logger.Level.DEBUG);
         
@@ -70,6 +73,22 @@ public class ParameterizedCommandGroup extends CommandGroup
                 case "Stop":
                     addSequential(new StopCommand(drivetrain)); // Takes no parameters
                     break;
+                case "Straight and Curve":
+                    double totalDistance = safeParseDouble(params[i++]);
+                    curve = safeParseDouble(params[i++]);
+                    double straightDistance = safeParseDouble(params[i++]);
+                    addSequential(new DriveTimedCurveCommand(drivetrain, totalDistance, curve, straightDistance));
+                case "Intake": // This command runs in parallel
+                    Intake.State intakeState;
+                    String currentParam = params[i++];
+                    if (currentParam == "ON") {
+                        intakeState = Intake.State.ON;
+                    } else if (currentParam == "REVERSE") {
+                        intakeState = Intake.State.REVERSE;
+                    } else {
+                        intakeState = Intake.State.OFF;
+                    }
+                    addParallel(new IntakeSetCommand(intake, intakeState));
                 case "Delay":
                     double delay = safeParseDouble(params[i++]);
                     addSequential(new DelayCommand(delay));
