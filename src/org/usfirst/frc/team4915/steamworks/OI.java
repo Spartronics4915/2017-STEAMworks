@@ -21,6 +21,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
@@ -233,23 +234,24 @@ public class OI
         {
             Drivetrain drivetrain = m_robot.getDrivetrain();
             Launcher launcher = m_robot.getLauncher();
+            Intake intake = m_robot.getIntake();
             String name = strategy.replaceFirst("Preset: ", "");
             switch (name)
             {
                 case "Cross Baseline Positons 1+3":
                     // This is the length from the diamond plate to the baseline
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "-93.3");
                     break;
                 case "Place Gear Position 2":
                     // This is the length from the diamond plate with the robot length subtracted and the 8 
                     //  subtracted to account for the spring and the inset of the gear on the robot
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)));
                     break;
                 case "Drive and Shoot Position 3":
                     // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
                             "Turn", "-45",
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
@@ -257,7 +259,7 @@ public class OI
                     break;
                 case "Drive Shoot and Cross Baseline Position 3 with Curve":
                     // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
                             "Turn", "-45",
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
