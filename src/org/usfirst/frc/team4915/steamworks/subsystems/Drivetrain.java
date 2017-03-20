@@ -332,6 +332,11 @@ public class Drivetrain extends SpartronicsSubsystem
         return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
     }
     
+    // A lower-overhead way then setControlMode to set the max output (this shouldn't mess anyone else up if they set control mode)
+    public void setRobotDriveMaxOutput(double maxOutput) {
+        m_robotDrive.setMaxOutput(maxOutput);
+    }
+    
     // Not to be confused with CANTalon's setControlMode... The idea here is to
     // make sure that we keep all the control-mode-specific settings under close
     // management.

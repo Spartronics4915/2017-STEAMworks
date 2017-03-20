@@ -13,14 +13,22 @@ public class DriveTimedCurveCommand extends DriveStraightCommand {
     private double m_straightInches;
     private double m_straightRevs;
     private double m_curve;
+    private double m_speed;
 
-    public DriveTimedCurveCommand(Drivetrain drivetrain, double totalInches, double curve, double straightInches)
+    public DriveTimedCurveCommand(Drivetrain drivetrain, double totalInches, double curve, double straightInches, double speed)
     {
         super(drivetrain, totalInches);
         m_drivetrain = drivetrain;
         m_straightInches = straightInches;
         m_curve = curve;
+        m_speed = speed;
         m_straightRevs = m_drivetrain.getInchesToRevolutions(m_straightInches);
+    }
+    
+    @Override
+    public void initialize() {
+        super.initialize();
+        m_drivetrain.setRobotDriveMaxOutput(m_speed);
     }
     
     // PIDOutput -----------------------------------------------------------------------

@@ -77,7 +77,8 @@ public class ParameterizedCommandGroup extends CommandGroup
                     double totalDistance = safeParseDouble(params[i++]);
                     curve = safeParseDouble(params[i++]);
                     double straightDistance = safeParseDouble(params[i++]);
-                    addSequential(new DriveTimedCurveCommand(drivetrain, totalDistance, curve, straightDistance));
+                    double speed = safeParseDouble(params[i++]);
+                    addSequential(new DriveTimedCurveCommand(drivetrain, totalDistance, curve, straightDistance, speed));
                 case "Intake": // This command runs in parallel
                     Intake.State intakeState;
                     String currentParam = params[i++];
