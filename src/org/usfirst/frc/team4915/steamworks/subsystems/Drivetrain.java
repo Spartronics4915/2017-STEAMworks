@@ -21,6 +21,7 @@ import org.usfirst.frc.team4915.steamworks.sensors.IMUPIDSource;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PIDController;
@@ -546,12 +547,12 @@ public class Drivetrain extends SpartronicsSubsystem
                     forward = 0.0;
                     rotation = 0.0;
                 }
-                if (getRecordingEnabled() && m_isRecording)
+                if (m_isRecording)
                 {
                     m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
                 }
-                m_robotDrive.arcadeDrive(forward, rotation);
+                m_robotDrive.arcadeDrive(forward, rotation, true /*Squared Inputs*/);
             }
             else
             {
@@ -718,10 +719,6 @@ public class Drivetrain extends SpartronicsSubsystem
 
     public void startRecording()
     {
-        if (!getRecordingEnabled())
-        {
-            return;
-        }
         m_startedRecordingAt = Instant.now();
         m_logger.notice("Started recording at " + m_startedRecordingAt);
 
@@ -853,11 +850,6 @@ public class Drivetrain extends SpartronicsSubsystem
             m_logger.exception(e, false);
             return false;
         }
-    }
-
-    public boolean getRecordingEnabled()
-    {
-        return SmartDashboard.getBoolean("RecordingEnabled", false);
     }
 
     public List<Double> getReplayForward()
