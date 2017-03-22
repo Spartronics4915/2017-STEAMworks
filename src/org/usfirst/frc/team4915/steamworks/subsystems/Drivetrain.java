@@ -45,8 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 */
 
 public class Drivetrain extends SpartronicsSubsystem
-{
-    
+{    
     public static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3; //was .3, changing the scaling factor
     
     private static final double TURN_MULTIPLIER = .4;
