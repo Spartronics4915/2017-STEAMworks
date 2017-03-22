@@ -206,6 +206,7 @@ public class OI
         display.add("Preset: Place Gear Position 2");
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
+        display.add("Preset: Drive to Hopper and Shoot from Boiler Position 3");
 
         display.addAll(m_autoReplayOptions);
 
@@ -265,6 +266,11 @@ public class OI
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
                             "Curve", "-125", "0.5");
+                    break;
+                case "Drive to Hopper and Shoot from Boiler Position 3":
+                    // Drive to the hopper, wait there to get balls, drive to the boiler
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
+                            "Straight and Curve", "20", "0.6", "10", "0.3", "false");
                     break;
                 default:
                     break;

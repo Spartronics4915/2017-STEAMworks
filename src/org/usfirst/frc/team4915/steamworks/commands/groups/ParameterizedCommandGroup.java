@@ -47,12 +47,17 @@ public class ParameterizedCommandGroup extends CommandGroup
             {
                 case "Drive":
                 	double distance = safeParseDouble(params[i++]);
-                    addSequential(new DriveStraightCommand(drivetrain, distance));
+                    addSequential(new DriveStraightCommand(drivetrain, distance, Drivetrain.MAX_OUTPUT_ROBOT_DRIVE));
+                    break;
+                case "Drive Speed":
+                    distance = safeParseDouble(params[i++]);
+                    double speed = safeParseDouble(params[i++]);
+                    addSequential(new DriveStraightCommand(drivetrain, distance, speed));
                     break;
                 case "Drive Timeout":
                     distance = safeParseDouble(params[i++]);
                     double timeout = safeParseDouble(params[i++]);
-                    addSequential(new DriveStraightCommand(drivetrain, distance), timeout);
+                    addSequential(new DriveStraightCommand(drivetrain, distance, Drivetrain.MAX_OUTPUT_ROBOT_DRIVE), timeout);
                     break;
                 case "Curve":
                 	distance = safeParseDouble(params[i++]);
@@ -77,8 +82,10 @@ public class ParameterizedCommandGroup extends CommandGroup
                     double totalDistance = safeParseDouble(params[i++]);
                     curve = safeParseDouble(params[i++]);
                     double straightDistance = safeParseDouble(params[i++]);
-                    double speed = safeParseDouble(params[i++]);
-                    addSequential(new DriveTimedCurveCommand(drivetrain, totalDistance, curve, straightDistance, speed));
+                    speed = safeParseDouble(params[i++]);
+                    boolean reverse = Boolean.parseBoolean(params[i++]);
+                    addSequential(new DriveTimedCurveCommand(drivetrain, totalDistance, curve * oi.getAllianceScale(), straightDistance, speed, reverse));
+                    break;
                 case "Intake": // This command runs in parallel
                     Intake.State intakeState;
                     String currentParam = params[i++];
@@ -90,6 +97,7 @@ public class ParameterizedCommandGroup extends CommandGroup
                         intakeState = Intake.State.OFF;
                     }
                     addParallel(new IntakeSetCommand(intake, intakeState));
+                    break;
                 case "Delay":
                     double delay = safeParseDouble(params[i++]);
                     addSequential(new DelayCommand(delay));
