@@ -260,7 +260,7 @@ public class OI
                 case "Drive Shoot and Cross Baseline Position 3 with Curve":
                     // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
                     result = new ParameterizedCommandGroup(drivetrain, launcher, this,
-                            "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
+                            "Drive", "" + (-42 + returnForSide(m_alliance, 0, 9)),
                             "Turn", "-45",
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",

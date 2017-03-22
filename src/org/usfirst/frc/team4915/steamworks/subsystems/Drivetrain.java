@@ -46,7 +46,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain extends SpartronicsSubsystem
 {
-    private static final double TURN_MULTIPLIER = .4;
+    private static final double TURN_MULTIPLIER = .25;
 
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
@@ -552,7 +552,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
                 }
-                m_robotDrive.arcadeDrive(forward, rotation);
+                m_robotDrive.arcadeDrive(forward, rotation, true /*Squared Inputs*/);
             }
             else
             {
