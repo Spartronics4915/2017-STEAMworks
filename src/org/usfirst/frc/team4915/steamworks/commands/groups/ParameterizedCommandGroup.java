@@ -6,13 +6,10 @@ import org.usfirst.frc.team4915.steamworks.commands.DriveCurveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DelayCommand;
 import org.usfirst.frc.team4915.steamworks.commands.DriveStraightCommand;
 import org.usfirst.frc.team4915.steamworks.commands.FastTurnDegreesIMUCommand;
-import org.usfirst.frc.team4915.steamworks.commands.IntakeSetCommand;
 import org.usfirst.frc.team4915.steamworks.commands.LauncherCommand;
 import org.usfirst.frc.team4915.steamworks.commands.StopCommand;
 import org.usfirst.frc.team4915.steamworks.commands.TurnDegreesIMUCommand;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
-import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
-import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
 
@@ -78,7 +75,7 @@ public class ParameterizedCommandGroup extends CommandGroup
                     addSequential(new DelayCommand(delay));
                     break;
                 default:
-                    drivetrain.m_logger.warning("ParameterizedCommandGroup Unrececognized parameter " + command);
+                    drivetrain.m_logger.warning("ParameterizedCommandGroup Unrececognized parameter "+command);
                     break;
             }
         }
