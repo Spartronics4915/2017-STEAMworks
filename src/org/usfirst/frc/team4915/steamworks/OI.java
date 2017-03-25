@@ -260,7 +260,7 @@ public class OI
                     result = new ParameterizedCommandGroup(drivetrain, launcher, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 9)),
                             "Turn Timeout", "-45", "3",
-                            "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
+                            "Drive Timeout", "" + (29 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
                             "Curve", "-125", "0.5");
                     break;
