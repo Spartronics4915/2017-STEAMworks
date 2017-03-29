@@ -24,8 +24,8 @@ public class Launcher extends SpartronicsSubsystem
     }
 
     //the "perfect" static speed that always makes goal
-    public static final double DEFAULT_LAUNCHER_SPEED = 2880;
-    public static final double DEFAULT_AGITATOR_SPEED = .7;
+    public static final double DEFAULT_LAUNCHER_SPEED = 2880; //the old number was 2940 (changed at GP)
+    public static final double DEFAULT_AGITATOR_SPEED = .6; //decreased rpm from .7 (Changed at GP)
     private CANTalon m_launcherMotor;
     private CANTalon m_agitatorMotor;
     private Logger m_logger;
