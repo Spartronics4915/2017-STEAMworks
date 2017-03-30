@@ -85,9 +85,9 @@ public class Drivetrain extends SpartronicsSubsystem
     private IMUPIDSource m_imuPIDSource;
 
     // PID Values for IMU turning
-    private static final double turnKp = 0.11;
+    private static final double turnKp = 0.09;
     private static final double turnKi = 0.01;
-    private static final double turnKd = 0.3;
+    private static final double turnKd = 0.4;
     private static final double turnKf = 0.001;
 
     // Replay

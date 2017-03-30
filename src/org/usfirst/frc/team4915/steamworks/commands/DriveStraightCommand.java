@@ -37,7 +37,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
         m_pidController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
         m_pidController.setInputRange(-5 * Math.abs(m_revs), 5 * Math.abs(m_revs)); // We limit our input range to revolutions, either direction
         m_pidController.setAbsoluteTolerance(2*(1 / (3 * (2 * Math.PI)))); // This is the tolerance for error for reaching our target, targeting one inch
-        
+
         requires(m_drivetrain);
     }
 
