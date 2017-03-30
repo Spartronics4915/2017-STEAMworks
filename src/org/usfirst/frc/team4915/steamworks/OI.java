@@ -207,7 +207,7 @@ public class OI
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
         display.add("Preset: Drive to Hopper and Shoot from Boiler Position 3");
-        display.add("Drive to Side Gear Position 4");
+        display.add("Preset: Drive to Side Gear Position 4");
 
         display.addAll(m_autoReplayOptions);
 
@@ -271,19 +271,19 @@ public class OI
         		case "Drive to Side Gear Position 4":
         		    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
         			    "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
-        			    "Turn", "-60",
+        			    "Turn Timeout", "-60", "4",
         			    "Drive", "-24.64");
         		    break;
                 case "Drive to Hopper and Shoot from Boiler Position 3":
                     // Drive to the hopper, wait there to get balls, drive to the boiler
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
-                        "Straight and Curve", ""+((16+150)-RobotMap.ROBOT_LENGTH), "1", "40", "0.6", "false",
+                        "Straight and Curve", ""+((16+150)-RobotMap.ROBOT_LENGTH), "1", "115", "0.5", "false",
         			    "Delay", "1",
-        			    "Drive Speed", "-45", "0.6",
+        			    "Drive Speed", "-110", "0.6",
         			    "Delay", "1",
-        			    "Turn", "45",
+        			    "Fast Turn", "45",
         			    "Delay", "1",
-        			    "Drive Speed", "30", "0.6");
+        			    "Drive Speed", "125", "0.6");
                     break;
                 default:
                     break;
