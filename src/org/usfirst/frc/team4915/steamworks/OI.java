@@ -205,6 +205,7 @@ public class OI
         display.add("Preset: Place Gear Position 2");
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
+        display.add("Preset: Drive Shoot and deliver Gear Position 3");
 
         display.addAll(m_autoReplayOptions);
 
@@ -263,6 +264,15 @@ public class OI
                             "Drive Timeout", "" + (40 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
                             "Curve", "-125", "0.5");
+                    break;
+                case "Drive Shoot and deliver Gear Position 3":
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                            "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
+                            "Turn", "-45",
+                            "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
+                            "Shoot",
+                            "Curve", "" + (-105 + returnForSide(m_alliance, 0, -7)), "" + returnForSide(m_alliance, 0.32, 0.38), // different values for alining
+                            "Turn", "-60");
                     break;
                 default:
                     break;
