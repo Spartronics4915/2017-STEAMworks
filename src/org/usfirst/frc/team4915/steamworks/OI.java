@@ -284,12 +284,10 @@ public class OI
                 case "Drive to Hopper and Shoot from Boiler Position 3":
                     // Drive to the hopper, wait there to get balls, drive to the boiler
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
-                        "Straight and Curve", ""+((16+150)-RobotMap.ROBOT_LENGTH), "1", "115", "0.5", "false",
-        			    "Delay", "1",
+                        "Straight and Curve", ""+((28+150)-RobotMap.ROBOT_LENGTH), "1", "115", "0.9", "false",
+				    "Intake", "ON",
         			    "Drive Speed", "-110", "0.6",
-        			    "Delay", "1",
         			    "Fast Turn", "45",
-        			    "Delay", "1",
         			    "Drive Speed", "125", "0.6");
                     break;
                 default:
