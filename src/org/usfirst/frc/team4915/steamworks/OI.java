@@ -207,7 +207,8 @@ public class OI
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
         display.add("Preset: Drive to Hopper and Shoot from Boiler Position 3");
-        display.add("Preset: Drive to Side Gear Position 4");
+        display.add("Preset: Drive to RIGHT Side Gear Position 4");
+        display.add("Preset: Drive to LEFT Side Gear Position 4");
 
         display.addAll(m_autoReplayOptions);
 
@@ -276,7 +277,7 @@ public class OI
         		    break;
                 case "Drive to LEFT Side Gear Position 4":
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
-                        "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
+                        "Drive Speed", "" + -(131 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 2 inches farther than the left side
                         "Turn Timeout", "60", "4",
                         "Drive", "-24.64");
                     break;
