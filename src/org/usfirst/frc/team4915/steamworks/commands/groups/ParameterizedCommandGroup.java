@@ -72,6 +72,11 @@ public class ParameterizedCommandGroup extends CommandGroup
                     angle = safeParseDouble(params[i++]);
                     timeout = safeParseDouble(params[i++]);
                     addSequential(new TurnDegreesIMUCommand(drivetrain, angle * oi.getAllianceScale()), timeout);
+		    break;
+		case "Turn Alliance Independent Timeout":
+		    angle = safeParseDouble(params[i++]);
+		    timeout = safeParseDouble(params[i++]);
+		    addSequential(new TurnDegreesIMUCommand(drivetrain, angle), timeout);
                     break;
                 case "Turn Fast":
                     double value = safeParseDouble(params[i++]);

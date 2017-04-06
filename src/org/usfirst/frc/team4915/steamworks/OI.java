@@ -269,16 +269,16 @@ public class OI
                             "Shoot",
                             "Curve", "-125", "0.5");
                     break;
-        		case "Drive to RIGHT Side Gear Position 4":
-        		    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
-        			    "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
-        			    "Turn Timeout", "-60", "4",
-        			    "Drive", "-24.64");
-        		    break;
+        	case "Drive to RIGHT Side Gear Position 4":
+        	    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
+        		    "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
+        		    "Turn Alliance Independent Timeout", "-60", "4",
+       			    "Drive", "-24.64");
+       		    break;
                 case "Drive to LEFT Side Gear Position 4":
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                         "Drive Speed", "" + -(131 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 2 inches farther than the left side
-                        "Turn Timeout", "60", "4",
+                        "Turn Alliance Independent Timeout", "60", "4",
                         "Drive", "-24.64");
                     break;
                 case "Drive to Hopper and Shoot from Boiler Position 3":
