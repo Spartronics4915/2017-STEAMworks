@@ -203,12 +203,12 @@ public class OI
         // all of them are backwards to keep the drivers not confused
         display.add("None");
         display.add("Preset: Cross Baseline Positons 1+3");
-        display.add("Preset: Place Gear Position 2");
+        display.add("Preset: CENTER Gear Position 2");
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
         display.add("Preset: Drive to Hopper and Shoot from Boiler Position 3");
-        display.add("Preset: Drive to RIGHT Side Gear Position 4");
-        display.add("Preset: Drive to LEFT Side Gear Position 4");
+        display.add("Preset: RIGHT Gear Position 5");
+        display.add("Preset: LEFT Gear Position 4");
 
         display.addAll(m_autoReplayOptions);
 
@@ -246,7 +246,7 @@ public class OI
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "-93.3");
                     break;
-                case "Place Gear Position 2":
+                case "CENTER Gear Position 2":
                     // This is the length from the diamond plate with the robot length subtracted and the 8 
                     //  subtracted to account for the spring and the inset of the gear on the robot
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
@@ -269,13 +269,13 @@ public class OI
                             "Shoot",
                             "Curve", "-125", "0.5");
                     break;
-        	case "Drive to RIGHT Side Gear Position 4":
+        	case "RIGHT Gear Position 5":
         	    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
         		    "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
         		    "Turn Alliance Independent Timeout", "-60", "4",
        			    "Drive", "-24.64");
        		    break;
-                case "Drive to LEFT Side Gear Position 4":
+                case "LEFT Gear Position 4":
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                         "Drive Speed", "" + -(131 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 2 inches farther than the left side
                         "Turn Alliance Independent Timeout", "60", "4",
