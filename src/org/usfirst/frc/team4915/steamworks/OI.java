@@ -259,8 +259,8 @@ public class OI
                     // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
                     result = new ParameterizedCommandGroup(drivetrain, launcher, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 9)),
-                            "Turn Timeout", "-45", "3",
-                            "Drive Timeout", "" + (29 + returnForSide(m_alliance, 0, -3)), "2.5",
+                            "Turn Timeout", "-45", "4",
+                            "Drive Timeout", "" + (40 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
                             "Curve", "-125", "0.5");
                     break;
