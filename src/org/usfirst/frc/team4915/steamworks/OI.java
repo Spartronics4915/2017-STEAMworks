@@ -277,7 +277,7 @@ public class OI
        		    break;
                 case "LEFT Gear Position 4":
                     result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
-                        "Drive Speed", "" + -(135 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 6 inches farther than the left side
+                        "Drive Speed", "" + -(133 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 4 inches farther than the left side
                         "Turn Alliance Independent Timeout", "60", "4",
                         "Drive", "-24.64");
                     break;
