@@ -17,22 +17,27 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     private double m_inches;
     private double m_revs;
     private double m_heading;
+    private double m_speed;
     
     private static final double IMU_CORRECTION = 0.25;
     private static final double MAX_DEGREES_ERROR = .125;
 
     private static final double k_P = 1.43, k_D = 0, k_I = 0, k_F = 0; // Working P 1.43
 
-    public DriveStraightCommand(Drivetrain drivetrain, double inches)
+    public DriveStraightCommand(Drivetrain drivetrain, double inches, double speed)
     {
         m_drivetrain = drivetrain;
-        // Adjust for negative direction logic of ArcadeDrive
+        
+        // Adjust for negative direction logic of ArcadeDrive (Do this better next year!)
         m_inches = -inches;
+        
+        m_speed = speed;
         m_revs = m_drivetrain.getInchesToRevolutions(m_inches);
         m_pidController = new PIDController(k_P, k_D, k_I, k_F, this, this);
         m_pidController.setOutputRange(-1, 1); // Set the output range so that this works with our PercentVbus turning method
         m_pidController.setInputRange(-5 * Math.abs(m_revs), 5 * Math.abs(m_revs)); // We limit our input range to revolutions, either direction
         m_pidController.setAbsoluteTolerance(2*(1 / (3 * (2 * Math.PI)))); // This is the tolerance for error for reaching our target, targeting one inch
+        m_pidController.setToleranceBuffer(20); // This is to prevent overshoot
         
         requires(m_drivetrain);
     }
@@ -42,7 +47,7 @@ public class DriveStraightCommand extends Command implements PIDSource, PIDOutpu
     {
         m_drivetrain.m_logger.info("DriveStraightCommand initialize");
         m_drivetrain.setControlMode(TalonControlMode.PercentVbus, 6.0, -6.0, // This was 3 and -3
-                0.0, 0, 0, 0 /* zero PIDF */);
+                0.0, 0, 0, 0 /* zero PIDF */, m_speed /* RobotDrive MaxOutput */);
         m_drivetrain.resetPosition();
         m_pidController.reset(); // Reset all of the things that have been passed to the IMU in any previous usages
         m_pidController.setSetpoint(m_revs); // Set the point we want to turn to

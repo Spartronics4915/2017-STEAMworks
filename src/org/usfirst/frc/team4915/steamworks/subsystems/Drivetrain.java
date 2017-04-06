@@ -45,12 +45,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 */
 
 public class Drivetrain extends SpartronicsSubsystem
-{
-    private static final double TURN_MULTIPLIER = .25;
+{    
+    public static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3; //was .3, changing the scaling factor
+    
+    private static final double TURN_MULTIPLIER = .4;
 
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
-    private static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3; //was .3, changing the scaling factor
 //    private static final double WHEEL_DIAMETER = 6; // Not needed right now
     private static final double WHEEL_CIRCUMFERENCE = 20.06; // This is to account for drift
 
@@ -330,6 +331,11 @@ public class Drivetrain extends SpartronicsSubsystem
     private double getTicksToRevolutions(int ticks)
     {
         return ticks / (double)QUAD_ENCODER_TICKS_PER_REVOLUTION;
+    }
+    
+    // A lower-overhead way then setControlMode to set the max output (this shouldn't mess anyone else up if they set control mode)
+    public void setRobotDriveMaxOutput(double maxOutput) {
+        m_robotDrive.setMaxOutput(maxOutput);
     }
     
     // Not to be confused with CANTalon's setControlMode... The idea here is to

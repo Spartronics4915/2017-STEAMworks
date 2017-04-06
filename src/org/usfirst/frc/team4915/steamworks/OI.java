@@ -21,6 +21,7 @@ import org.usfirst.frc.team4915.steamworks.commands.ReverseArcadeDriveCommand;
 import org.usfirst.frc.team4915.steamworks.commands.groups.ParameterizedCommandGroup;
 import org.usfirst.frc.team4915.steamworks.subsystems.Climber;
 import org.usfirst.frc.team4915.steamworks.subsystems.Drivetrain;
+import org.usfirst.frc.team4915.steamworks.subsystems.Intake;
 import org.usfirst.frc.team4915.steamworks.subsystems.Intake.State;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher;
 import org.usfirst.frc.team4915.steamworks.subsystems.Launcher.LauncherState;
@@ -202,9 +203,12 @@ public class OI
         // all of them are backwards to keep the drivers not confused
         display.add("None");
         display.add("Preset: Cross Baseline Positons 1+3");
-        display.add("Preset: Place Gear Position 2");
+        display.add("Preset: CENTER Gear Position 2");
         display.add("Preset: Drive and Shoot Position 3");
         display.add("Preset: Drive Shoot and Cross Baseline Position 3 with Curve");
+        display.add("Preset: Drive to Hopper and Shoot from Boiler Position 3");
+        display.add("Preset: RIGHT Gear Position 5");
+        display.add("Preset: LEFT Gear Position 4");
 
         display.addAll(m_autoReplayOptions);
 
@@ -233,23 +237,24 @@ public class OI
         {
             Drivetrain drivetrain = m_robot.getDrivetrain();
             Launcher launcher = m_robot.getLauncher();
+            Intake intake = m_robot.getIntake();
             String name = strategy.replaceFirst("Preset: ", "");
             switch (name)
             {
                 case "Cross Baseline Positons 1+3":
                     // This is the length from the diamond plate to the baseline
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "-93.3");
                     break;
-                case "Place Gear Position 2":
+                case "CENTER Gear Position 2":
                     // This is the length from the diamond plate with the robot length subtracted and the 8 
                     //  subtracted to account for the spring and the inset of the gear on the robot
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-114.3 + (RobotMap.ROBOT_LENGTH - 3)));
                     break;
                 case "Drive and Shoot Position 3":
                     // We drive forward, turn to be parallel with the boiler, and drive into the boiler
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 10)),
                             "Turn", "-45",
                             "Drive Timeout", "" + (37 + returnForSide(m_alliance, 0, -3)), "2.5",
@@ -257,12 +262,33 @@ public class OI
                     break;
                 case "Drive Shoot and Cross Baseline Position 3 with Curve":
                     // Do our regular shooting routine, then almost the exact opposite, and then drive over the baseline
-                    result = new ParameterizedCommandGroup(drivetrain, launcher, this,
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
                             "Drive", "" + (-42 + returnForSide(m_alliance, 0, 9)),
                             "Turn Timeout", "-45", "4",
                             "Drive Timeout", "" + (40 + returnForSide(m_alliance, 0, -3)), "2.5",
                             "Shoot",
                             "Curve", "-125", "0.5");
+                    break;
+        	case "RIGHT Gear Position 5":
+        	    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
+        		    "Drive Speed", "" + -(129 - RobotMap.ROBOT_LENGTH), "0.3",
+        		    "Turn Alliance Independent Timeout", "-60", "4",
+       			    "Drive", "-24.64");
+       		    break;
+                case "LEFT Gear Position 4":
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
+                        "Drive Speed", "" + -(133 - RobotMap.ROBOT_LENGTH), "0.3", // This drives forward 4 inches farther than the left side
+                        "Turn Alliance Independent Timeout", "60", "4",
+                        "Drive", "-24.64");
+                    break;
+                case "Drive to Hopper and Shoot from Boiler Position 3":
+                    // Drive to the hopper, wait there to get balls, drive to the boiler
+                    result = new ParameterizedCommandGroup(drivetrain, launcher, intake, this,
+                        "Straight and Curve", ""+((28+150)-RobotMap.ROBOT_LENGTH), "1", "115", "0.9", "false",
+				    "Intake", "ON",
+        			    "Drive Speed", "-110", "0.6",
+        			    "Fast Turn", "45",
+        			    "Drive Speed", "125", "0.6");
                     break;
                 default:
                     break;
