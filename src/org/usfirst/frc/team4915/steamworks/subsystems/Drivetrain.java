@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.usfirst.frc.team4915.steamworks.ControlManager;
 import org.usfirst.frc.team4915.steamworks.Logger;
 import org.usfirst.frc.team4915.steamworks.RobotMap;
 import org.usfirst.frc.team4915.steamworks.commands.ArcadeDriveCommand;
@@ -48,7 +49,7 @@ public class Drivetrain extends SpartronicsSubsystem
 {    
     public static final double MAX_OUTPUT_ROBOT_DRIVE = 0.3; //was .3, changing the scaling factor
     
-    private static final double TURN_MULTIPLIER = .4;
+//    private static final double TURN_MULTIPLIER = .4;
 
     private static final int QUAD_ENCODER_CODES_PER_REVOLUTION = 250; // Encoder-specific value, for E4P-250-250-N-S-D-D
     private static final int QUAD_ENCODER_TICKS_PER_REVOLUTION = QUAD_ENCODER_CODES_PER_REVOLUTION * 4; // This should be one full rotation
@@ -78,6 +79,9 @@ public class Drivetrain extends SpartronicsSubsystem
     private double m_target;
     private int m_targetReached;
 
+    // ControlManager
+    private ControlManager m_controlManager;
+    
     // IMU
     private BNO055 m_imu;
     // PID Turning with IMU
@@ -105,6 +109,7 @@ public class Drivetrain extends SpartronicsSubsystem
     {
         
         m_logger = new Logger("Drivetrain", Logger.Level.DEBUG);
+        m_controlManager = new ControlManager(m_logger);
         m_driveStick = null; // We'll get a value for this after OI is inited
         m_target = 0;
 
@@ -198,6 +203,20 @@ public class Drivetrain extends SpartronicsSubsystem
             
             m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
             SmartDashboard.putString("ReverseEnabled", "Disabled");
+            
+            // Register control manger variables
+        	m_controlManager.registerVariableSource("RJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kRight);});
+        	m_controlManager.registerVariableSource("RJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kRight);});
+        	m_controlManager.registerVariableSource("LJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kLeft);});
+        	m_controlManager.registerVariableSource("LJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kLeft);});
+        	m_controlManager.registerVariableSource("RTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
+        	m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
+        	
+        	// Register control manager outputs
+            m_controlManager.registerExpressionOutput("Forward", "RJOYX^(-RTRIG)");
+            m_controlManager.registerExpressionOutput("Rotation", "sqrt(RJOYX)-LTRIG");
+            m_controlManager.registerExpressionOutput("Forward (Reversed)", "-1*RJOYX^(-RTRIG)");
+            m_controlManager.registerExpressionOutput("Rotation (Reversed)", "-1*(sqrt(RJOYX)-LTRIG)");
 
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
@@ -531,6 +550,9 @@ public class Drivetrain extends SpartronicsSubsystem
 
     
     // Uses arcade drive coupled with the drivestick
+    // XXX: Don't do it this way next year. Drivetrain shouldn't know about Xbox controllers or GenericHID.
+    // Encapsulate; when only one command needs to know about this stuff (like in this case), the code should
+    // be in the command and not the subsystem.
     public void driveArcade()
     {
         if (initialized())
@@ -538,12 +560,12 @@ public class Drivetrain extends SpartronicsSubsystem
             if (m_portMasterMotor.getControlMode() == TalonControlMode.PercentVbus
                     && m_starboardMasterMotor.getControlMode() == TalonControlMode.PercentVbus)
             {
-                double forward = triggerAxis(); // + m_altDriveStick.getY();
-                double rotation = m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER; // + m_altDriveStick.getX();
+                double forward = m_controlManager.getExpressionOutput("Forward");
+                double rotation = m_controlManager.getExpressionOutput("Rotation");
                 if(m_reverseIsOn)
                 {
-                    forward = -triggerAxis(); // - m_altDriveStick.getY();
-                    rotation = m_driveStick.getX(GenericHID.Hand.kLeft) * TURN_MULTIPLIER; // + m_altDriveStick.getX();
+                    forward = m_controlManager.getExpressionOutput("Forward (Reversed)");
+                    rotation = m_controlManager.getExpressionOutput("Rotation (Reversed)");
                     //m_logger.debug("Reverse Engaged");
                 }
                 
@@ -558,7 +580,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     m_replayForward.add(forward); 
                     m_replayRotation.add(rotation);
                 }
-                m_robotDrive.arcadeDrive(forward, rotation, true /*Squared Inputs*/);
+                m_robotDrive.arcadeDrive(forward, rotation);
             }
             else
             {

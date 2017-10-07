@@ -3,31 +3,29 @@ package org.usfirst.frc.team4915.steamworks;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class ControlManager {
 	
 	private Logger m_logger;
-	private Map<String,String> m_expressionOutputs; // Expression outputs are mathematical expressions, meant to be evaluated, that have (mathematical) variables from m_controllerInputs
-	private static Map<String,DoubleSupplier> m_controllerInputs; // We use DoubleSupplier here to pass around functions like they are first-class
+	private static Map<String,DoubleSupplier> m_variableSources; // We use the DoubleSupplier interface to get callback-like behavior without first-class functions
 	
 	
 	public ControlManager(Logger logger) {
 		m_logger = logger;
 	}
 	
-	public void registerExpressionOutput(String name, String defualtExpression) {
-		m_expressionOutputs.put(name, defualtExpression); // This just replaces/adds the key, so the registerExpressionOutput method can be called when a source is changed or added
+	public void registerExpressionOutput(String name, String defaultExpression) {
+		name.toUpperCase(); // The expression parser differentiates variables from named functions by capitalization (variables are all-caps)
+		SmartDashboard.putString("ControlManager/"+name, defaultExpression);
 	}
 	
-	public void registerControllerInput(String name, DoubleSupplier method) {
-		m_controllerInputs.put(name,method);
+	public void registerVariableSource(String name, DoubleSupplier method) {
+		m_variableSources.put(name,method);
 	}
 	
 	public double getExpressionOutput(String name) {
-		String expression = m_expressionOutputs.get(name);
-		if (expression == null) {
-			m_logger.error("No expression exists called " + name);
-			return 0.0;
-		}
+		String expression = SmartDashboard.getString(name, "0");
 		try {
 			return eval(expression);
 		} catch (Exception e) {
@@ -110,7 +108,7 @@ public class ControlManager {
 	            	while (ch >= 'A' && ch <= 'Z') nextChar();
 	            	String varName = str.substring(startPos, this.pos);
 	                x = parseFactor();
-	            	DoubleSupplier method = m_controllerInputs.get(varName);
+	            	DoubleSupplier method = m_variableSources.get(varName);
 	            	if (method == null) {
 	            		throw new RuntimeException("Unknown variable: " + varName);
 	            	}
