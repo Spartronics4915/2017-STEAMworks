@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4915.steamworks;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 
@@ -12,6 +13,7 @@ public class ControlManager {
 	
 	
 	public ControlManager(Logger logger) {
+		m_variableSources = new HashMap<String,DoubleSupplier>();
 		m_logger = logger;
 	}
 	
