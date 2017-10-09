@@ -103,6 +103,9 @@ public class ControlManager {
 	                else if (func.equals("sin")) x = Math.sin(Math.toRadians(x));
 	                else if (func.equals("cos")) x = Math.cos(Math.toRadians(x));
 	                else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
+	                else if (func.equals("log")) x = Math.log(x);
+	                else if (func.equals("exp")) x = Math.exp(x);
+	                else if (func.equals("abs")) x = Math.abs(x);
 	                else throw new RuntimeException("Unknown function: " + func);
 	            } else if (ch >= 'A' && ch <- 'Z') { // variables
 	            	while (ch >= 'A' && ch <= 'Z') nextChar();
