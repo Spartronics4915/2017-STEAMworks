@@ -27,9 +27,12 @@ public class ControlManager {
 	}
 	
 	public double getExpressionOutput(String name) {
-		String expression = SmartDashboard.getString(name, "0");
+		String expression = SmartDashboard.getString("ControlManager/"+name, "0");
+		m_logger.debug(expression);
 		try {
-			return eval(expression);
+			double eval = eval(expression);
+			m_logger.debug("Eval: "+eval);
+			return eval;
 		} catch (Exception e) {
 			m_logger.exception(e, true);
 			return 0.0;
@@ -100,7 +103,7 @@ public class ControlManager {
 	            } else if (ch >= 'a' && ch <= 'z') { // functions
 	                while (ch >= 'a' && ch <= 'z') nextChar();
 	                String func = str.substring(startPos, this.pos);
-	                x = parseFactor();
+	                x = parseFactor(); // this is here to parse the parenthesis that go after functions
 	                if (func.equals("sqrt")) x = Math.sqrt(x);
 	                else if (func.equals("sin")) x = Math.sin(Math.toRadians(x));
 	                else if (func.equals("cos")) x = Math.cos(Math.toRadians(x));
@@ -109,17 +112,16 @@ public class ControlManager {
 	                else if (func.equals("exp")) x = Math.exp(x);
 	                else if (func.equals("abs")) x = Math.abs(x);
 	                else throw new RuntimeException("Unknown function: " + func);
-	            } else if (ch >= 'A' && ch <- 'Z') { // variables
-	            	while (ch >= 'A' && ch <= 'Z') nextChar();
-	            	String varName = str.substring(startPos, this.pos);
-	                x = parseFactor();
-	            	DoubleSupplier method = m_variableSources.get(varName);
-	            	if (method == null) {
-	            		throw new RuntimeException("Unknown variable: " + varName);
-	            	}
-	            	x = method.getAsDouble();
+	            } else if (ch >= 'A' && ch <= 'Z') { // variables
+	                while (ch >= 'A' && ch <= 'Z') nextChar();
+                       String varName = str.substring(startPos, this.pos);
+                       DoubleSupplier method = m_variableSources.get(varName);
+                       if (method == null) {
+                           throw new RuntimeException("Unknown variable: " + varName);
+                       }
+                       x = method.getAsDouble();
 	            } else {
-	                throw new RuntimeException("Unexpected: " + (char)ch);
+	                throw new RuntimeException("Unexpected: " + (char)ch + " in " + str);
 	            }
 
 	            if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation

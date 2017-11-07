@@ -568,7 +568,7 @@ public class Drivetrain extends SpartronicsSubsystem
                     rotation = m_controlManager.getExpressionOutput("Rotation (Reversed)");
                     //m_logger.debug("Reverse Engaged");
                 }
-                
+
                 if (Math.abs(forward) < 0.02 && Math.abs(rotation) < 0.02)
                 {
                     // To keep motor safety happy
