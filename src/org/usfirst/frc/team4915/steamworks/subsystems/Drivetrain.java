@@ -204,20 +204,6 @@ public class Drivetrain extends SpartronicsSubsystem
             m_lightOutput = new DigitalOutput(LIGHT_OUTPUT_PORT);
             SmartDashboard.putString("ReverseEnabled", "Disabled");
             
-            // Register control manger variables
-        	m_controlManager.registerVariableSource("RJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kRight);});
-        	m_controlManager.registerVariableSource("RJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kRight);});
-        	m_controlManager.registerVariableSource("LJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kLeft);});
-        	m_controlManager.registerVariableSource("LJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kLeft);});
-        	m_controlManager.registerVariableSource("RTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
-        	m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
-        	
-        	// Register control manager outputs
-            m_controlManager.registerExpressionOutput("Forward", "RJOYX^(-RTRIG)");
-            m_controlManager.registerExpressionOutput("Rotation", "sqrt(RJOYX)-LTRIG");
-            m_controlManager.registerExpressionOutput("Forward (Reversed)", "-1*RJOYX^(-RTRIG)");
-            m_controlManager.registerExpressionOutput("Rotation (Reversed)", "-1*(sqrt(RJOYX)-LTRIG)");
-
             // Debug stuff so everyone knows that we're initialized
             m_logger.info("initialized successfully"); // Tell everyone that the drivetrain is initialized successfully
             
@@ -339,7 +325,20 @@ public class Drivetrain extends SpartronicsSubsystem
     public void setDriveStick(XboxController s)// Joystick j) // setDriveStick is presumably called once from OI after joystick initialization
     {
         m_driveStick = s;
-        //m_altDriveStick = j;
+        
+        // Register control manger variables
+        m_controlManager.registerVariableSource("RJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kRight);});
+        m_controlManager.registerVariableSource("RJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kRight);});
+        m_controlManager.registerVariableSource("LJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kLeft);});
+        m_controlManager.registerVariableSource("LJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kLeft);});
+        m_controlManager.registerVariableSource("RTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
+        m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
+        
+        // Register control manager outputs
+        m_controlManager.registerExpressionOutput("Forward", "RJOYX^(-RTRIG)");
+        m_controlManager.registerExpressionOutput("Rotation", "sqrt(RJOYX)-LTRIG");
+        m_controlManager.registerExpressionOutput("Forward (Reversed)", "-1*RJOYX^(-RTRIG)");
+        m_controlManager.registerExpressionOutput("Rotation (Reversed)", "-1*(sqrt(RJOYX)-LTRIG)");
     }
 
     public double getInchesToRevolutions(double inches)

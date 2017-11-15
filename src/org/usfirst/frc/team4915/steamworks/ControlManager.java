@@ -32,11 +32,9 @@ public class ControlManager
     public double getExpressionOutput(String name)
     {
         String expression = SmartDashboard.getString("ControlManager/" + name, "0");
-        m_logger.debug(expression);
         try
         {
             double eval = eval(expression);
-            m_logger.debug("Eval: " + eval);
             return eval;
         }
         catch (Exception e)

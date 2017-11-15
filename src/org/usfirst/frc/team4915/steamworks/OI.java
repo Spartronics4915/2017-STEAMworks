@@ -326,6 +326,7 @@ public class OI
 
     private void initDrivetrainOI()
     {
+        m_robot.getDrivetrain().setDriveStick(m_driveStick);
         ; // needs tweaking!
           //m_driveDistancePID.whenPressed(new DriveStraightCommand(m_robot.getDrivetrain(), 57.3));
         ; // needs tweaking!
