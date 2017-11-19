@@ -335,10 +335,10 @@ public class Drivetrain extends SpartronicsSubsystem
         m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft);});
         
         // Register control manager outputs
-        m_controlManager.registerExpressionOutput("Forward", "RJOYX^(-RTRIG)");
-        m_controlManager.registerExpressionOutput("Rotation", "sqrt(RJOYX)-LTRIG");
-        m_controlManager.registerExpressionOutput("Forward (Reversed)", "-1*RJOYX^(-RTRIG)");
-        m_controlManager.registerExpressionOutput("Rotation (Reversed)", "-1*(sqrt(RJOYX)-LTRIG)");
+        m_controlManager.registerExpressionOutput("Forward", "LJOYY^3");
+        m_controlManager.registerExpressionOutput("Rotation", "RJOYX^3");
+        m_controlManager.registerExpressionOutput("Forward (Reversed)", "-1*LJOYY^3");
+        m_controlManager.registerExpressionOutput("Rotation (Reversed)", "-1*RJOYX^3");
     }
 
     public double getInchesToRevolutions(double inches)
