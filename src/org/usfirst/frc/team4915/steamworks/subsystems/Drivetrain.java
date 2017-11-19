@@ -332,7 +332,7 @@ public class Drivetrain extends SpartronicsSubsystem
         m_controlManager.registerVariableSource("LJOYX", () -> {return m_driveStick.getX(GenericHID.Hand.kLeft);});
         m_controlManager.registerVariableSource("LJOYY", () -> {return m_driveStick.getY(GenericHID.Hand.kLeft);});
         m_controlManager.registerVariableSource("RTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
-        m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kRight);});
+        m_controlManager.registerVariableSource("LTRIG", () -> {return m_driveStick.getTriggerAxis(GenericHID.Hand.kLeft);});
         
         // Register control manager outputs
         m_controlManager.registerExpressionOutput("Forward", "RJOYX^(-RTRIG)");
