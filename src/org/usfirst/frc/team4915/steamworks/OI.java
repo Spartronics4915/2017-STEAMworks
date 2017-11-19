@@ -114,7 +114,7 @@ public class OI
          * and we don't get a NullPointer because we set
          * m_alliance to blue as a dummy value. To actually get what the driver
          * selected we run it again, after getting
-         * our actualy m_alliance from the SmartDashboard in initAlliance().
+         * our actual m_alliance from the SmartDashboard in initAlliance().
          */
         initDrivetrainOI();
         initIntakeOI();
