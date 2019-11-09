@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import edu.wpi.first.wpilibj.can.CANJNI;
+import edu.wpi.first.hal.can.CANJNI;
 
 public class CANProbe
 {

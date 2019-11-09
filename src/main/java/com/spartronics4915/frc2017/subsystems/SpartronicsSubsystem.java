@@ -1,4 +1,4 @@
-package main.java.com.spartronics4915.frc2017.subsystems;
+package com.spartronics4915.frc2017.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
