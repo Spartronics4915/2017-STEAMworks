@@ -2,56 +2,41 @@ package com.spartronics4915.frc2017.commands;
 
 import com.spartronics4915.frc2017.subsystems.Cameras;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/**
- *
- */
-public class ChooseCameraCommand extends Command
+public class ChooseCameraCommand extends CommandBase
 {
+    private Cameras mCameras;
+    private int mWhichCamera;
 
-    private final Cameras m_cameras;
-    private int m_whichCamera;
-
-    public ChooseCameraCommand(Cameras cameras, int whichCamera)
+    public ChooseCameraCommand(int whichCamera)
     {
-        m_cameras = cameras;
-        m_whichCamera = whichCamera;
-        requires(m_cameras);
+        mCameras = Cameras.getInstance();
+        mWhichCamera = whichCamera;
+        addRequirements(mCameras);
     }
 
     @Override
     public void initialize()
     {
-        m_cameras.changeCamera(m_whichCamera);
-
-        // Log the selection for debugging?
-        /*
-        if (m_camera == Cameras.CameraType.CAM_FWD) {
-        }
-        else if (m_camera == Cameras.CameraType.CAM_REV) {
-        }
-        */
+        mCameras.changeCamera(mWhichCamera);
     }
 
     @Override
     public void execute()
     {
+
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+
     }
 
     @Override
     public boolean isFinished()
     {
         return true;    // Once we're done, we're done...
-    }
-
-    @Override
-    public void interrupted()
-    {
-    }
-
-    @Override
-    public void end()
-    {
     }
 }
