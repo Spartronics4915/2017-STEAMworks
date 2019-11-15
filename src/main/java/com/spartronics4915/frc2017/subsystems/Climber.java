@@ -1,94 +1,63 @@
+// IDEA: Structure thing-to-do: eliminate Constants.java.
+// Constants go in their own respective subsystem / command class.
+// Easier for newcomers, easier to find, easier naming.
+
 package com.spartronics4915.frc2017.subsystems;
 
-import com.spartronics4915.frc2017.Logger;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.spartronics4915.frc2017.RobotMap;
-
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.TalonControlMode;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends SpartronicsSubsystem
 {
+    private static Climber mInstance = null;
 
-    //The 'SHLOW' is cutting the the speed of 'ON' in half
-    // The speed of ON is currently .75
-
-    public static enum State
+    public static Climber getInstance()
     {
-        OFF,
-        ON,
-        SLOW
+        if (mInstance == null)
+        {
+            mInstance = new Climber();
+        }
+        return mInstance;
     }
 
-    private CANTalon m_climberMotor;
+    private TalonSRX mClimberMotor;
+    private final double mClimbSpeed = 0.90; // With respect to PercentOutput
 
-    public Logger m_logger;
-
-    public Climber()
+    private Climber()
     {
-        m_logger = new Logger("Climber", Logger.Level.DEBUG);
+        // boolean success = false;
         try
-
         {
-            m_climberMotor = new CANTalon(RobotMap.CLIMBER_MOTOR);
-            m_climberMotor.changeControlMode(TalonControlMode.PercentVbus);
-            m_logger.info("Climber initialized");
-            SmartDashboard.putString("Climber Status", "Initialized");
-            SmartDashboard.putNumber("Climber Speed", .90);
+            mClimberMotor = new TalonSRX(RobotMap.CLIMBER_MOTOR);
+            mClimberMotor.configFactoryDefault();
+            // success = true;
         }
         catch (Exception e)
         {
-            m_logger.exception(e, false);
-            m_initialized = false;
+            // success = false;
+            // logException("Could not instantiate Climber subsystem: " + e);
         }
+        // logInitialized(success);
     }
 
-    @Override
-    protected void initDefaultCommand()
+    public void climb()
     {
+        mClimberMotor.set(ControlMode.PercentOutput, mClimbSpeed);
+    }
 
+    public void slow()
+    {
+        mClimberMotor.set(ControlMode.PercentOutput, mClimbSpeed / 2);
+    }
+
+    public void stop()
+    {
+        mClimberMotor.set(ControlMode.PercentOutput, 0);
     }
 
     public double getClimberCurrent()
     {
-        return m_climberMotor.getOutputCurrent();
-    }
-
-    public String getStateString(State s)
-    {
-        switch(s)
-        {
-            case OFF:
-                return "OFF";
-            case ON:
-                return "ON";
-            case SLOW:
-                return "SLOW";
-        }
-        return null;
-    }
-
-    public double getClimberSpeed(State s) {
-        double speed = SmartDashboard.getNumber("Climber Speed", .90);
-        switch(s)
-        {
-            case ON:
-                return speed;
-            case SLOW:
-                return speed / 2;
-            case OFF:
-            default:
-                return 0;
-        }
-    }
-
-    public void setClimber(State s) // NB: this is called during execute! (limit log / dashboard traffic)
-    {
-        if (initialized())
-        {
-            m_climberMotor.set(getClimberSpeed(s));
-        }
-
+        return mClimberMotor.getOutputCurrent();
     }
 }
