@@ -35,6 +35,6 @@ public class ClimbOnCommand extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return false; // apparently, gotta look into that:::: did they cancel with the stopcommand thing they had going on???
+        return false; // Stopping is handled by the ClimbOffCommand and mapped to a button
     }
 }

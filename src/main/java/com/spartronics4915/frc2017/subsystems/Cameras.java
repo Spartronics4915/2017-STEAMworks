@@ -1,10 +1,8 @@
 // FIXME: This Class has issues!!!
 // 1. relies heavily on logging
-// 2. overcommented code
+// 2. overcommented code - or maybe not? not using states should clear this up
 // 3. redundant code
-// 4. shitty variable names (albeit my fault)
-// 5. that motherfucking switch statement
-// sorry riyadth (who i think wrote a significant portion of this)
+// all of which is a product of the state system and should be fixable, but is kind of a lot at once
 
 package com.spartronics4915.frc2017.subsystems;
 

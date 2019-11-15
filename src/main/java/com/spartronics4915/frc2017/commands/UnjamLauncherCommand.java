@@ -29,18 +29,14 @@ public class UnjamLauncherCommand extends CommandBase
     {
         // The intended action is for the launcher to launch and reverse until it becomes unjammed
         if (mJamCount < 15)   // We are waiting for the reversed velocity to have an effect
-        {
             mLauncher.launch();
-        }
+
         else if (mJamCount > 30) // If it doesn't work at this time, reverse the velocity again
-        {
             mJamCount = 0;
-            mLauncher.launch();
-        }
+
         else
-        {
             mLauncher.reverse();
-        }
+
         mJamCount++;
     }
 
