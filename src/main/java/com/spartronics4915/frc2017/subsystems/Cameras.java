@@ -35,10 +35,10 @@ public class Cameras extends SpartronicsSubsystem
 
     private static final int mServerPort = 1180;
 
-    private UsbCamera mCamera[];        // Save space in an array for two USB cameras
-    private int mNumCameras;            // Track the number of cameras we have
-    private int mCurrentCamera;         // Store the current camera ID
-    private MjpegServer mMjpegServer;   // The camera server object
+    private UsbCamera mCamera[]; // Save space in an array for two USB cameras
+    private int mNumCameras; // Track the number of cameras we have
+    private int mCurrentCamera; // Store the current camera ID
+    private MjpegServer mMjpegServer; // The camera server object
 
 
     private Cameras()

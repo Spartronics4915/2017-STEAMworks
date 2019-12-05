@@ -19,8 +19,8 @@ public class Launcher extends SpartronicsSubsystem
 
     private TalonSRX mLauncherMotor;
     private TalonSRX mAgitatorMotor;
-    private final double mLauncherVelocity = 2880.0; // the old number was 2940 (changed at GP)
-    private final double mAgitatorSpeed = 0.7; // Note the difference between Speed and Velocity - Speed == CtrlMd.PercentOutput, Velocity == CtrlMd.Velocity
+    private final double mLauncherVelocity = 2880.0; // The old number was 2940 (changed at GP)
+    private final double mAgitatorSpeed = 0.7; // Speed == PercentOutput, Velocity == Velocity
 
     private Launcher()
     {

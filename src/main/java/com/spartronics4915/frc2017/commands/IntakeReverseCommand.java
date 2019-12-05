@@ -35,6 +35,6 @@ public class IntakeReverseCommand extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return false; // they relied on buttons to control their lifetime (:D :D :D)
+        return false; // Buttons are relied on to control lifetime
     }
 }

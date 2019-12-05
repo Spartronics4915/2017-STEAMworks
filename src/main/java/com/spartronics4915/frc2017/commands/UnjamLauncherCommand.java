@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class UnjamLauncherCommand extends CommandBase
 {
     private Launcher mLauncher;
-    private int mJamCount; // times in a row the agitator hasn't moved
+    private int mJamCount; // Times in a row the agitator hasn't moved
 
     public UnjamLauncherCommand()
     {
@@ -28,7 +28,7 @@ public class UnjamLauncherCommand extends CommandBase
     public void execute()
     {
         // The intended action is for the launcher to launch and reverse until it becomes unjammed
-        if (mJamCount < 15)   // We are waiting for the reversed velocity to have an effect
+        if (mJamCount < 15) // We are waiting for the reversed velocity to have an effect
             mLauncher.launch();
 
         else if (mJamCount > 30) // If it doesn't work at this time, reverse the velocity again
@@ -50,7 +50,7 @@ public class UnjamLauncherCommand extends CommandBase
     @Override
     public boolean isFinished()
     {
-        if (mLauncher.getRPM() >= 10) // target is 70
+        if (mLauncher.getRPM() >= 10) // Target is 70
             return true;
         return false;
     }

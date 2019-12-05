@@ -37,6 +37,6 @@ public class ChooseCameraCommand extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return true;    // Once we're done, we're done...
+        return true; // Once we're done, we're done...
     }
 }
